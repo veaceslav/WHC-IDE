@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/slavik/git/ide/samples/Execute/src/Task1/main.cpp
+main.h
+/home/slavik/git/ide/samples/Execute/src/Task1/main.h
+fstream
+-
+iostream
+-
+string.h
+-
+time.h
+-
+sstream
+-
+
+/home/slavik/git/ide/samples/Execute/src/Task1/main.h
+CL/cl.h
+-
+iostream
+-
+stdio.h
+-
+

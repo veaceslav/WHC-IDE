@@ -1,0 +1,8 @@
+#include "projectitem.h"
+
+ProjectItem::ProjectItem()
+{
+    this->isFile=false;
+    this->isOpen=false;
+    this->textEdit=NULL;
+}

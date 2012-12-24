@@ -1,0 +1,78 @@
+#ifndef IDE_H
+#define IDE_H
+
+#include <QMainWindow>
+#include <QTimer>
+#include <QDebug>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomNode>
+#include <QDomDocument>
+
+
+#include "credits.h"
+#include "projectdialog.h"
+#include "tabproject.h"
+#include "diagramtask.h"
+#include "diagramconnection.h"
+#include "intro.h"
+#include "projectsettings.h"
+#include "newproject.h"
+#include "project.h"
+#include "projectitem.h"
+
+
+#define RED "<span style=\" font-weight:600; color:#f80e12;\">"
+#define GREEN "<span style=\" font-weight:600; color:#198e21;\">"
+#define BLUE "<span style=\" color:#003bb2;\">"
+#define END "</span> "
+
+
+#define XML_TASK "item"
+#define XML_TASK_SOURCE "files"
+#define XML_INPUT "input"
+#define XML_FILENAME "name"
+
+
+
+namespace Ui {
+    class Ide;
+}
+
+class Ide : public QMainWindow {
+    Q_OBJECT
+public:
+
+    static QList<Project> project_list;     // list that contains all the data ref to projects opened
+    newProject* newProject_ui;              // user interface of newProject dialog
+    Credits* credits_ui;                    // user interface of credits dialog
+    Ide(QWidget *parent = 0);
+    Intro* newI;
+    ~Ide();
+
+    // defines the current opened project
+    Project* currentProject;
+
+protected:
+    void changeEvent(QEvent *e);
+    void on_action_Open_Project_triggered(QString file);
+
+
+private:
+    void closeCurrentProject();
+    Ui::Ide *ui;
+
+public slots:
+    void openProject(QString projectName);
+
+private slots:
+    void on_action_Open_Project_triggered();
+    void on_actionSave_Project_triggered();
+    void on_action_New_Project_triggered();
+    void on_actionAbout_WLoHC_triggered();
+    void on_action_Exit_triggered();
+    QString format(QString format,QString toFormat);
+    void on_action_Open_project_triggered();
+    void on_treeFiles_itemClicked(QTreeWidgetItem* item, int column);
+};
+
+#endif // IDE_H

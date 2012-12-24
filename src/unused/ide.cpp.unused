@@ -1,0 +1,636 @@
+#include "ide.h"
+#include "ui_ide.h"
+
+#include "diagramconnection.h"
+
+QTabWidget* TabProject::mainTab;
+QTabWidget* TabProject::secondTab;
+QComboBox* TabProject::projectCombo;
+
+Ide::Ide(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::Ide)
+{
+    ui->setupUi(this);
+}
+
+Ide::~Ide()
+{
+    delete ui;
+}
+
+void Ide::changeEvent(QEvent *e)
+{
+    QMainWindow::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
+
+QString Ide::format(QString format,QString toFormat)
+{
+    return format+toFormat+END;
+}
+
+void Ide::on_action_Exit_triggered()
+{
+    this->close();
+}
+
+void Ide::on_actionAbout_WLoHC_triggered()
+{
+    credits_ui=new Credits();
+    credits_ui->showNormal();
+}
+
+void Ide::on_action_New_Project_triggered()
+{
+    ProjectDialog newProject;
+    newProject.ide_ui=this;
+    //newProject.main_tab=ui->tab_main;
+    newProject.exec();
+}
+
+
+////////////////////////////////////////////////////////////////
+//
+//  Close project (current)
+//
+////////////////////////////////////////////////////////////////
+
+
+void Ide::closeCurrentProject(){
+
+    // TODO
+    // ASK user to save previous data
+
+    // free mem for object currentProject
+    free(this->currentProject);
+    this->currentProject=NULL;
+
+    // reset UI settings
+    this->ui->tabFiles->clear();
+    this->ui->treeFiles->clear();
+
+}
+
+void Ide::on_actionSave_Project_triggered()
+{
+
+    // XML variables
+    QDomDocument doc( "WHC" );
+    QDomElement root;
+    // project header
+    QDomElement pheader;
+    // project item
+    QDomElement pitem;
+    // project input
+    QDomElement pinput;
+    // item connection
+    QDomElement itemcon;
+
+    // inputs of a project
+    QString inputs;
+    TabProject* currentTab;
+    DiagramScene* diagramScene;
+    int i=0;
+
+    root = doc.createElement( "project" );
+    doc.appendChild( root );
+
+    pheader = doc.createElement( "header" );
+
+    // get current tab project / get its diagramScene
+    //currentTab=(TabProject*)this->ui->tab_main->currentWidget();
+    diagramScene=currentTab->diagramScene;
+
+    // add project info
+    pheader.setAttribute( "name", currentTab->project->name );
+    pheader.setAttribute( "location", currentTab->project->location );
+
+    root.appendChild(pheader);
+
+    // add inputs
+    for(;i<diagramScene->input->outputFileS.count();i++)
+        if(diagramScene->input->outputFileS.at(i).size()>0)
+        {
+            pinput=doc.createElement( "input" );
+            pinput.setAttribute("name",diagramScene->input->outputFileS.at(i));
+            pheader.appendChild(pinput);
+        }
+
+
+
+    // add items
+    for(i=0;i<currentTab->diagramScene->items().count();i++)
+
+        //check if item is task
+        if(currentTab->diagramScene->items().at(i)->opacity()==1)
+        {
+            // item that is not DiagramConnection, initial node or final node
+            DiagramTask* diagItem=(DiagramTask*)currentTab->diagramScene->items().at(i);
+
+            // if node is item then save it
+            if((!diagItem->isInitialNode)&&(!diagItem->isFinalNode))
+            {
+                pitem=doc.createElement( "item" );
+                pitem.setAttribute("id",diagItem->taskID);
+                pitem.setAttribute("name",diagItem->taskNameS);
+                pitem.setAttribute("args",diagItem->taskArgsS);
+                pitem.setAttribute("posX",diagItem->pos().x());
+                pitem.setAttribute("posY",diagItem->pos().y());
+                pitem.setAttribute("input",diagItem->inputNR);
+                pitem.setAttribute("output",diagItem->outputNR);
+
+
+                // save source code files
+                for(int p=0;p<diagItem->sourceFiles.count();p++)
+                {
+                    itemcon=doc.createElement("files");
+                    itemcon.setAttribute("name",diagItem->sourceFiles.at(p));
+                    pitem.appendChild(itemcon);
+                }
+
+
+                // save parents
+                for(int p=0;p<diagItem->parents.count();p++)
+                {
+                    itemcon=doc.createElement( "parent" );
+                    itemcon.setAttribute("id",diagItem->parents.at(p)->taskID);
+                    pitem.appendChild(itemcon);
+                }
+
+                // save children
+                for(int p=0;p<diagItem->children.count();p++)
+                {
+                    itemcon=doc.createElement( "child" );
+                    itemcon.setAttribute("id",diagItem->children.at(p)->taskID);
+                    pitem.appendChild(itemcon);
+                }
+
+                root.appendChild(pitem);
+
+            } // end of if
+
+        } // end of for
+
+
+    // writing to file .whc
+
+    QString dir = currentTab->project->location+"/"+currentTab->project->name+"/";
+    QFile fileXML( dir+currentTab->project->name+".whc");
+
+    if( !fileXML.open( QFile::WriteOnly ) )
+        return;
+
+    QTextStream ts( &fileXML );
+    ts << doc.toString();
+
+    fileXML.close();
+
+}
+
+void Ide::on_action_Open_Project_triggered()
+{
+
+    // open file
+    QString file = QFileDialog::getOpenFileName(this, tr("Open WHC Project"), "", tr("WHC Project File (*.whc)"));
+    if (file.trimmed() == "") return;
+
+    // close current project
+    closeCurrentProject();
+
+    // attempt to read *.whc file and open project
+    openProject(file);
+
+}
+
+////////////////////////////////////////////////////////////////
+//
+//  Open Project
+//
+////////////////////////////////////////////////////////////////
+
+void Ide::openProject(QString projectFilename)
+{
+
+    QDomDocument doc( "WHC" );
+    QDomElement proot, pitem, hitem, titem;
+    QDomNode pnode, hnode, tnode;
+    ProjectTreeItem* rootProject=NULL;
+    ProjectTreeItem* itemProject=NULL;
+
+    // attempt to open file
+    QFile qfile(projectFilename);
+    if( !qfile.open( QFile::ReadOnly ) )
+        return;
+
+    // attempt to read xml
+    if( !doc.setContent( &qfile ) ){
+        qfile.close();
+        return;
+    }
+    qfile.close();
+
+    // get root from file
+    proot = doc.documentElement();
+    if( proot.tagName() != "project" )
+        return;
+
+    // assign a new project object & set attributes
+    this->currentProject=new Project("","");
+
+    pnode = proot.firstChild();
+    while( !pnode.isNull() )
+    {
+        pitem = pnode.toElement();
+
+        // reading all info
+        if( !pitem.isNull() )
+        {
+            // reading project header info
+            if( pitem.tagName() == "header" )
+            {
+
+                this->currentProject->name = pitem.attribute( XML_FILENAME, "" );
+                this->currentProject->location = projectFilename.left(projectFilename.lastIndexOf("/"));
+
+
+                // add root element to flow
+                rootProject=new ProjectTreeItem();
+                rootProject->filename=this->currentProject->name;
+                rootProject->fileDesc=new QFile(projectFilename);
+                rootProject->setText(0,rootProject->filename);
+                this->ui->treeFiles->addTopLevelItem(rootProject);
+
+                // add workflow file
+                ProjectTreeItem* workflow=new ProjectTreeItem();
+                workflow->setText(0,"Workflow");
+                rootProject->addChild(workflow);
+
+                ProjectTreeItem* workflowFile=new ProjectTreeItem();
+                workflowFile->setText(0,currentProject->name+".whc");
+                workflow->addChild(workflowFile);
+
+                // appending input files
+                hnode=pitem.firstChild();
+                itemProject=new ProjectTreeItem();
+                itemProject->setText(0,"Inputs");
+                rootProject->addChild(itemProject);
+
+                // loop through file list in XML (*.whc) and add tree items
+                while(!hnode.isNull())
+                {
+                    hitem=hnode.toElement();
+
+                    if(!hitem.isNull())
+                        if(hitem.tagName()==XML_INPUT){
+
+                            this->currentProject->inputFiles.append(hitem.attribute(XML_FILENAME,""));
+                            ProjectTreeItem* inputFileTreeItem=new ProjectTreeItem();
+                            inputFileTreeItem->isFile=true;
+                            inputFileTreeItem->filename=hitem.attribute(XML_FILENAME,"");
+                            inputFileTreeItem->setText(0,inputFileTreeItem->filename);
+                            itemProject->addChild(inputFileTreeItem);
+                        }
+
+                    hnode=hnode.nextSibling();
+                }
+
+            }
+
+            // reading project task info
+            else if (pitem.tagName()==XML_TASK){
+
+                // allocate memory & set properties
+                this->currentProject->taskFolders.append(pitem.attribute(XML_FILENAME,""));
+                itemProject=new ProjectTreeItem();
+                itemProject->setText(0,pitem.attribute(XML_FILENAME,""));
+
+                // color tasks gray
+                QColor grayColor;
+                grayColor.setRgb(220,220,220);
+                itemProject->setBackgroundColor(0,grayColor);
+
+                rootProject->addChild(itemProject);
+
+                // loop through file tasks
+                tnode=pitem.firstChild();
+                while(!tnode.isNull())
+                {
+                    titem=tnode.toElement();
+
+                    if(!titem.isNull())
+                        if(titem.tagName()==XML_TASK_SOURCE){
+
+                            // add file items to each task & set properties
+                            ProjectTreeItem* taskFileTreeItem=new ProjectTreeItem();
+                            taskFileTreeItem->isFile=true;
+                            taskFileTreeItem->path=this->currentProject->location+"/Cod/"+itemProject->text(0)+"/"+titem.attribute(XML_FILENAME,"");
+                            taskFileTreeItem->filename=titem.attribute(XML_FILENAME,"");
+                            taskFileTreeItem->setText(0,taskFileTreeItem->filename);
+                            itemProject->addChild(taskFileTreeItem);
+                        }
+                    tnode=tnode.nextSibling();
+                }
+            }
+            pnode = pnode.nextSibling();
+        }
+
+    }
+
+}
+
+void Ide::on_action_Open_Project_triggered(QString file)
+{
+    QDomDocument doc( "WHC" );
+    QDomElement proot;
+
+    QDomElement pheader;
+    QDomElement pitem;
+
+    QDomNode hnode;
+    QDomElement hitem;
+
+    QDomNode tnode;
+    QDomElement titem;
+
+    QDomNode pnode;
+
+    TabProject* tabProject = NULL;
+    DiagramScene* diagScene = NULL;
+    DiagramTask* diagTask = NULL;
+
+    // id to id connections
+    QList<QPoint> listConnections;
+
+    QFile qfile(file);
+    if( !qfile.open( QFile::ReadOnly ) )
+        return;
+
+    if( !doc.setContent( &qfile ) )
+    {
+        qfile.close();
+        return;
+    }
+    qfile.close();
+
+    // get root from file
+    proot = doc.documentElement();
+    if( proot.tagName() != "project" )
+        return;
+
+    // create new project
+    tabProject = new TabProject();
+
+    pnode = proot.firstChild();
+    while( !pnode.isNull() )
+    {
+        pitem = pnode.toElement();
+
+        // reading all info
+        if( !pitem.isNull() )
+        {
+            // reading project header info
+            if( pitem.tagName() == "header" )
+            {
+                QString pname = pitem.attribute( "name", "" );
+                //QString ploc = pitem.attribute( "location", "" );
+                QString ploc = file.left(file.lastIndexOf("/"));
+
+                qDebug()<<"Opening project"<<pname<<"in"<<ploc;
+
+                tabProject->project = new Project(pname, ploc);
+                //ui->tab_main->addTab(tabProject, tabProject->project->name);
+
+                diagScene = tabProject->diagramScene;
+                diagScene->project = tabProject->project;
+
+                hnode=pitem.firstChild();
+                while(!hnode.isNull())
+                {
+                    hitem=hnode.toElement();
+                    if(!hitem.isNull())
+                        if(hitem.tagName()=="input")
+                        {
+                            QString input=hitem.attribute("name","");
+                            diagScene->input->outputFileS.push_back(input);
+                            diagScene->inputFiles->addItem(input);
+                        }
+                    hnode=hnode.nextSibling();
+                }
+            } // end of read of project header
+
+            // reading project task info
+            else if (pitem.tagName()=="item")
+            {
+                // create new item and fill in data
+                diagScene->diagSceneID++;
+
+                diagTask = new DiagramTask(diagScene->diagSceneID, 0 ,"");
+                diagTask->taskID = pitem.attribute("id", "").toInt();
+
+                if(diagScene->diagSceneID < diagTask->taskID)
+                    diagScene->diagSceneID = diagTask->taskID;
+
+                diagTask->taskNameS = pitem.attribute("name","");
+                diagTask->taskArgsS = pitem.attribute("args","");
+
+                int posX = pitem.attribute("posX","").toInt();
+                int posY = pitem.attribute("posY","").toInt();
+
+                diagTask->setPos(posX,posY);
+                diagTask->inputNR=pitem.attribute("input","").toInt();
+                diagTask->outputNR=pitem.attribute("output","").toInt();
+
+                tnode=pitem.firstChild();
+                while(!tnode.isNull())
+                {
+                    titem=tnode.toElement();
+                    if(!titem.isNull())
+                    {
+                        if(titem.tagName()=="files"){
+                            diagTask->sourceFiles.append(titem.attribute("name",""));
+                        }
+                        if(titem.tagName()=="parent")
+                        {
+                            // convention id=0 ,is input, id=-2
+                            int id=titem.attribute("id","").toInt();
+                            if(id==0)id=-2;
+                            QPoint qpoint(id,diagTask->taskID);
+                            listConnections.push_back(qpoint);
+                        }
+                        else if(titem.tagName()=="child")
+                        {
+                            // convention id=0, is output, id=-1
+                            int id=titem.attribute("id","").toInt();
+                            if(id==0)id=-1;
+                            QPoint qpoint(diagTask->taskID,id);
+                            listConnections.push_back(qpoint);
+                        }
+                    }
+                    tnode=tnode.nextSibling();
+                }
+
+                // adding the item to the scene
+                diagScene->addItem(diagTask);
+            }
+
+            pnode = pnode.nextSibling();
+        }
+
+    }
+    // end of inputs from file
+
+
+
+    // building connections
+
+
+    int listCon=listConnections.count();
+
+    for(int k=0;k<listCon;k++)
+        for(int m=k+1;m<listCon;m++)
+            if((listConnections.at(k).x()==listConnections.at(m).x())
+                    && (listConnections.at(k).y()==listConnections.at(m).y()))
+            {
+                listConnections.removeAt(m);
+                listCon--;
+                m--;
+            }
+            else if((listConnections.at(k).x()==listConnections.at(m).y())
+                    && (listConnections.at(k).y()==listConnections.at(m).x()))
+            {
+                listConnections.removeAt(m);
+                listCon--;
+                m--;
+            }
+
+    for(int k=0;k<listCon;k++)
+    {
+        DiagramTask* start=NULL;
+        DiagramTask* end=NULL;
+        for(int p=0;p<diagScene->items().count();p++)
+            if(diagScene->items().at(p)->opacity()==1)
+            {
+                DiagramTask* diagItem=(DiagramTask*)diagScene->items().at(p);
+                if(diagItem->taskID!=0)
+                {
+                    if(diagItem->taskID==listConnections.at(k).x())start=diagItem;
+                    else if(diagItem->taskID==listConnections.at(k).y())end=diagItem;
+                }
+                else
+                {
+                    if((diagItem->isInitialNode)&&(listConnections.at(k).x()==(-2)))
+                        start=diagItem;
+                    else if((diagItem->isFinalNode)&&(listConnections.at(k).y()==(-1)))
+                        end=diagItem;
+                }
+            }
+
+        if(start->isFinalNode || end->isInitialNode)
+        {
+            qDebug()<<"Cannot add connection where start node is marked final or end node is marked initial";
+            continue;
+        }
+
+        DiagramConnection* diagramConnection = new DiagramConnection(start, end);
+
+        diagScene->addItem(diagramConnection);
+
+    } // end of for
+
+    tabProject->updateInputItem();
+//    tabProject->diagramScene->updateIO(); // TODO calling this function makes it crash, investigate.
+
+}
+
+
+
+
+void Ide::on_action_Open_project_triggered()
+{
+        // open file
+        QString file = QFileDialog::getOpenFileName(this, tr("Open WHC Project"),
+                                                    "", tr("WHC Project File (*.whc)"));
+        if (file.trimmed() == "")
+            return;
+
+        // close current project
+        closeCurrentProject();
+
+        // attempt to read *.whc file and open project
+        openProject(file);
+
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Item Clicked - open file/graph for editing
+//
+//////////////////////////////////////////////////////////////////////////////
+
+void Ide::on_treeFiles_itemClicked(QTreeWidgetItem* item, int column)
+{
+    // convert & check if file
+    ProjectTreeItem* selectedItem=(ProjectTreeItem*)item;
+    if(!selectedItem->isFile)
+        return;
+
+
+    // check for *.cl type files
+    if(selectedItem->text(0).right(3)==QString::fromLatin1(".cl")){
+
+        selectedItem->textEdit=new QTextEdit();
+        HighlightCL *highlightcl=new HighlightCL(selectedItem->textEdit->document());
+        if(highlightcl==NULL){
+            QMessageBox msgBox;
+            msgBox.setText("Error creating highlight \nNull was returned when creating highlightCL object");
+            msgBox.exec();
+        }
+    }
+
+    // check for *.h *.c *.cpp *.hpp files
+    else if(
+            (selectedItem->text(0).right(2)==QString::fromLatin1(".c"))
+            ||(selectedItem->text(0).right(2)==QString::fromLatin1(".h"))
+            ||(selectedItem->text(0).right(4)==QString::fromLatin1(".cpp"))
+            ||(selectedItem->text(0).right(4)==QString::fromLatin1(".hpp"))
+            ){
+
+        selectedItem->textEdit=new QTextEdit();
+        HighlightC *highlightc=new HighlightC(selectedItem->textEdit->document());
+        if(highlightc==NULL){
+            QMessageBox msgBox;
+            msgBox.setText("Error creating highlight \nNull was returned when creating highlightC object");
+            msgBox.exec();
+        }
+    }
+
+    // check for *.wwf
+    else if(selectedItem->text(0).right(2)==QString::fromLatin1(".whc")){
+        //DiagramScene* diagScene=new DiagramScene();
+        //this->ui->tabFiles->addTab(diagScene,selectedItem->filename);
+        //this->ui->tabFiles->setFocus();
+    }
+
+    else
+        return;
+
+    this->ui->tabFiles->addTab(selectedItem->textEdit,selectedItem->filename.toLatin1());
+    this->ui->tabFiles->setFocus();
+
+    QFile file(selectedItem->path.toLatin1());
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+       {
+            QString line;
+            while (!file.atEnd())
+                line.append(file.readLine());
+            selectedItem->textEdit->setText(line);
+        }
+
+}

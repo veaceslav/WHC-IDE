@@ -1,0 +1,1 @@
+/home/slavik/git/ide/samples/Execute/src/Task1/build/CMakeFiles/Task1.dir

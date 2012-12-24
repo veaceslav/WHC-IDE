@@ -1,0 +1,9 @@
+/* File for listing current problems */
+
+1) [Done]SIGSEGV if i close "Open Project" window
+2) [Done]Harcoded file paths that only work on lupescuPC and Linux :)
+3) [Done]Need to find good colors for syntax highlighting
+
+4. [CAN'T Reproduce] SIGSEGV when creating new project under windows
+
+5. [BUG][Win7 x64] Open Ide, don't open any project, go to replace type something, receive message "Something went wrong!" after that crash.

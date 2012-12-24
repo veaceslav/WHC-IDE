@@ -1,0 +1,28 @@
+<!DOCTYPE WHC>
+<project>
+ <header location="projects/" name="template2">
+  <input name="Lena256.pgm"/>
+  <input name="Lena512.pgm"/>
+  <input name="Lena64.pgm"/>
+ </header>
+ <item output="1" input="1" posX="-48" posY="212" id="2" args="" name="Task_2">
+  <files name="Task_2.cpp"/>
+  <files name="lib.hpp"/>
+  <files name="lib.cpp"/>
+  <files name="libCL.hpp"/>
+  <files name="libCL.cpp"/>
+  <files name="kernels.cl"/>
+  <parent id="1"/>
+  <child id="0"/>
+ </item>
+ <item output="1" input="1" posX="-44" posY="114" id="1" args="" name="Task_1">
+  <files name="Task_1.cpp"/>
+  <files name="lib.hpp"/>
+  <files name="lib.cpp"/>
+  <files name="libCL.hpp"/>
+  <files name="libCL.cpp"/>
+  <files name="kernels.cl"/>
+  <parent id="0"/>
+  <child id="2"/>
+ </item>
+</project>

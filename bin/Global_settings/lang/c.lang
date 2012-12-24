@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="cpp">
+    <context id="keywords">
+        <keyword>asm</keyword>
+        <keyword>break</keyword>
+        <keyword>case</keyword>
+        <keyword>continue</keyword>
+        <keyword>default</keyword>
+        <keyword>do</keyword>
+        <keyword>else</keyword>
+        <keyword>enum</keyword>
+        <keyword>for</keyword>
+        <keyword>fortran</keyword>
+        <keyword>goto</keyword>
+        <keyword>if</keyword>
+        <keyword>return</keyword>
+        <keyword>sizeof</keyword>
+        <keyword>struct</keyword>
+        <keyword>switch</keyword>
+        <keyword>typedef</keyword>
+        <keyword>union</keyword>
+        <keyword>while</keyword>
+        <keyword>and</keyword>
+        <keyword>and_eq</keyword>
+        <keyword>bitand</keyword>
+        <keyword>bitor</keyword>
+        <keyword>catch</keyword>
+        <keyword>compl</keyword>
+        <keyword>constexpr</keyword>
+        <keyword>const_cast</keyword>
+        <keyword>decltype</keyword>
+        <keyword>delete</keyword>
+        <keyword>dynamic_cast</keyword>
+        <keyword>false</keyword>
+        <keyword>friend</keyword>
+        <keyword>new</keyword>
+        <keyword>not</keyword>
+        <keyword>not_eq</keyword>
+        <keyword>nullptr</keyword>
+        <keyword>operator</keyword>
+        <keyword>or</keyword>
+        <keyword>or_eq</keyword>
+        <keyword>private</keyword>
+        <keyword>protected</keyword>
+        <keyword>public</keyword>
+        <keyword>reinterpret_cast</keyword>
+        <keyword>static_assert</keyword>
+        <keyword>static_cast</keyword>
+        <keyword>this</keyword>
+        <keyword>throw</keyword>
+        <keyword>true</keyword>
+        <keyword>try</keyword>
+        <keyword>typeid</keyword>
+        <keyword>using</keyword>
+        <keyword>xor</keyword>
+        <keyword>xor_eq</keyword>
+        <keyword>class</keyword>
+        <keyword>namespace</keyword>
+        <keyword>typename</keyword>
+        <keyword>template</keyword>
+        <keyword>virtual</keyword>
+    </context>
+    <context id="types">
+        <keyword>_Bool</keyword>
+        <keyword>_Complex</keyword>
+        <keyword>_Imaginary</keyword>
+        <keyword>bool</keyword>
+        <keyword>char</keyword>
+        <keyword>double</keyword>
+        <keyword>float</keyword>
+        <keyword>int</keyword>
+        <keyword>long</keyword>
+        <keyword>short</keyword>
+        <keyword>signed</keyword>
+        <keyword>size_t</keyword>
+        <keyword>unsigned</keyword>
+        <keyword>void</keyword>
+        <keyword>bool</keyword>
+        <keyword>char16_t</keyword>
+        <keyword>char32_t</keyword>
+        <keyword>explicit</keyword>
+        <keyword>export</keyword>
+        <keyword>inline</keyword>
+        <keyword>mutable</keyword>
+        <keyword>nullptr_t</keyword>
+        <keyword>wchar_t</keyword>
+    </context>
+    <context id="storage-class">
+        <keyword>auto</keyword>
+        <keyword>const</keyword>
+        <keyword>extern</keyword>
+        <keyword>inline</keyword>
+        <keyword>register</keyword>
+        <keyword>restrict</keyword>
+        <keyword>static</keyword>
+        <keyword>volatile</keyword>
+    </context>
+    <context id="common-defines">
+        <keyword>__STDC__</keyword>
+        <keyword>__cplusplus</keyword>
+        <keyword>NULL</keyword>
+        <keyword>MAX</keyword>
+        <keyword>MIN</keyword>
+        <keyword>TRUE</keyword>
+        <keyword>FALSE</keyword>
+        <keyword>__LINE__</keyword>
+        <keyword>__DATA__</keyword>
+        <keyword>__FILE__</keyword>
+        <keyword>__func__</keyword>
+        <keyword>__TIME__</keyword>
+        <keyword>__STDC__</keyword>
+    </context>
+    <context id="boolean">
+        <keyword>true</keyword>
+        <keyword>false</keyword>
+    </context>
+    <context id="macro">
+        <keyword>^\s*#\s*(define|undef|error|pragma|ident|if(n?def)?|else|elif|endif|line|warning)</keyword>
+        <keyword>^\s*#\s*(include|import)\s*((&lt;.*&gt;)|(&quot;.*&quot;))</keyword>
+    </context>
+    <context id="strings">
+        <keyword>&quot;\%\%|\%(?:[1-9][0-9]*\$)?[#0\-\ \+\'I]*(?:[1-9][0-9]*|\*)?(?:\.\-?(?:[0-9]+|\*))?(?:hh|ll|[hlLqjzt])?[diouxXeEfFgGaAcsCSpnm]&quot;</keyword>
+        <keyword>&quot;.*&quot;</keyword>
+        <keyword>'.*'</keyword>
+        <keyword>`.*`</keyword>
+    </context>
+    <context id="comment">
+        <keyword>//.*</keyword>
+    </context>
+    <context id="start-comment-multiline">
+        <keyword>/(\*)+(.[^(\*/)])*</keyword>
+    </context>
+    <context id="end-comment-multiline">
+        <keyword>[^(/\*)]*(\*)+/</keyword>
+    </context>
+</language>

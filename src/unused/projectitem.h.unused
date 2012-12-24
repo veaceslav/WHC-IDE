@@ -1,0 +1,24 @@
+#ifndef FILETREEOBJ_H
+#define FILETREEOBJ_H
+
+#include <QTreeWidgetItem>
+#include <QFile>
+#include <QTextEdit>
+
+class ProjectItem : public QTreeWidgetItem
+{
+public:
+    ProjectItem();
+
+    bool isOpen;
+    bool isFile;
+
+    QFile* fileDesc;
+    QTextEdit* textEdit;
+    QString filename;
+    QString path;
+    QList<ProjectItem*> fileTreeItemList;
+
+};
+
+#endif // FILETREEOBJ_H

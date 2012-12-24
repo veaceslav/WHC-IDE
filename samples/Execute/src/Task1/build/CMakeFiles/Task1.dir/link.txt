@@ -1,0 +1,1 @@
+/usr/bin/c++    -I/opt/AMDAPP/include -L/opt/AMDAPP/lib/x86_64/    CMakeFiles/Task1.dir/main.cpp.o  -o Task1 -rdynamic -lOpenCL 

@@ -1,0 +1,395 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/stat.h>
+
+#include <libssh/libssh.h>
+#include "libssh_core.h"
+
+char **sources;
+int nsources;
+char *destination;
+int verbosity=0;
+
+struct location {
+  int is_ssh;
+  char *user;
+  char *host;
+  char *path;
+  ssh_session session;
+  ssh_scp scp;
+  FILE *file;
+};
+
+enum {
+  READ,
+  WRITE
+};
+
+int verify_knownhost(ssh_session session){
+  char *hexa;
+  int state;
+  char buf[10];
+  unsigned char *hash = NULL;
+  int hlen;
+
+  state=ssh_is_server_known(session);
+
+  hlen = ssh_get_pubkey_hash(session, &hash);
+  if (hlen < 0) {
+    return -1;
+  }
+  switch(state){
+    case SSH_SERVER_KNOWN_OK:
+      break; /* ok */
+    case SSH_SERVER_KNOWN_CHANGED:
+      fprintf(stderr,"Host key for server changed : server's one is now :\n");
+      ssh_print_hexa("Public key hash",hash, hlen);
+      free(hash);
+      fprintf(stderr,"For security reason, connection will be stopped\n");
+      return -1;
+    case SSH_SERVER_FOUND_OTHER:
+      fprintf(stderr,"The host key for this server was not found but an other type of key exists.\n");
+      fprintf(stderr,"An attacker might change the default server key to confuse your client"
+          "into thinking the key does not exist\n"
+          "We advise you to rerun the client with -d or -r for more safety.\n");
+      return -1;
+    case SSH_SERVER_FILE_NOT_FOUND:
+      fprintf(stderr,"Could not find known host file. If you accept the host key here,\n");
+      fprintf(stderr,"the file will be automatically created.\n");
+      /* fallback to SSH_SERVER_NOT_KNOWN behavior */
+    case SSH_SERVER_NOT_KNOWN:
+      hexa = ssh_get_hexa(hash, hlen);
+      fprintf(stderr,"The server is unknown. Do you trust the host key ?\n");
+      fprintf(stderr, "Public key hash: %s\n", hexa);
+      free(hexa);
+      if (fgets(buf, sizeof(buf), stdin) == NULL) {
+        return -1;
+      }
+      if(strncasecmp(buf,"yes",3)!=0){
+        return -1;
+      }
+      fprintf(stderr,"This new key will be written on disk for further usage. do you agree ?\n");
+      if (fgets(buf, sizeof(buf), stdin) == NULL) {
+        return -1;
+      }
+      if(strncasecmp(buf,"yes",3)==0){
+        if (ssh_write_knownhost(session) < 0) {
+          free(hash);
+          fprintf(stderr, "error %s\n", strerror(errno));
+          return -1;
+        }
+      }
+
+      break;
+    case SSH_SERVER_ERROR:
+      free(hash);
+      fprintf(stderr,"%s",ssh_get_error(session));
+      return -1;
+  }
+  free(hash);
+  return 0;
+}
+
+ssh_session connect_ssh(const char *host, const char *user,int verbosity){
+  ssh_session session;
+  int auth=0;
+
+  session=ssh_new();
+  if (session == NULL) {
+    return NULL;
+  }
+
+  if(user != NULL){
+    if (ssh_options_set(session, SSH_OPTIONS_USER, user) < 0) {
+      ssh_disconnect(session);
+      return NULL;
+    }
+  }
+
+  if (ssh_options_set(session, SSH_OPTIONS_HOST, host) < 0) {
+    return NULL;
+  }
+  ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
+  if(ssh_connect(session)){
+    fprintf(stderr,"Connection failed : %s\n",ssh_get_error(session));
+    ssh_disconnect(session);
+    return NULL;
+  }
+  if(verify_knownhost(session)<0){
+    ssh_disconnect(session);
+    return NULL;
+  }
+  auth=authenticate_console(session);
+  if(auth==SSH_AUTH_SUCCESS){
+    return session;
+  } else if(auth==SSH_AUTH_DENIED){
+    fprintf(stderr,"Authentication failed\n");
+  } else {
+    fprintf(stderr,"Error while authenticating : %s\n",ssh_get_error(session));
+  }
+  ssh_disconnect(session);
+  return NULL;
+}
+
+static void usage(const char *argv0){
+  fprintf(stderr,"Usage : %s [options] [[user@]host1:]file1 ... \n"
+      "                               [[user@]host2:]destination\n"
+      "sample scp client - libssh-%s\n",
+//      "Options :\n",
+//      "  -r : use RSA to verify host public key\n",
+      argv0,
+      ssh_version(0));
+  exit(0);
+}
+
+static int opts(int argc, char **argv){
+  int i;
+  while((i=getopt(argc,argv,"v"))!=-1){
+    switch(i){
+      case 'v':
+        verbosity++;
+        break;
+      default:
+        fprintf(stderr,"unknown option %c\n",optopt);
+        usage(argv[0]);
+        return -1;
+    }
+  }
+  nsources=argc-optind-1;
+  if(nsources < 1){
+    usage(argv[0]);
+    return -1;
+  }
+  sources=(char**)malloc((nsources + 1) * sizeof(char *));
+  if(sources == NULL)
+    return -1;
+  for(i=0;i<nsources;++i){
+    sources[i] = argv[optind];
+    optind++;
+  }
+  sources[i]=NULL;
+  destination=argv[optind];
+  return 0;
+}
+
+static struct location *parse_location(char *loc){
+  struct location *location=(struct location*) malloc(sizeof(struct location));
+  char *ptr;
+
+  location->host=location->user=NULL;
+  ptr=strchr(loc,':');
+  if(ptr != NULL){
+    location->is_ssh=1;
+    location->path=strdup(ptr+1);
+    *ptr='\0';
+    ptr=strchr(loc,'@');
+    if(ptr != NULL){
+      location->host=strdup(ptr+1);
+      *ptr='\0';
+      location->user=strdup(loc);
+    } else {
+      location->host=strdup(loc);
+    }
+  } else {
+    location->is_ssh=0;
+    location->path=strdup(loc);
+  }
+  return location;
+}
+
+static int open_location(struct location *loc, int flag){
+  if(loc->is_ssh && flag==WRITE){
+    loc->session=connect_ssh(loc->host,loc->user,verbosity);
+    if(!loc->session){
+      fprintf(stderr,"Couldn't connect to %s\n",loc->host);
+      return -1;
+    }
+    loc->scp=ssh_scp_new(loc->session,SSH_SCP_WRITE,loc->path);
+    if(!loc->scp){
+      fprintf(stderr,"error : %s\n",ssh_get_error(loc->session));
+      return -1;
+    }
+    if(ssh_scp_init(loc->scp)==SSH_ERROR){
+      fprintf(stderr,"error : %s\n",ssh_get_error(loc->session));
+      ssh_scp_free(loc->scp);
+      return -1;
+    }
+    return 0;
+  } else if(loc->is_ssh && flag==READ){
+    loc->session=connect_ssh(loc->host, loc->user,verbosity);
+    if(!loc->session){
+      fprintf(stderr,"Couldn't connect to %s\n",loc->host);
+      return -1;
+    }
+    loc->scp=ssh_scp_new(loc->session,SSH_SCP_READ,loc->path);
+    if(!loc->scp){
+      fprintf(stderr,"error : %s\n",ssh_get_error(loc->session));
+      return -1;
+    }
+    if(ssh_scp_init(loc->scp)==SSH_ERROR){
+      fprintf(stderr,"error : %s\n",ssh_get_error(loc->session));
+      ssh_scp_free(loc->scp);
+      return -1;
+    }
+    return 0;
+  } else {
+    loc->file=fopen(loc->path,flag==READ ? "r":"w");
+    if(!loc->file){
+        if(errno==EISDIR){
+                if(chdir(loc->path)){
+                        fprintf(stderr,"Error changing directory to %s: %s\n",loc->path,strerror(errno));
+                        return -1;
+                }
+                return 0;
+        }
+        fprintf(stderr,"Error opening %s: %s\n",loc->path,strerror(errno));
+        return -1;
+        }
+    return 0;
+  }
+  return -1;
+}
+
+/** @brief copies files from source location to destination
+ * @param src source location
+ * @param dest destination location
+ * @param recursive Copy also directories
+ */
+static int do_copy(struct location *src, struct location *dest, int recursive){
+  int size;
+  socket_t fd;
+  struct stat s;
+  int w,r;
+  char buffer[16384];
+  int total=0;
+  int mode;
+  char *filename;
+  /* recursive mode doesn't work yet */
+  (void)recursive;
+  /* Get the file name and size*/
+  if(!src->is_ssh){
+    fd=fileno(src->file);
+    fstat(fd,&s);
+    size=s.st_size;
+    mode = s.st_mode & S_IFMT;
+    filename=ssh_basename(src->path);
+  } else {
+    size=0;
+    do {
+        r=ssh_scp_pull_request(src->scp);
+        if(r==SSH_SCP_REQUEST_NEWDIR){
+                ssh_scp_deny_request(src->scp,"Not in recursive mode");
+                continue;
+        }
+        if(r==SSH_SCP_REQUEST_NEWFILE){
+                size=ssh_scp_request_get_size(src->scp);
+                filename=strdup(ssh_scp_request_get_filename(src->scp));
+                mode=ssh_scp_request_get_permissions(src->scp);
+                //ssh_scp_accept_request(src->scp);
+                break;
+        }
+        if(r==SSH_ERROR){
+                fprintf(stderr,"Error: %s\n",ssh_get_error(src->session));
+                return -1;
+        }
+    } while(r != SSH_SCP_REQUEST_NEWFILE);
+  }
+
+  if(dest->is_ssh){
+          r=ssh_scp_push_file(dest->scp,src->path, size, mode);
+          //  snprintf(buffer,sizeof(buffer),"C0644 %d %s\n",size,src->path);
+          if(r==SSH_ERROR){
+                  fprintf(stderr,"error: %s\n",ssh_get_error(dest->session));
+                  ssh_scp_free(dest->scp);
+                  return -1;
+          }
+  } else {
+          if(!dest->file){
+                  dest->file=fopen(filename,"w");
+                  if(!dest->file){
+                          fprintf(stderr,"Cannot open %s for writing: %s\n",filename,strerror(errno));
+                          if(src->is_ssh)
+                                  ssh_scp_deny_request(src->scp,"Cannot open local file");
+                          return -1;
+                  }
+          }
+          if(src->is_ssh){
+                  ssh_scp_accept_request(src->scp);
+          }
+  }
+  do {
+          if(src->is_ssh){
+                  r=ssh_scp_read(src->scp,buffer,sizeof(buffer));
+                  if(r==SSH_ERROR){
+                          fprintf(stderr,"Error reading scp: %s\n",ssh_get_error(src->session));
+                          return -1;
+                  }
+                  if(r==0)
+                          break;
+          } else {
+                  r=fread(buffer,1,sizeof(buffer),src->file);
+                  if(r==0)
+                          break;
+                  if(r<0){
+                          fprintf(stderr,"Error reading file: %s\n",strerror(errno));
+                          return -1;
+                  }
+          }
+          if(dest->is_ssh){
+                  w=ssh_scp_write(dest->scp,buffer,r);
+                  if(w == SSH_ERROR){
+                          fprintf(stderr,"Error writing in scp: %s\n",ssh_get_error(dest->session));
+                          ssh_scp_free(dest->scp);
+                          dest->scp=NULL;
+                          return -1;
+                  }
+          } else {
+                  w=fwrite(buffer,r,1,dest->file);
+                  if(w<=0){
+                          fprintf(stderr,"Error writing in local file: %s\n",strerror(errno));
+                          return -1;
+                  }
+          }
+          total+=r;
+
+  } while(total < size);
+ printf("wrote %d bytes\n",total);
+ return 0;
+}
+
+int doCopy(int argc, char **argv){
+  struct location *dest, *src;
+  int i;
+  int r;
+  if(opts(argc,argv)<0)
+    return EXIT_FAILURE;
+  dest=parse_location(destination);
+  if(open_location(dest,WRITE)<0)
+    return EXIT_FAILURE;
+  for(i=0;i<nsources;++i){
+    src=parse_location(sources[i]);
+    if(open_location(src,READ)<0){
+      return EXIT_FAILURE;
+    }
+    if(do_copy(src,dest,0) < 0){
+        break;
+    }
+  }
+  if(dest->is_ssh){
+          r=ssh_scp_close(dest->scp);
+          if(r == SSH_ERROR){
+                  fprintf(stderr,"Error closing scp: %s\n",ssh_get_error(dest->session));
+                  ssh_scp_free(dest->scp);
+                  dest->scp=NULL;
+                  return -1;
+          }
+  } else {
+          fclose(dest->file);
+          dest->file=NULL;
+  }
+  ssh_disconnect(dest->session);
+  ssh_finalize();
+  return 0;
+}

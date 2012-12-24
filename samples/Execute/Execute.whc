@@ -1,0 +1,30 @@
+<!DOCTYPE WHC>
+<project name="Execute">
+ <tasks>
+  <task x="1" y="1" id="1" name="Task1">
+   <file name="CMakeLists.txt"/>
+   <file name="kernel.cl"/>
+   <file name="main.cpp"/>
+   <file name="main.h"/>
+  </task>
+ </tasks>
+ <data>
+  <group x="1" y="1" id="1" name="input">
+   <file name="1.txt"/>
+   <file name="2.txt"/>
+   <file name="3.txt"/>
+  </group>
+  <group x="1" y="1" id="2" name="output"/>
+  <group x="1" y="1" id="3" name="input2"/>
+ </data>
+ <diagram>
+  <item x="2069" y="2485" diagId="0" type="0" id="1"/>
+  <item x="2256" y="2226" diagId="1" type="1" id="1"/>
+  <item x="2365" y="2712" diagId="2" type="1" id="2"/>
+  <arrow parentInId="1" parentOutId="0" connectorOutId="0" connectorInId="1"/>
+  <arrow parentInId="0" parentOutId="2" connectorOutId="0" connectorInId="1"/>
+  <item x="2602" y="2473" diagId="3" type="0" id="1"/>
+  <arrow parentInId="3" parentOutId="2" connectorOutId="0" connectorInId="1"/>
+  <arrow parentInId="1" parentOutId="3" connectorOutId="0" connectorInId="1"/>
+ </diagram>
+</project>

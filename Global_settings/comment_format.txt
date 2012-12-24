@@ -1,0 +1,1 @@
+Caution! The number of groups must be equal with the number of groups from type file and in the same order.The parser is not verifying if the format and types files are matching. <bold name="keywords"></bold>

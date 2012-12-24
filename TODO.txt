@@ -1,0 +1,43 @@
+
+* Workflow graphics remake 
+
+	- toolbox/entities reorganization (add new tools maybe ?)
+	- delete digram items when a task/data is deleted from projectTree
+
+
+* Task execution
+    - LIFO Task execution
+    - Workflow optimization
+    - List available devices
+
+*Gui and usability:
+	- Settings menu [Ongoing ...]
+	- If possible, a separate context menu for tasks and data
+	- Gui polish
+	- Remove x,y drom data and add task/data window
+	- Rename file in projecttreemodel
+	- Add option to add data files
+	- Editor settings - doesn't look ok when default applicattion font is bigger
+	- check if execute folder is present
+	- check if output folder is present
+	
+
+*Editor
+    - Lines numbers and compiler error line number mismatch
+	
+List of closed files:
+	- keep multiple projects possible [WONTFIX - only one project available at time]
+	- add existing source files ? [DONE]
+	- fix loading of files   [DONE]
+    - delete source files [DONE]
+    - input/output corespondence [DONE]
+    - makefile handling/ process restrictions ? [DONE]
+    - process structure graphic/logic representation [DONE]
+    - save changes (button/in background ?) [DONE]
+    - Fix ProjectTreeModel to be able to add without reloading\ [DONE]
+    - Fix ProjectTreeModel to be able to receive a pointer to QDomNode [DONE]
+    - nicer arrows (maybe also enable a coloring of arrows [DONE]
+    - present input output through arguments [DONE]
+    - clearer interconnections between entities [DONE]
+    - cleaner graphics, clear differentiation of processes ( in a box, circle etc ) [DONE]
+    - Get data from diagram in a container for processing [DONE]
