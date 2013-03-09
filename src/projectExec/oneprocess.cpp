@@ -107,8 +107,10 @@ void OneProcess::copytoData()
         if(taskNode->link[inputs].at(i)->type == 1) // Data type
         {
             Node* data = taskNode->link[inputs].at(i);
-            QString dest = dir.cleanPath(buildPath
-                    +"../../../../data/" + data->Name + "/" + filename);
+            
+            QString destDir = dir.cleanPath(buildPath
+                                            +"../../../../data/" + data->Name);
+            QString dest = dir.cleanPath(destDir + "/" + filename);
 
             /** Add files to project tree **/
             ProjectTreeItem* groupItem = model->getGroupByName(data->Name);
@@ -130,6 +132,10 @@ void OneProcess::copytoData()
                     qDebug() << "copyToData: impossible to remove file";
 
             }
+            
+            /** Create output folder (if it doesn't exist) **/
+            dir.mkdir(destDir);
+            
             if(!QFile::copy(source,dest))
                 qDebug() << "copyToData: Error! file was not copied";
         }
