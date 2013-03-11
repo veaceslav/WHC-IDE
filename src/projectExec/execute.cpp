@@ -147,10 +147,16 @@ void Execute::fillQueue(Node *nod)
             min = v[i].size();
 
     QString tempPath;
-
-    QString dirPath = path + "src/" + nod->Name + "/Execute/temp_" +
-                            QString::number(nod->diagId);
+    QString dirPath = path + "src/" + nod->Name + "/Execute";
     QDir dir;
+    
+    
+    // Check if /Execute folder exists and if not exists it is created
+    dir.mkdir(dirPath);
+	
+     
+    dirPath = path + "src/" + nod->Name + "/Execute/temp_" +
+                            QString::number(nod->diagId);
     dir.mkdir(dirPath);
 
 
