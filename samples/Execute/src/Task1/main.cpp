@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <sstream>
-
+#include <cstdlib>
 
 ///
 /// Error codes
