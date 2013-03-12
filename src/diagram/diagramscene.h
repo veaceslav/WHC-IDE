@@ -86,6 +86,14 @@ public slots:
      */
     void setItemType(DiagramItem::DiagramType type);
 
+    /**
+     * @brief renameItems - change all the items that have the old name,
+     *                      with the new name.
+     * @param oldName     - the old name of the item, used to select
+     *                       items to be changed
+     * @param newName     - the new name that will replace the old name
+     */
+    void renameItems(QString oldName, QString newName);
 
 signals:
 
