@@ -76,6 +76,9 @@ public:
 
     QString Name() const
                  { return itemName; }
+                 
+    void setName(QString newName)
+                 { itemName = newName; }
 
     int connectorCount()
                  { return childs.count(); }
