@@ -463,6 +463,9 @@ void Ide::startNewProject(QString whcFiles)
     diagramShow = true;
     diagramSubW->show();
 
+    connect(model, SIGNAL(updateDiagram(QString,QString)),
+            diagram, SLOT(renameDiagItems(QString,QString)));
+
     /**
      * after staring the project, we must enable this options
      */

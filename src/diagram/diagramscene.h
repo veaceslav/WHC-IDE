@@ -71,6 +71,13 @@ public:
      */
     void removeFromList(DiagramItem* item);
 
+    /**
+     * @brief renameItem - renames all the items in the scene that have the
+     *                     old name and replace it with the new name
+     *                     (used after a rename in the project tree model)
+     */
+    void renameItems(QString oldName, QString newName);
+
 
 public slots:
 
