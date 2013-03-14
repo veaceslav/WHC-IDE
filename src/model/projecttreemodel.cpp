@@ -105,6 +105,8 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
         if(dir.rename(oldName,newName))
         {
             parentIde->writeXmltoFile();
+            //TODO emit a signal HERE
+            //for the DiagramScrene slot
             return true;
         }
     }
@@ -122,6 +124,8 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
         if(dir.rename(oldName,newName))
         {
             parentIde->writeXmltoFile();
+            //TODO emit a signal HERE
+            //for the DiagramScrene slot
             return true;
         }
     }
