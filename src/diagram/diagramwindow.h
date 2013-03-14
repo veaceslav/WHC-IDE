@@ -124,8 +124,7 @@ public slots:
      * @brief renameDiagItems - renames the items in the scene after a rename in
      *                          the project tree
      */
-    void renameDiagItems(QString oldName, QString newName)
-                { scene->renameItems(oldName, newName); }
+    void renameDiagItems(QString oldName, QString newName);
 
 
 private slots:
