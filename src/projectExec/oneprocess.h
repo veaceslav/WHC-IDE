@@ -86,6 +86,12 @@ private slots:
 
 private:
 
+    /**
+     * @brief getExecutableName -  parse CMakeLists.txt for a task and return name of the Executable
+     * @param path - file that is parsed to get the name of the executable
+     */
+    QString getExecutableName(QString path);
+
     QProcess* proc;
     Node* taskNode;
     CommandLine* cmdL;

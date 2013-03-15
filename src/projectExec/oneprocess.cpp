@@ -43,7 +43,6 @@ OneProcess::OneProcess(CommandLine* cmd, QStringList& lst, Node* nod,Ide* parent
     buildPath = lst.first();
     tempPath = lst.at(4);
 
-    //qDebug() << "Device id is" << device;
 }
 
 OneProcess::~OneProcess()
@@ -75,13 +74,24 @@ void OneProcess::startExecution()
     connect(proc,SIGNAL(finished(int)),
             this,SLOT(copytoData()));
 
+
+    // aici am inceput eu: Andrei
+    QString executableName = buildPath;
+    executableName.remove(QString("/build"));
+    executableName = getExecutableName(executableName + "/CMakeLists.txt");
+    if (executableName == "" && OS == 1) executableName = taskNode->Name + ".exe";
+    else if (executableName == "" ) executableName = taskNode->Name;
+
     QString program;
 
     if(OS == 1)
-        program = list.first() + "//" + taskNode->Name +".exe";
+        //program = list.first() + "//" + taskNode->Name +".exe";
+        program = list.first() + "//" + executableName;
     if(OS == 2)
-        program = "./" + taskNode->Name;
+        program = "./" + executableName;
+        //program = "./" + taskNode->Name;
 
+    // aici am terminat eu: Andrei
     list.removeFirst();
 
     cmdL->addLine(QString( "Executing "+taskNode->Name
@@ -89,7 +99,28 @@ void OneProcess::startExecution()
     proc->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     proc->start(program,list);
 }
-
+QString OneProcess::getExecutableName(QString path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QString("");
+    }
+    QString line;
+    QStringList listOfWords;
+    QTextStream in(&file);
+    do {
+        line = in.readLine();
+        if (line.contains("add_executable(")) {
+            listOfWords = line.split("(");
+            line = listOfWords[1];
+            listOfWords = line.split(" ");
+            file.close();
+            return listOfWords[0];
+        }
+    } while (!in.atEnd());
+    file.close();
+    return QString("");
+}
 
 void OneProcess::copytoData()
 {
