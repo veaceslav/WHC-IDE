@@ -102,11 +102,13 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
 
         if(!item->setData(value,role))
             return false;
+
+        emit updateDiagram(oldFileName, newFileName);
+
         QDir dir;
         if(dir.rename(oldName,newName))
         {
             parentIde->writeXmltoFile();
-            emit updateDiagram(oldFileName, newFileName);
             return true;
         }
     }
@@ -121,11 +123,13 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
 
         if(!item->setData(value,role))
             return false;
+
+        emit updateDiagram(oldFileName, newFileName);
+
         QDir dir;
         if(dir.rename(oldName,newName))
         {
             parentIde->writeXmltoFile();
-            emit updateDiagram(oldFileName, newFileName);
             return true;
         }
     }

@@ -213,8 +213,6 @@ void DiagramScene::loadDiagram()
 {
     QDomNodeList lst = projXml->elementsByTagName("item");
 
-    qDebug() << lst.count();
-
     for(int i=0;i<lst.count();i++)
     {
         QDomNode xmlNode = lst.at(i);
