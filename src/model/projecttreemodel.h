@@ -96,6 +96,8 @@ signals:
      * @brief updateDiagram - it's role is to tell the diagram window to
      *                        rename all the items that have the old name
      *                        with the new one
+     * @param oldName - the name used before the rename
+     * @param newName - the name used to replace the old name
      */
     void updateDiagram(QString oldName, QString newName);
 
