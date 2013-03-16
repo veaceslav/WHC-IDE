@@ -52,6 +52,12 @@ void DiagramScene::setItemType(DiagramItem::DiagramType type)
     myItemType = type;
 }
 
+void DiagramScene::renameItems(QString oldName, QString newName) {
+    for(int i = 0; i < diagItems.count(); i++)
+        if(diagItems.at(i)->Name() == oldName)
+            diagItems.at(i)->setName(newName);
+}
+
 void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton)
@@ -206,8 +212,6 @@ DiagramItem* DiagramScene::getItemById(int id)
 void DiagramScene::loadDiagram()
 {
     QDomNodeList lst = projXml->elementsByTagName("item");
-
-    qDebug() << lst.count();
 
     for(int i=0;i<lst.count();i++)
     {

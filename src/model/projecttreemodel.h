@@ -88,6 +88,18 @@ public:
         FileNameRole,
         PositionRole
     };
+
+
+signals:
+
+    /**
+     * @brief updateDiagram - it's role is to tell the diagram window to
+     *                        rename all the items that have the old name
+     *                        with the new one
+     */
+    void updateDiagram(QString oldName, QString newName);
+
+
 private:
 
     void setupModelData(QDomNode nodx, ProjectTreeItem *parent);
