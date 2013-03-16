@@ -151,18 +151,11 @@ void Execute::fillQueue(Node *nod)
     QDir dir;
     
     
-<<<<<<< HEAD
     // Check if /Execute folder exists and if not exists it is created
-    dir.mkdir(dirPath);
-=======
-    // Check if /Execute folder exists
     if (!dir.exists(dirPath))
-    	dir.mkdir(dirPath);
->>>>>>> 958d3be916b038eebe9289c7a2f87014d93ed0c1
-	
-     
-    dirPath = path + "src/" + nod->Name + "/Execute/temp_" +
-                            QString::number(nod->diagId);
+        dir.mkdir(dirPath);
+
+    dirPath += "/temp_" + QString::number(nod->diagId);
     dir.mkdir(dirPath);
 
 
