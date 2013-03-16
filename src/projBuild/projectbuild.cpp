@@ -73,9 +73,10 @@ void ProjectBuild::startBuild()
 
 void ProjectBuild::clean()
 {
-
+    cmd->showM();
     cmd->clearAll();
-    cmd->show();
+
+    // AICI am terminat eu de adaugat
     for(int i=0;i<paths.size();i++)
     {;
         cmd->addLine("Cleaning " + paths.at(i),Qt::black);
@@ -86,11 +87,12 @@ void ProjectBuild::clean()
         cmd->addLine("Done!",Qt::black);
     }
 }
+
+
 void ProjectBuild::configureTask()
 {
     cmd->addLine("*** Running Cmake ***",Qt::darkGreen);
     QDir dir;
-
     dir.mkdir(pathTmp);
 
     /**
@@ -98,9 +100,13 @@ void ProjectBuild::configureTask()
      */
     QString source(pathTmp);
     source.remove(pathTmp.split("/").last());
+
+
     source.append("kernel.cl");
     QString dest = pathTmp + "/kernel.cl";
     QFile file(source);
+
+
     file.copy(dest);
 
     if(!proc)
