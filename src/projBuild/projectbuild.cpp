@@ -76,10 +76,6 @@ void ProjectBuild::clean()
     cmd->showM();
     cmd->clearAll();
 
-<<<<<<< HEAD
-=======
-    // AICI am terminat eu de adaugat
->>>>>>> b1b7a6b6b3c017c38af3252e32dfe3f911b5c7e3
     for(int i=0;i<paths.size();i++)
     {;
         cmd->addLine("Cleaning " + paths.at(i),Qt::black);
