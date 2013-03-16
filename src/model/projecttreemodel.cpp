@@ -77,67 +77,66 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
     ProjectTreeItem* item = getItem(index);
     QDomNode itemNode = item->getNode();
 
-    if(itemNode.nodeName() == "file")
-    {
-        QString oldname = data(index,ProjectTreeModel::FileNameRole).toString();
-        if(!item->setData(value,role))
+    QString type = itemNode.nodeName();
+
+    if(type != "file" && type != "task" && type != "group")
             return false;
 
-        QString newname = data(index,ProjectTreeModel::FileNameRole).toString();
+    QString oldName, newName;
 
-        if(QFile::rename(oldname,newname))
+    if(type == "file")
+    {
+        oldName = data(index, ProjectTreeModel::FileNameRole).toString();
+        /*Building the new name for the file requires us to truncate*/
+        /*the old name and then append the new name*/
+        newName = oldName;
+        newName.truncate(newName.lastIndexOf(item->getName()));
+        newName += value.toString();
+
+        if(!QFile::rename(oldName, newName))
+            return false;
+        if(!item->setData(value, role))
         {
-            parentIde->writeXmltoFile();
-            return true;
-        }
-    }
-
-    if(itemNode.nodeName() == "task")
-    {
-        QString oldFileName = itemNode.attributes().namedItem("name").nodeValue();
-        QString oldName = projectInfo.path() + "/src/" + oldFileName;
-
-        QString newFileName = value.toString();
-        QString newName = projectInfo.path() + "/src/" + newFileName;
-
-        if(!item->setData(value,role))
+            if(!QFile::rename(oldName, newName))
+                qDebug() << "Could not revert "<< newName
+                         <<" to " << oldName << "after rename fail";
             return false;
+        }
 
-        emit updateDiagram(oldFileName, newFileName);
+    }
+    else    /*type == "task" or type == "group"*/
+    {
+        QString oldFile = itemNode.attributes().namedItem("name").nodeValue();
+        QString newFile = value.toString();
+        QString folder;
+
+        if(type == "task")
+            folder = "/src/";
+        else    /*type == "group"*/
+            folder = "/data/";
+
+        oldName = projectInfo.path() + folder + oldFile;
+        newName = projectInfo.path() + folder + newFile;
 
         QDir dir;
-        if(dir.rename(oldName,newName))
-        {
-            parentIde->writeXmltoFile();
-            //TODO emit a signal HERE
-            //for the DiagramScrene slot
-            return true;
-        }
-    }
-
-    if(itemNode.nodeName() == "group")
-    {
-        QString oldFileName = itemNode.attributes().namedItem("name").nodeValue();
-        QString oldName = projectInfo.path() + "/data/" + oldFileName;
-
-        QString newFileName = value.toString();
-        QString newName = projectInfo.path() + "/data/" + newFileName;
-
-        if(!item->setData(value,role))
+        if(!dir.rename(oldName, newName))
             return false;
 
-        emit updateDiagram(oldFileName, newFileName);
-
-        QDir dir;
-        if(dir.rename(oldName,newName))
+        if(!item->setData(value, role))
         {
-            parentIde->writeXmltoFile();
-            //TODO emit a signal HERE
-            //for the DiagramScrene slot
-            return true;
+            if(!dir.rename(newName, oldName))
+                qDebug() << "Could not revert " << newName
+                         << " to " << oldName << "after rename fail";
+            return false;
         }
+
+        emit updateDiagram(oldFile, newFile);
     }
-    return false;
+
+    /*Everything went well, so we write the changes to the xml file*/
+    parentIde->writeXmltoFile();
+
+    return true;
 }
 
 QVariant ProjectTreeModel::data(const QModelIndex &index, int role) const
