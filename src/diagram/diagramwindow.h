@@ -117,6 +117,16 @@ public:
      */
     void deleteItemById(int id, int type);
 
+
+public slots:
+
+    /**
+     * @brief renameDiagItems - renames the items in the scene after a rename in
+     *                          the project tree
+     */
+    void renameDiagItems(QString oldName, QString newName);
+
+
 private slots:
 
     /**

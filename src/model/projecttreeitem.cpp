@@ -98,6 +98,7 @@ bool ProjectTreeItem::setData(const QVariant &value, int role)
             || (node.nodeName() == "group"))
         {
             node.attributes().namedItem("name").setNodeValue(value.toString());
+            itemName = node.attributes().namedItem("name").nodeValue();
             return true;
         }
     }

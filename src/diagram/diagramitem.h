@@ -80,6 +80,14 @@ public:
     void setName(QString newName)
                  { itemName = newName; }
 
+    /**
+     * @brief setName - renames an item (used after a rename in the
+     *                  project tree model)
+     */
+    void setName(QString newName)
+                 { itemName = newName;
+                   update(); }
+
     int connectorCount()
                  { return childs.count(); }
     /**

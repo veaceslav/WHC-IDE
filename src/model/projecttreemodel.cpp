@@ -94,13 +94,17 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
 
     if(itemNode.nodeName() == "task")
     {
-        QString oldName = projectInfo.path() + "/src/"
-                + itemNode.attributes().namedItem("name").nodeValue();
-        QString newName = projectInfo.path() + "/src/"
-                + value.toString();
+        QString oldFileName = itemNode.attributes().namedItem("name").nodeValue();
+        QString oldName = projectInfo.path() + "/src/" + oldFileName;
+
+        QString newFileName = value.toString();
+        QString newName = projectInfo.path() + "/src/" + newFileName;
 
         if(!item->setData(value,role))
             return false;
+
+        emit updateDiagram(oldFileName, newFileName);
+
         QDir dir;
         if(dir.rename(oldName,newName))
         {
@@ -113,13 +117,17 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
 
     if(itemNode.nodeName() == "group")
     {
-        QString oldName = projectInfo.path() + "/data/"
-                + itemNode.attributes().namedItem("name").nodeValue();
-        QString newName = projectInfo.path() + "/data/"
-                + value.toString();
+        QString oldFileName = itemNode.attributes().namedItem("name").nodeValue();
+        QString oldName = projectInfo.path() + "/data/" + oldFileName;
+
+        QString newFileName = value.toString();
+        QString newName = projectInfo.path() + "/data/" + newFileName;
 
         if(!item->setData(value,role))
             return false;
+
+        emit updateDiagram(oldFileName, newFileName);
+
         QDir dir;
         if(dir.rename(oldName,newName))
         {

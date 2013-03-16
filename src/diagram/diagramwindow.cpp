@@ -366,6 +366,11 @@ void DiagramWindow::deleteItemById(int id, int type)
     qDebug() << "Diagram Window: Unknown option";
 }
 
+void DiagramWindow::renameDiagItems(QString oldName, QString newName)
+{
+    scene->renameItems(oldName, newName); 
+}
+
 void DiagramWindow::createActions()
 {
     toFrontAction = new QAction(QIcon(":/images/bringtofront.png"),
