@@ -87,13 +87,8 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
     if(type == "file")
     {
         oldName = data(index, ProjectTreeModel::FileNameRole).toString();
-<<<<<<< HEAD
-        //Building the new name for the file requires us to truncate
-        //the old name and then append the new name
-=======
         /*Building the new name for the file requires us to truncate*/
         /*the old name and then append the new name*/
->>>>>>> 7833da41f99fedf4ec1d725fbde09f7aab0b4504
         newName = oldName;
         newName.truncate(newName.lastIndexOf(item->getName()));
         newName += value.toString();
@@ -109,11 +104,7 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
         }
 
     }
-<<<<<<< HEAD
-    else    //type == "task" or type == "group"
-=======
     else    /*type == "task" or type == "group"*/
->>>>>>> 7833da41f99fedf4ec1d725fbde09f7aab0b4504
     {
         QString oldFile = itemNode.attributes().namedItem("name").nodeValue();
         QString newFile = value.toString();
@@ -121,11 +112,7 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
 
         if(type == "task")
             folder = "/src/";
-<<<<<<< HEAD
-        else    //type == "group"
-=======
         else    /*type == "group"*/
->>>>>>> 7833da41f99fedf4ec1d725fbde09f7aab0b4504
             folder = "/data/";
 
         oldName = projectInfo.path() + folder + oldFile;
@@ -146,10 +133,7 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
         emit updateDiagram(oldFile, newFile);
     }
 
-<<<<<<< HEAD
-=======
     /*Everything went well, so we write the changes to the xml file*/
->>>>>>> 7833da41f99fedf4ec1d725fbde09f7aab0b4504
     parentIde->writeXmltoFile();
 
     return true;
