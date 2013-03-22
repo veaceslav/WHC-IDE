@@ -75,6 +75,8 @@ public:
      * @brief renameItem - renames all the items in the scene that have the
      *                     old name and replace it with the new name
      *                     (used after a rename in the project tree model)
+     * @param oldName - the name of the items that need to be renamed
+     * @param newName - the name to replace the old name
      */
     void renameItems(QString oldName, QString newName);
 

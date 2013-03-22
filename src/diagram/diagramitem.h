@@ -80,6 +80,7 @@ public:
     /**
      * @brief setName - renames an item (used after a rename in the
      *                  project tree model)
+     * @param newName - the new name used to replace the old one
      */
     void setName(QString newName)
                  { itemName = newName;
