@@ -123,6 +123,8 @@ public slots:
     /**
      * @brief renameDiagItems - renames the items in the scene after a rename in
      *                          the project tree
+     * @param oldName - the name of the items that have been changed
+     * @param newName - the name to replace the old name of the items
      */
     void renameDiagItems(QString oldName, QString newName);
 
