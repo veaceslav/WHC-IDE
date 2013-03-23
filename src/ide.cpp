@@ -766,6 +766,10 @@ void Ide::slotClean()
     {
         build = new ProjectBuild(projectXml,this,settings,outWindow);
     }
+    else {
+        delete build;
+        build = new ProjectBuild(projectXml,this,settings,outWindow);
+    }
     build->clean();
 }
 void Ide::disableMenuOptions(bool val)
