@@ -119,19 +119,19 @@ public slots:
     /**
      * @brief Edit -> Find
      */
-    void on_action_findString();
+    void slotFindString();
     /**
      * @brief Edit -> Replace
      */
-    void on_action_replaceString();
+    void slotReplaceString();
 
-    void on_find_button_triggered();
-    void on_replace_button_triggered();
-    void on_replace_all_button_triggered();
-    void on_action_go_to_line();
-    void on_go_to_pressed();
-    void on_save_pressed();
-    void on_replaceSpaceLineEnding();
+    void slotFindButtonTriggered();
+    void slotReplaceButtonTriggered();
+    void slotReplaceAllButtonTriggered();
+    void slotActionGoToLine();
+    void slotGoToPressed();
+    void slotSavePressed();
+    void slotReplaceSpaceLineEnding();
 
 
 private slots:
