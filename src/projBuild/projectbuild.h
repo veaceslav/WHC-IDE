@@ -112,6 +112,9 @@ private:
 
     CommandLine* cmd;
 
+    /** reference to the DOM Document **/
+    QDomDocument *proj;
+
 };
 
 #endif // PROJECTBUILD_H
