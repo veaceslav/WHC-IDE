@@ -168,8 +168,9 @@ void OneProcess::copytoData()
 
             }
             
-            /** Create output folder (if it doesn't exist) **/
-            dir.mkdir(destDir);
+            /** Create output folder if not present **/
+            if (!dir.exists(destDir))
+                dir.mkdir(destDir);
             
             if(!QFile::copy(source,dest))
                 qDebug() << "copyToData: Error! file was not copied";
