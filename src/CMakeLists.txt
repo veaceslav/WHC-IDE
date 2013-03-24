@@ -129,12 +129,14 @@ set(projExe_SOURCES
 set(test_HEADERS
     projBuild/test/testCommandLine.h
     tests/testIde.h
+    tests/testdiagram.h
     runtests.h
     )
     
 set(test_SOURCES
     projBuild/test/testCommandLine.cpp
     tests/testide.cpp
+    tests/testdiagram.cpp
     )
 
 set(whc_SOURCES

@@ -49,7 +49,8 @@ SOURCES += \
     src/mdidiagram.cpp \
     src/settings/editorSettingsVar.cpp \
     src/projBuild/test/testCommandLine.cpp \
-    src/tests/testide.cpp
+    src/tests/testide.cpp \
+    src/tests/testdiagram.cpp
 
 HEADERS += \
     src/ide.h \
@@ -91,7 +92,8 @@ HEADERS += \
     src/settings/editorSettingsVar.h \
     src/projBuild/test/testCommandLine.h \
     src/runtests.h \
-    src/tests/testIde.h
+    src/tests/testIde.h \
+    src/tests/testdiagram.h
 
 FORMS += \
     src/forms/tabproject.ui \

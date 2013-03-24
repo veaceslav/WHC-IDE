@@ -29,6 +29,7 @@
 
 #include "diagramitem.h"
 #include "ide.h"
+#include "tests/testdiagram.h"
 
 class DiagramScene;
 
@@ -52,7 +53,7 @@ class ExecNode;
 class DiagramWindow : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     DiagramWindow(QDomDocument* proj,Ide* parent);
     ~DiagramWindow();
@@ -241,6 +242,8 @@ private:
 
     int currentTask;
     int currentData;
+
+    friend class TestDiagram;
 
 };
 
