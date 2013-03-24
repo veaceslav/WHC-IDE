@@ -31,6 +31,7 @@
 #include <QPair>
 #include <QStringList>
 #include <QMap>
+#include <QDir>
 #include "oneprocess.h"
 
 class Node;
@@ -85,6 +86,13 @@ private:
      *                 until queue is empty
      */
     void start(int devId);
+
+    /**
+      * @brief removeDirectory - remove a directory recursively before running
+      * @param aDir - reference to the directory to be removed
+      * @return - check if the directory was removed
+     **/
+    bool removeDirectory(QDir &aDir);
 
     QString path;
     int taskIndex;

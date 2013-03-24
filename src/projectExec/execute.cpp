@@ -87,6 +87,10 @@ void Execute::execute()
     if(taskIndex >= execOrder.count())
         return; //Finish
 
+    // remove output folder
+    QDir dir(path + "data/output");
+    removeDirectory(dir);
+
     fillQueue(execOrder[taskIndex]);
     taskIndex++;
 
@@ -95,6 +99,7 @@ void Execute::execute()
      */
     devFinished = 0;
     QMap<int,OneProcess*>::iterator it;
+
     for(it=exec2.begin();it!=exec2.end();++it)
         start(it.key());
 }
@@ -181,6 +186,37 @@ void Execute::fillQueue(Node *nod)
 
         q.enqueue(qMakePair(nod,lst));
     }
+}
+
+bool Execute::removeDirectory(QDir &aDir)
+{
+    bool has_err = false;
+    if (aDir.exists())//QDir::NoDotAndDotDot
+    {
+        QFileInfoList entries = aDir.entryInfoList(QDir::NoDotAndDotDot |
+        QDir::Dirs | QDir::Files);
+        int count = entries.size();
+        for (int idx = 0; idx < count; idx++)
+        {
+            QFileInfo entryInfo = entries[idx];
+            QString path = entryInfo.absoluteFilePath();
+            if (entryInfo.isDir())
+            {
+                QDir next(path);
+                has_err = removeDirectory(next);
+            }
+            else
+            {
+                QFile file(path);
+                if (!file.remove())
+                has_err = true;
+            }
+        }
+        if (!aDir.rmdir(aDir.absolutePath()))
+        has_err = true;
+    }
+
+    return(has_err);
 }
 
 void Execute::start(int devId)
