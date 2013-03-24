@@ -3,7 +3,8 @@
 # -------------------------------------------------
 QT += network
 QT += xml \
-    xmlpatterns
+    xmlpatterns \
+    widgets
 TARGET = IDE
 TEMPLATE = app
 INCLUDEPATH += src \

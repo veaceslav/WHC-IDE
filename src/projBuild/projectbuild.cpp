@@ -40,7 +40,6 @@ ProjectBuild::ProjectBuild(QDomDocument *proj, Ide* parent,
 
     QDomNodeList lst = proj->elementsByTagName("task");
 
-    this->proj = proj;
     path = parent->whcFile;
 
     path.remove(path.split("/").last());
@@ -76,16 +75,6 @@ void ProjectBuild::clean()
 {
     cmd->showM();
     cmd->clearAll();
-    paths.clear();
-    QDomNodeList lst = proj->elementsByTagName("task");
-
-    for(int i=0;i<lst.count();i++)
-     {
-        QString tmp = lst.at(i).attributes().namedItem("name").nodeValue();
-
-        paths+= path + "src/" + tmp + "/build";
-
-     }
 
     for(int i=0;i<paths.size();i++)
     {;

@@ -93,13 +93,13 @@ Ide::Ide(QWidget *parent) :
     ui->actionGo_to->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
     ui->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     connect(ui->actionGo_to, SIGNAL(triggered()),
-            this, SLOT(on_action_go_to_line()));
+            this, SLOT(slotActionGoToLine()));
 
     connect(ui->actionFind, SIGNAL(triggered()),
-            this, SLOT(on_action_findString()));
+            this, SLOT(slotFindString()));
 
     connect(ui->actionReplace, SIGNAL(triggered()),
-            this, SLOT(on_action_replaceString()));
+            this, SLOT(slotReplaceString()));
 
     connect(ui->action_New_File_or_Project,SIGNAL(triggered()),
             this,SLOT(slot_New_Project()));
@@ -111,9 +111,9 @@ Ide::Ide(QWidget *parent) :
     connect(ui->actionBuild_Project,SIGNAL(triggered()),this,SLOT(slotBuild()));
     connect(ui->actionClean_All,SIGNAL(triggered()),this,SLOT(slotClean()));
     connect(ui->actionSave, SIGNAL(triggered()),
-            this, SLOT(on_save_pressed()));
+            this, SLOT(slotSavePressed()));
     connect(ui->actionRemove_end_line_spaces, SIGNAL(triggered()),
-            this, SLOT(on_replaceSpaceLineEnding()));
+            this, SLOT(slotReplaceSpaceLineEnding()));
 
     ui->projectsView->setContextMenuPolicy(Qt::CustomContextMenu);
     createContextMenus();
@@ -179,7 +179,7 @@ void Ide::writeXmltoFile()
     file.close();
 }
 
-void Ide::on_find_button_triggered()
+void Ide::slotFindButtonTriggered()
 {
     if(findtool->search_solution == NULL){
         QMessageBox::warning(0, tr("Note:"), tr("Something went wrong!\n"));
@@ -276,7 +276,7 @@ bool Ide::findText()
     }
 }
 
-void Ide::on_replace_button_triggered()
+void Ide::slotReplaceButtonTriggered()
 {
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
@@ -294,7 +294,7 @@ void Ide::on_replace_button_triggered()
     }
 }
 
-void Ide::on_replace_all_button_triggered()
+void Ide::slotReplaceAllButtonTriggered()
 {
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
@@ -307,11 +307,11 @@ void Ide::on_replace_all_button_triggered()
     }
 }
 
-void Ide::on_action_go_to_line()
+void Ide::slotActionGoToLine()
 {
     if(findtool != NULL){
         ui->verticalLayout->removeWidget(findtool->getFindUI());
-        disconnect(SLOT(on_find_button_triggered()));
+        disconnect(SLOT(slotFindButtonTriggered()));
         delete findtool;
         findtool = NULL;
     }
@@ -320,16 +320,16 @@ void Ide::on_action_go_to_line()
         ui->verticalLayout->addWidget(gotoTool->getGotoObj());
         gotoTool->getLineEdit()->setFocus();
         connect(gotoTool->getLineEdit(), SIGNAL(returnPressed()),
-                this, SLOT(on_go_to_pressed()));
+                this, SLOT(slotGoToPressed()));
     }
     else{
-        disconnect(this, SLOT(on_go_to_pressed()));
+        disconnect(this, SLOT(slotGoToPressed()));
         delete gotoTool;
         gotoTool = NULL;
     }
 }
 
-void Ide::on_save_pressed()
+void Ide::slotSavePressed()
 {
     bool success = true;
     foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList()) {
@@ -349,7 +349,7 @@ void Ide::on_save_pressed()
     }
 }
 
-void Ide::on_go_to_pressed()
+void Ide::slotGoToPressed()
 {
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
@@ -367,26 +367,26 @@ void Ide::on_go_to_pressed()
     }
 }
 
-void Ide::on_action_findString()
+void Ide::slotFindString()
 {
     if(findtool == NULL){
         findtool = new FindToolUI();
         ui->verticalLayout->addWidget(findtool->find_w);
         connect(findtool->find_bt, SIGNAL(clicked()),
-                this, SLOT(on_find_button_triggered()));
-        connect(findtool->srch, SIGNAL(returnPressed()), this, SLOT(on_find_button_triggered()));
+                this, SLOT(slotFindButtonTriggered()));
+        connect(findtool->srch, SIGNAL(returnPressed()), this, SLOT(slotFindButtonTriggered()));
         findtool->srch->setFocus();
     }else{
         if(findtool->replace_w == NULL){
-            disconnect(SLOT(on_find_button_triggered()));
+            disconnect(SLOT(slotFindButtonTriggered()));
             ui->verticalLayout->removeWidget(findtool->find_w);
             ui->verticalLayout->removeWidget(findtool->search_sol_w);
             delete findtool;
             findtool = NULL;
         }
         else{
-            disconnect(SLOT(on_replace_button_triggered()));
-            disconnect(SLOT(on_replace_all_button_triggered()));
+            disconnect(SLOT(slotReplaceButtonTriggered()));
+            disconnect(SLOT(slotReplaceAllButtonTriggered()));
             ui->verticalLayout->removeWidget(findtool->replace_w);
             findtool->collapseReplace();
             findtool->searchInFilesMainGUI();
@@ -396,7 +396,7 @@ void Ide::on_action_findString()
 }
 
 
-void Ide::on_action_replaceString()
+void Ide::slotReplaceString()
 {
     if(findtool == NULL){
         /*If no tool is activated*/
@@ -406,15 +406,15 @@ void Ide::on_action_replaceString()
         ui->verticalLayout->addWidget(findtool->getFindUI());
         ui->verticalLayout->addWidget(findtool->getReplaceUI());
         connect(findtool->find_bt, SIGNAL(clicked()),
-                this, SLOT(on_find_button_triggered()));
+                this, SLOT(slotFindButtonTriggered()));
         connect(findtool->srch, SIGNAL(returnPressed()),
-                this, SLOT(on_find_button_triggered()));
+                this, SLOT(slotFindButtonTriggered()));
         connect(findtool->replace_bt, SIGNAL(clicked()),
-                this, SLOT(on_replace_button_triggered()));
+                this, SLOT(slotReplaceButtonTriggered()));
         connect(findtool->rplc, SIGNAL(returnPressed()),
-                this, SLOT(on_replace_button_triggered()));
+                this, SLOT(slotReplaceButtonTriggered()));
         connect(findtool->replace_all_bt, SIGNAL(clicked()),
-                this, SLOT(on_replace_all_button_triggered()));
+                this, SLOT(slotReplaceAllButtonTriggered()));
         findtool->srch->setFocus();
 
     }
@@ -425,14 +425,14 @@ void Ide::on_action_replaceString()
             ui->verticalLayout->addWidget(findtool->getReplaceUI());
             //QPushButton *b = findtool->replace_bt;
             connect(findtool->replace_bt, SIGNAL(clicked()),
-                    this, SLOT(on_replace_button_triggered()));
+                    this, SLOT(slotReplaceButtonTriggered()));
             connect(findtool->replace_all_bt, SIGNAL(clicked()),
-                    this, SLOT(on_replace_all_button_triggered()));
+                    this, SLOT(slotReplaceAllButtonTriggered()));
         }
         else{
-            disconnect(SLOT(on_find_button_triggered()));
-            disconnect(SLOT(on_replace_button_triggered()));
-            disconnect(SLOT(on_replace_all_button_triggered()));
+            disconnect(SLOT(slotFindButtonTriggered()));
+            disconnect(SLOT(slotReplaceButtonTriggered()));
+            disconnect(SLOT(slotReplaceAllButtonTriggered()));
             ui->verticalLayout->removeWidget(findtool->getFindUI());
             ui->verticalLayout->removeWidget(findtool->getReplaceUI());
             delete findtool;
@@ -491,9 +491,9 @@ void Ide::keyPressEvent(QKeyEvent *event)
             ui->verticalLayout->removeWidget(findtool->find_w);
             ui->verticalLayout->removeWidget(findtool->replace_w);
             ui->verticalLayout->removeWidget(findtool->search_sol_w);
-            disconnect(SLOT(on_find_button_triggered()));
-            disconnect(SLOT(on_replace_button_triggered()));
-            disconnect(SLOT(on_replace_all_button_triggered()));
+            disconnect(SLOT(slotFindButtonTriggered()));
+            disconnect(SLOT(slotReplaceButtonTriggered()));
+            disconnect(SLOT(slotReplaceAllButtonTriggered()));
             delete findtool;
             findtool = NULL;
         }
@@ -766,7 +766,8 @@ void Ide::slotClean()
     {
         build = new ProjectBuild(projectXml,this,settings,outWindow);
     }
-    else {
+    else
+    {
         delete build;
         build = new ProjectBuild(projectXml,this,settings,outWindow);
     }
@@ -827,7 +828,7 @@ void Ide::closeEvent(QCloseEvent *event)
                         "Do you want to save your changes?"),
                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if(answ == QMessageBox::Save){
-            on_save_pressed();
+            slotSavePressed();
             event->accept();
         }
         if(answ == QMessageBox::Discard){
@@ -949,7 +950,7 @@ void Ide::on_actionShow_Diagram_triggered()
     diagramSubW->addtoMdi();
 }
 
-void Ide::on_replaceSpaceLineEnding()
+void Ide::slotReplaceSpaceLineEnding()
 {
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
