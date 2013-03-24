@@ -91,6 +91,7 @@ private:
      */
     void setEnvironmentVariables(ProjectSettings* setting);
 
+
     /** Display configure/build output **/
     QTextEdit* standardOut;
     Ide* parent;

@@ -217,7 +217,8 @@ bool ProjectBuild::removeDirectory(QDir &aDir)
         if (!aDir.rmdir(aDir.absolutePath()))
         has_err = true;
     }
-return(has_err);
+
+    return(has_err);
 
 }
 
