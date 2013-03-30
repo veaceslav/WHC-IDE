@@ -27,6 +27,7 @@
 #include <QGraphicsScene>
 #include <QDomDocument>
 #include "diagramitem.h"
+#include "tests/testdiagramscene.h"
 
 
 class QGraphicsSceneMouseEvent;
@@ -153,6 +154,8 @@ private:
 
     QColor myItemColor;
     QColor myLineColor;
+
+    friend class TestDiagramScene;
 };
 
 
