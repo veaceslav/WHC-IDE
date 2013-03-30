@@ -38,7 +38,9 @@ class CommandLine : public QWidget
     Q_OBJECT
 public:
     explicit CommandLine(Ide *parent = 0);
-    
+
+    virtual ~CommandLine();
+
     void addLine(QString line, QColor txtColor);
 
     void addDebugLine(QString line);
@@ -67,7 +69,7 @@ private:
     bool debugMode;
 
     friend class TestCommandLine;
-    
+
 };
 
 #endif // COmmanDLINE_H

@@ -151,10 +151,21 @@ Ide::~Ide()
 
     delete ui;
     delete settings;
-    destroy(status_bar_info);
-    destroy(editorSettings);
-    destroy(findtool);
-    destroy(gotoTool);
+    delete contextTask;
+    delete contextFile;
+    delete contextData;
+
+    destroyObj(creditsPage);
+    destroyObj(projectXml);
+    destroyObj(build);
+    destroyObj(diagram);
+    destroyObj(diagramSubW);
+    destroyObj(devices);
+    destroyObj(exec);
+    destroyObj(status_bar_info);
+    destroyObj(editorSettings);
+    destroyObj(findtool);
+    destroyObj(gotoTool);
 }
 
 void Ide::slot_New_Project()
