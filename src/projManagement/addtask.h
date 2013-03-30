@@ -46,6 +46,16 @@ private:
     QDomDocument* projectXml;
     Ide* parent;
 
+
+    /**
+     * @brief generateMainFile - generates main.cpp file
+     * @param path             - the full path and name of the file
+     *                           that will be generated
+     * @param inputs           - the number of inputs for the task
+     * @return                 - return true if the file was generated, false
+                                 in case of an error
+     */
+    bool generateMainFile(QString path, int inputs);
     /**
      *  Gui elements
      */

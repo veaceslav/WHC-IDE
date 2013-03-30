@@ -192,7 +192,10 @@ set(whc_FORMS
 	forms/settingsDialog.ui
 )
 
-set(whc_RESOURCES resources/icons.qrc)
+set(whc_RESOURCES
+    resources/icons.qrc
+    resources/mainCppTemplate.qrc
+)
 
 qt4_wrap_cpp(whc_HEADERS_MOC ${whc_HEADERS})
 qt4_wrap_ui(whc_FORMS_UIC ${whc_FORMS})

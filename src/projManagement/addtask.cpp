@@ -27,6 +27,8 @@
 #include <QLineEdit>
 #include <QDomDocument>
 #include <QDir>
+#include <QTextStream>
+#include <QDate>
 
 #include "model/projecttreemodel.h"
 #include "model/projecttreemodel.h"
@@ -122,21 +124,26 @@ void AddTask::slotAddTask()
     QDir dir;
     dir.mkdir(temp);
 
-    /*----This segment adds an auto-generated main.cpp file to the new task---*/
+    /**
+     * This segment adds an auto-generated main.cpp file to the new task
+     */
+
     /**
       * Opening a file in append mode will
       * create a new file if it doesn't exist
       */
-    QFile mainCpp(temp + "/main.cpp");
-    mainCpp.open(QIODevice::Append);
+    if (!QFile::exists(temp + "/mainCpp"))
+        generateMainFile(temp + "/main.cpp", x.toInt());
 
     QDomElement elem = projectXml->createElement("file");
     elem.setAttribute("name","main.cpp");
     tmp.appendChild(elem);
     parent->model->addItem(new ProjectTreeItem(elem, addedTask), addedTask);
 
-    //generateMainFile
-    /*------------------------------------------------------------------------*/
+    /**
+     * Finished generating main.cpp file
+     */
+
     dir.mkdir(temp + "/Execute");
 
     /**
@@ -145,4 +152,25 @@ void AddTask::slotAddTask()
     parent->getDiagram()->addTask(taskName->text(), x.toInt(), 1, id);
 
     this->close();
+}
+
+bool AddTask::generateMainFile(QString path, int inputs)
+{
+    QFile mainTemplate(":/mainTemplate.cpp");
+    mainTemplate.open(QIODevice::ReadOnly);
+    QTextStream input(&mainTemplate);
+    QString templateText = input.readAll();
+    mainTemplate.close();
+
+    templateText.replace("`TASKNAME`", taskName->text());
+    templateText.replace("`DATE`", QDate::currentDate().toString("dd.MM.yyyy"));
+    templateText.replace("`ARGNO`", QString::number(inputs + 6));
+
+    QFile mainCpp(path);
+    mainCpp.open(QIODevice::WriteOnly);
+    QTextStream output(&mainCpp);
+    output << templateText;
+    mainCpp.close();
+
+    return true;
 }
