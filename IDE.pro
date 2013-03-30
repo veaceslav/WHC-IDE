@@ -50,7 +50,8 @@ SOURCES += \
     src/settings/editorSettingsVar.cpp \
     src/projBuild/test/testCommandLine.cpp \
     src/tests/testide.cpp \
-    src/tests/testdiagram.cpp
+    src/tests/testdiagram.cpp \
+    src/tests/testdiagramscene.cpp
 
 HEADERS += \
     src/ide.h \
@@ -93,7 +94,8 @@ HEADERS += \
     src/projBuild/test/testCommandLine.h \
     src/runtests.h \
     src/tests/testIde.h \
-    src/tests/testdiagram.h
+    src/tests/testdiagram.h \
+    src/tests/testdiagramscene.h
 
 FORMS += \
     src/forms/tabproject.ui \

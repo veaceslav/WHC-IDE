@@ -130,6 +130,7 @@ set(test_HEADERS
     projBuild/test/testCommandLine.h
     tests/testIde.h
     tests/testdiagram.h
+    tests/testdiagramscene.h
     runtests.h
     )
     
@@ -137,6 +138,7 @@ set(test_SOURCES
     projBuild/test/testCommandLine.cpp
     tests/testide.cpp
     tests/testdiagram.cpp
+    tests/testdiagramscene.cpp
     )
 
 set(whc_SOURCES

@@ -12,6 +12,7 @@ private slots:
     void slotTestAddTask();
     void slotTestAddData();
     void slotTestDeleteItemById();
+    void slotTestSearchById();
 };
 
 #endif // TESTDIAGRAM_H

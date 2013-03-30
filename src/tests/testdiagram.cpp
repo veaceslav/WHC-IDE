@@ -1,6 +1,7 @@
 #include "testdiagram.h"
 #include "ide.h"
 #include "diagram/diagramwindow.h"
+#include "../diagram/containers.h"
 #include <QtTest/QtTest>
 
 
@@ -18,7 +19,9 @@ void TestDiagram::slotTestAddTask()
 
 }
 
-void TestDiagram::slotTestAddData(){
+void TestDiagram::slotTestAddData()
+{
+
     Ide ide;
 
     QDomDocument doc;
@@ -31,33 +34,71 @@ void TestDiagram::slotTestAddData(){
 }
 
 
-void TestDiagram::slotTestDeleteItemById(){
+void TestDiagram::slotTestDeleteItemById()
+{
 
-        Ide ide;
+    Ide ide;
 
-        QDomDocument doc;
+    QDomDocument doc;
 
-        DiagramWindow dw(&doc,&ide);
+    DiagramWindow dw(&doc,&ide);
 
-        // test data element
-        int id = 1;
-        int type = 1;
+    // test data element
+    int id = 1;
+    int type = 1;
 
-        dw.addData("newData",id);
+    dw.addData("newData",id);
 
-        dw.deleteItemById(id,type);
+    dw.deleteItemById(id,type);
 
-        QVERIFY(dw.data.isEmpty());
+    QVERIFY(dw.data.isEmpty());
 
-        // test task element
-        id = 1;
-        type = 0;
+    // test task element
+    id = 1;
+    type = 0;
 
-        dw.addTask("newTask",1,1,id);
-        dw.deleteItemById(id,type);
+    dw.addTask("newTask",1,1,id);
+    dw.deleteItemById(id,type);
 
-        QVERIFY(dw.tasks.isEmpty());
+    QVERIFY(dw.tasks.isEmpty());
 }
+
+void TestDiagram::slotTestSearchById()
+{
+
+    Ide ide;
+
+    QDomDocument doc;
+
+    DiagramWindow dw(&doc,&ide);
+
+    int id = 1;
+    int type = 1;
+
+    dw.addData("newData",id);
+
+    DiagramNode a = dw.searchById(type,id);
+
+    QVERIFY(a.id == id && a.name == "newData");
+
+    a = dw.searchById(type,id + 1);
+
+    QVERIFY(a.id == -1);
+
+
+    type = 0;
+    dw.addTask("newTask",1,1,id);
+
+    a = dw.searchById(type,id);
+
+    QVERIFY(a.id == id && a.name == "newTask");
+
+    a = dw.searchById(type,id + 1);
+
+    QVERIFY(a.id == -1);
+}
+
+
 
 
 
