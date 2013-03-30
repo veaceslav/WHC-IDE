@@ -58,7 +58,6 @@ ProjectBuild::~ProjectBuild()
 }
 void ProjectBuild::startBuild()
 {
-    clean();
     cmd->showM();
     this->iter=0;
     pathTmp=paths.at(iter);
