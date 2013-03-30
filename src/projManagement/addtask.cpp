@@ -108,8 +108,8 @@ void AddTask::slotAddTask()
     QModelIndex taskIndex = parent->model->tasksIndex();
 
     ProjectTreeItem* parentItem = static_cast<ProjectTreeItem*>(taskIndex.internalPointer());
-
-    parent->model->addItem(new ProjectTreeItem(tmp,parentItem),parentItem);
+    ProjectTreeItem* addedTask = new ProjectTreeItem(tmp,parentItem);
+    parent->model->addItem(addedTask,parentItem);
 
     /**
      *  Create task directory in src folder
@@ -122,15 +122,27 @@ void AddTask::slotAddTask()
     QDir dir;
     dir.mkdir(temp);
 
+    /*----This segment adds an auto-generated main.cpp file to the new task---*/
+    /**
+      * Opening a file in append mode will
+      * create a new file if it doesn't exist
+      */
+    QFile mainCpp(temp + "/main.cpp");
+    mainCpp.open(QIODevice::Append);
+
+    QDomElement elem = projectXml->createElement("file");
+    elem.setAttribute("name","main.cpp");
+    tmp.appendChild(elem);
+    parent->model->addItem(new ProjectTreeItem(elem, addedTask), addedTask);
+
+    //generateMainFile
+    /*------------------------------------------------------------------------*/
     dir.mkdir(temp + "/Execute");
 
     /**
      *  Add created task to diagram comboBox
      */
-    parent->getDiagram()->addTask(taskName->text(),
-                                                x.toInt(),
-                                                1,
-                                                id);
+    parent->getDiagram()->addTask(taskName->text(), x.toInt(), 1, id);
 
     this->close();
 }
