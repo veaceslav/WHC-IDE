@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>mainCppTemplate.qrc</file>
+        <file>mainTemplate.cpp</file>
     </qresource>
 </RCC>
