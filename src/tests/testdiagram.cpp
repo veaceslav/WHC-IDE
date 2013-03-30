@@ -19,7 +19,8 @@ void TestDiagram::slotTestAddTask()
 
 }
 
-void TestDiagram::slotTestAddData(){
+void TestDiagram::slotTestAddData()
+{
 
     Ide ide;
 
@@ -33,7 +34,8 @@ void TestDiagram::slotTestAddData(){
 }
 
 
-void TestDiagram::slotTestDeleteItemById(){
+void TestDiagram::slotTestDeleteItemById()
+{
 
     Ide ide;
 
@@ -61,7 +63,8 @@ void TestDiagram::slotTestDeleteItemById(){
     QVERIFY(dw.tasks.isEmpty());
 }
 
-void TestDiagram::slotTestSearchById(){
+void TestDiagram::slotTestSearchById()
+{
 
     Ide ide;
 

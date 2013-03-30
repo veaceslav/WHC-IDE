@@ -127,10 +127,7 @@ void AddTask::slotAddTask()
     /**
      *  Add created task to diagram comboBox
      */
-    parent->getDiagram()->addTask(taskName->text(),
-                                                x.toInt(),
-                                                1,
-                                                id);
+    parent->getDiagram()->addTask(taskName->text(), x.toInt(), 1, id);
 
     this->close();
 }

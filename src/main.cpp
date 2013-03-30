@@ -22,15 +22,19 @@
  * ============================================================ */
 
 #include <QApplication>
-#include "ide.h"
+#include <QString>
 #include <QtTest/QtTest>
+
+#include "ide.h"
 #include "runtests.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc,argv);
 
-    runtests();
+    if(argc >= 2 && !QString(argv[1]).compare("--run-test"))
+        runtests();
+
     QCoreApplication::setOrganizationName("whc");
     QCoreApplication::setApplicationName("ide");
 

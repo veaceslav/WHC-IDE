@@ -10,4 +10,5 @@ private slots:
     void slotCheckActions();
 
     void slotCheckContextMenu();
+
 };
