@@ -110,7 +110,8 @@ FORMS += \
     src/forms/addFile.ui \
     src/forms/settingsDialog.ui
 RESOURCES += \
-    src/resources/icons.qrc
+    src/resources/icons.qrc \
+    src/resources/mainCppTemplate.qrc
 
 OTHER_FILES += \
     src/CMakeLists.txt
