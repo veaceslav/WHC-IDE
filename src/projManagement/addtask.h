@@ -53,7 +53,8 @@ private:
      *                           that will be generated
      * @param inputs           - the number of inputs for the task
      * @return                 - return true if the file was generated, false
-                                 in case of an error
+     *                           in case of an error while opening the main.cpp
+     *                           file.
      */
     bool generateMainFile(QString path, int inputs);
     /**

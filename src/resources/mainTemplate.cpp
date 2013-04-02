@@ -14,7 +14,7 @@
  *===============================================
  * argc - the number of arguments the task has received;
  * argv - the arguments vector, stored as char strings;
-          argv has a length of argc;
+ *        argv has a length of argc;
  *        argv[0]        - name of the executable;
  *        argv[1]        - "-in". Specifies that the next arguments
  *                         will be input file-names;
