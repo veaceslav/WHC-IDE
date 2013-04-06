@@ -31,7 +31,7 @@
 
 int main(int argc, char *argv[]) {
 	
-	if(argc < `ARGNO`) {
+	if(argc != `ARGNO`) {
 		printf("Usage: ./whc -in in1.txt `INFILES`-out out.txt -dev 0");
 	}
 	return 0;

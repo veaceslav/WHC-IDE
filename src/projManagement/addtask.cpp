@@ -200,6 +200,9 @@ bool AddTask::generateMainFile(QString path, int inputs)
         templateText.replace("`DATE`",
                                    QDate::currentDate().toString("dd.MM.yyyy"));
         templateText.replace("`EXPAND'", fileArgs);
+        for(int i = 1; i <= 4; i++)
+            templateText.replace("`ARGNO" + QString::number(i) + "`",
+                                               QString::number(inputs + 6 - i));
         templateText.replace("`ARGNO`", QString::number(inputs + 6));
         templateText.replace("`INFILES`", inFiles);
     }
