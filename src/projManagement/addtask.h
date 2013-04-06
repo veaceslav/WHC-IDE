@@ -27,6 +27,10 @@
 #include <QGroupBox>
 #include "ide.h"
 
+/**
+  * The maximum file names to be shown in the printf of the main.cpp file.
+  */
+#define MAX_NAMES_NO 10
 
 class Ide;
 class AddTask : public QDialog

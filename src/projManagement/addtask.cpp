@@ -166,6 +166,31 @@ bool AddTask::generateMainFile(QString path, int inputs)
 
     if(mainTemplate.open(QIODevice::ReadOnly))
     {
+        /**
+          * Generates a part of the comment section (the part with the input
+          * file names).
+          */
+        QString inArg = " *        argv[%1]     %2- %3 input file-name;\n";
+        QString tenNumbers =
+             "first second third fourth fifth sixth seventh eighth ninth tenth";
+        QStringList numberToWord = tenNumbers.split(" ");
+        QString fileArgs = "";
+        for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
+            fileArgs += inArg.arg(QString::number(i + 1),
+                             (i + 1 < 10) ? "  " : " ", numberToWord.at(i - 1));
+        if(inputs > MAX_NAMES_NO)
+            fileArgs += " *        .......\n";
+
+        /**
+          * Generates a part of the printf that shows the usage.
+          */
+        QString inFileName = "in%1.txt ";
+        QString inFiles = "";
+        for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
+            inFiles += inFileName.arg(QString::number(i));
+        if(inputs > MAX_NAMES_NO)
+            inFiles += "... ";
+
         templateText = input.readAll();
         mainTemplate.close();
         /**
@@ -174,7 +199,9 @@ bool AddTask::generateMainFile(QString path, int inputs)
         templateText.replace("`TASKNAME`", taskName->text());
         templateText.replace("`DATE`",
                                    QDate::currentDate().toString("dd.MM.yyyy"));
+        templateText.replace("`EXPAND'", fileArgs);
         templateText.replace("`ARGNO`", QString::number(inputs + 6));
+        templateText.replace("`INFILES`", inFiles);
     }
     else
     {
