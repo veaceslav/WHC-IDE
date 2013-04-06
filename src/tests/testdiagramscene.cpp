@@ -157,6 +157,9 @@ void TestDiagramScene::slotTestLoadDiagram(){
 
     QDomDocument docXml;
 
+    ide.projectXml = &docXml;
+
+
     DiagramWindow dw(&docXml,&ide);
 
     QDomElement dummyElement = docXml.createElement("dummyElement");
@@ -172,13 +175,18 @@ void TestDiagramScene::slotTestLoadDiagram(){
     QVERIFY(!list.isEmpty());
 
     DiagramNode node;
+
     node.id = 1;
+
     node.name = "newNode";
+
     QPointF point(1.0,2.0);
 
     DiagramScene diagScene(&menu, &docXml, &dw);
 
+    diagScene.createItemXml(node,point);
 
     diagScene.loadDiagram();
+
 }
 
