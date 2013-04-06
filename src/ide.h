@@ -112,7 +112,7 @@ public:
     MdiTextEditor *getCurrentMdiTextEditor() const;
 
     template <typename T>
-    static void destroyObj(T *p) {p == NULL ?(delete p):void(0);p = NULL;}
+    static void destroyObj(T *p) {p != NULL ? (delete p) : void(0); p = NULL;}
 signals:
 
 public slots:
