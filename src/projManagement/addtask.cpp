@@ -176,8 +176,16 @@ bool AddTask::generateMainFile(QString path, int inputs)
         QStringList numberToWord = tenNumbers.split(" ");
         QString fileArgs = "";
         for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
-            fileArgs += inArg.arg(QString::number(i + 1),
+            if(i <= numberToWord.length())
+                fileArgs += inArg.arg(QString::number(i + 1),
                              (i + 1 < 10) ? "  " : " ", numberToWord.at(i - 1));
+            else
+                /**
+                  * In this case we don't have a word representation for the
+                  * number so we add the number in digits + th.
+                  */
+                fileArgs += inArg.arg(QString::number(i + 1),
+                          (i + 1 < 10) ? "  " : " ", QString::number(i) + "th");
         if(inputs > MAX_NAMES_NO)
             fileArgs += " *        .......\n";
 
