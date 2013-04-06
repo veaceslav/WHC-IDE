@@ -70,6 +70,13 @@ Ide::Ide(QWidget *parent) :
     projectXml  = 0;
     build       = 0;
     exec        = 0;
+    diagram     = 0;
+    diagramSubW = 0;
+    devices     = 0;
+    exec        = 0;
+    model       = 0;
+    outWindow   = 0;
+    editorSettings  = 0;
 
     settings = new ProjectSettings();
     readSettingsfromFile();
@@ -145,8 +152,9 @@ Ide::Ide(QWidget *parent) :
 
 Ide::~Ide()
 {
+
     foreach(Highlighter* h, langs){
-        delete h;
+        destroyObj(&h);
     }
 
     delete ui;
@@ -155,25 +163,27 @@ Ide::~Ide()
     delete contextFile;
     delete contextData;
 
-    destroyObj(creditsPage);
-    destroyObj(projectXml);
-    destroyObj(build);
-    destroyObj(diagram);
-    destroyObj(diagramSubW);
-    destroyObj(devices);
-    destroyObj(exec);
-    destroyObj(status_bar_info);
-    destroyObj(editorSettings);
-    destroyObj(findtool);
-    destroyObj(gotoTool);
+    destroyObj(&creditsPage);
+    destroyObj(&projectXml);
+    destroyObj(&build);
+    destroyObj(&diagram);
+    destroyObj(&diagramSubW);
+    destroyObj(&devices);
+    destroyObj(&exec);
+    destroyObj(&status_bar_info);
+    destroyObj(&editorSettings);
+    destroyObj(&findtool);
+    destroyObj(&gotoTool);
+    destroyObj(&model);
+    destroyObj(&outWindow);
 }
 
 void Ide::slot_New_Project()
 {
-    NewProject* np = new NewProject(this);
+    NewProject np(this);
 
     setUpdatesEnabled(false);
-    np->show();
+    np.show();
     setUpdatesEnabled(true);
 
 }
@@ -744,7 +754,10 @@ void Ide::slotCloseProject()
 {
     ui->mdiArea->closeAllSubWindows();
     ui->projectsView->setModel(new QStandardItemModel(this));
-
+    destroyObj(&model);
+    destroyObj(&diagram);
+    destroyObj(&diagramSubW);
+    qDebug() << QString("0x%0").arg((qlonglong)diagramSubW,8,16,QLatin1Char('0')) ;
     disableMenuOptions(true);
 }
 
@@ -866,10 +879,7 @@ void Ide::readSettingsfromFile()
     QSettings sets("WHC","WHC IDE");
 
     if(sets.allKeys().count() == 0)
-    {
-        qDebug() << "No keys are set, first run";
         return;
-    }
 
     settings->clPath        = sets.value("clPath").toString();
     settings->libclPath     = sets.value("libclPath").toString();

@@ -368,7 +368,7 @@ void DiagramWindow::deleteItemById(int id, int type)
 
 void DiagramWindow::renameDiagItems(QString oldName, QString newName)
 {
-    scene->renameItems(oldName, newName); 
+    scene->renameItems(oldName, newName);
 }
 
 void DiagramWindow::createActions()
