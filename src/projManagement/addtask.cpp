@@ -171,21 +171,17 @@ bool AddTask::generateMainFile(QString path, int inputs)
           * file names).
           */
         QString inArg = " *        argv[%1]     %2- %3 input file-name;\n";
-        QString tenNumbers =
-             "first second third fourth fifth sixth seventh eighth ninth tenth";
-        QStringList numberToWord = tenNumbers.split(" ");
         QString fileArgs = "";
+        QStringList suffixes;
+        suffixes << "th" << "st" << "nd" << "rd";
         for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
-            if(i <= numberToWord.length())
-                fileArgs += inArg.arg(QString::number(i + 1),
-                             (i + 1 < 10) ? "  " : " ", numberToWord.at(i - 1));
-            else
-                /**
-                  * In this case we don't have a word representation for the
-                  * number so we add the number in digits + th.
-                  */
-                fileArgs += inArg.arg(QString::number(i + 1),
-                          (i + 1 < 10) ? "  " : " ", QString::number(i) + "th");
+        {
+            int chosenSuffix = ((i % 10) >= 1 && (i % 10) <= 3
+                                         && (i / 10) != 1) ? (i % 10) : 0;
+            fileArgs += inArg.arg(QString::number(i + 1),
+                                  (i + 1 < 10) ? "  " : " ", QString::number(i)
+                                                   + suffixes.at(chosenSuffix));
+        }
         if(inputs > MAX_NAMES_NO)
             fileArgs += " *        .......\n";
 
