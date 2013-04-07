@@ -30,6 +30,7 @@
 #include "diagramitem.h"
 #include "ide.h"
 #include "tests/testdiagram.h"
+#include "tests/testdiagramscene.h"
 
 class DiagramScene;
 
@@ -244,7 +245,7 @@ private:
     int currentData;
 
     friend class TestDiagram;
-
+    friend class TestDiagramScene;
 };
 
 #endif // DIAGRAMWINDOW_H

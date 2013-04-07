@@ -27,6 +27,10 @@
 #include <QGroupBox>
 #include "ide.h"
 
+/**
+  * The maximum file names to be shown in the printf of the main.cpp file.
+  */
+#define MAX_NAMES_NO 10
 
 class Ide;
 class AddTask : public QDialog
@@ -53,7 +57,8 @@ private:
      *                           that will be generated
      * @param inputs           - the number of inputs for the task
      * @return                 - return true if the file was generated, false
-                                 in case of an error
+     *                           in case of an error while opening the main.cpp
+     *                           file.
      */
     bool generateMainFile(QString path, int inputs);
     /**

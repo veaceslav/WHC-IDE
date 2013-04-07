@@ -52,7 +52,8 @@ EditorSettingsVar::EditorSettingsVar(Ide* parent)
     }
 
     line = sets.value("fontSize").toString();
-    if(fontSize == 0){
+
+    if(line.toInt() == 0){
         fontSize = 10;
     }
     else{
@@ -65,6 +66,7 @@ EditorSettingsVar::EditorSettingsVar(Ide* parent)
     else{
         endLineSpace = true;
     }
+
 }
 
 EditorSettingsVar::~EditorSettingsVar()

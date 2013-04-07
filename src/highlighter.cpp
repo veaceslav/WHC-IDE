@@ -79,7 +79,7 @@ Highlighter::Highlighter(QString filetype, EditorSettingsVar *es)
 
 Highlighter::~Highlighter()
 {
-    Ide::destroy(sh);
+    Ide::destroyObj(&sh);
     foreach(Type* t, types){
         delete t;
     }

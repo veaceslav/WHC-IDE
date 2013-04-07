@@ -66,6 +66,15 @@ CommandLine::CommandLine(Ide *parent) :
     visible = false;
 }
 
+CommandLine::~CommandLine()
+{
+    delete this->window;
+    delete this->closeButton;
+    delete this->debugButton;
+    delete this->vlay;
+    delete this->lay;
+}
+
 void CommandLine::addLine(QString line,QColor txtColor)
 {
     QString toWrite = "<font color=\"" + txtColor.name()

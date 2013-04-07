@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc,argv);
 
-    if(argc >= 2 && !QString(argv[1]).compare("--run-test"))
+    if(argc >= 2 && !QString(argv[1]).compare("--run-tests"))
         runtests();
 
     QCoreApplication::setOrganizationName("whc");

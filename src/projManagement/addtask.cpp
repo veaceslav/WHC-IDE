@@ -109,42 +109,46 @@ void AddTask::slotAddTask()
 
     QModelIndex taskIndex = parent->model->tasksIndex();
 
-    ProjectTreeItem* parentItem = static_cast<ProjectTreeItem*>(taskIndex.internalPointer());
+    ProjectTreeItem* parentItem =
+                     static_cast<ProjectTreeItem*>(taskIndex.internalPointer());
     ProjectTreeItem* addedTask = new ProjectTreeItem(tmp,parentItem);
     parent->model->addItem(addedTask,parentItem);
 
     /**
-     *  Create task directory in src folder
+     *  Create a string holding the path to the task.
      */
-    QString temp(parent->whcFile);
-
-    temp.remove(temp.split("/").last());
-    temp.append("src/" + taskName->text());
+    QString taskPath(parent->whcFile);
+    taskPath.remove(taskPath.split("/").last());
+    taskPath.append("src/" + taskName->text());
 
     QDir dir;
-    dir.mkdir(temp);
-
     /**
-     * This segment adds an auto-generated main.cpp file to the new task
+     *  Create task directory in src folder
      */
-
+    dir.mkdir(taskPath);
     /**
-      * Opening a file in append mode will
-      * create a new file if it doesn't exist
-      */
-    if (!QFile::exists(temp + "/mainCpp"))
-        generateMainFile(temp + "/main.cpp", x.toInt());
-
-    QDomElement elem = projectXml->createElement("file");
-    elem.setAttribute("name","main.cpp");
-    tmp.appendChild(elem);
-    parent->model->addItem(new ProjectTreeItem(elem, addedTask), addedTask);
-
-    /**
-     * Finished generating main.cpp file
+     *  Create Execute directory in task folder
      */
+    dir.mkdir(taskPath + "/Execute");
 
-    dir.mkdir(temp + "/Execute");
+    bool mainExists = QFile::exists(taskPath + "/main.cpp");
+
+    if (!mainExists)
+        mainExists = generateMainFile(taskPath + "/main.cpp", x.toInt());
+
+    /**
+     * If the program finished generating the main.cpp file or if it was
+     * already on the drive, the file will be added to the project tree.
+     */
+    if(mainExists)
+    {
+        QDomElement elem = projectXml->createElement("file");
+        elem.setAttribute("name","main.cpp");
+        tmp.appendChild(elem);
+        parent->model->addItem(new ProjectTreeItem(elem, addedTask), addedTask);
+    }
+    else
+        qDebug() << "Could not generate main.cpp file in folder " << taskPath;
 
     /**
      *  Add created task to diagram comboBox
@@ -157,20 +161,86 @@ void AddTask::slotAddTask()
 bool AddTask::generateMainFile(QString path, int inputs)
 {
     QFile mainTemplate(":/mainTemplate.cpp");
-    mainTemplate.open(QIODevice::ReadOnly);
     QTextStream input(&mainTemplate);
-    QString templateText = input.readAll();
-    mainTemplate.close();
+    QString templateText = "";
 
-    templateText.replace("`TASKNAME`", taskName->text());
-    templateText.replace("`DATE`", QDate::currentDate().toString("dd.MM.yyyy"));
-    templateText.replace("`ARGNO`", QString::number(inputs + 6));
+    if(mainTemplate.open(QIODevice::ReadOnly))
+    {
+        /**
+          * Generates a part of the comment section (the part with the input
+          * file names).
+          */
+        QString inArg = " *        argv[%1]     %2- %3 input file-name;\n";
+        QString tenNumbers =
+             "first second third fourth fifth sixth seventh eighth ninth tenth";
+        QStringList numberToWord = tenNumbers.split(" ");
+        QString fileArgs = "";
+        for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
+            if(i <= numberToWord.length())
+                fileArgs += inArg.arg(QString::number(i + 1),
+                             (i + 1 < 10) ? "  " : " ", numberToWord.at(i - 1));
+            else
+                /**
+                  * In this case we don't have a word representation for the
+                  * number so we add the number in digits + th.
+                  */
+                fileArgs += inArg.arg(QString::number(i + 1),
+                          (i + 1 < 10) ? "  " : " ", QString::number(i) + "th");
+        if(inputs > MAX_NAMES_NO)
+            fileArgs += " *        .......\n";
+
+        /**
+          * Generates a part of the printf that shows the usage.
+          */
+        QString inFileName = "in%1.txt ";
+        QString inFiles = "";
+        for(int i = 1; i <= inputs && i <= MAX_NAMES_NO; i++)
+            inFiles += inFileName.arg(QString::number(i));
+        if(inputs > MAX_NAMES_NO)
+            inFiles += "... ";
+
+        templateText = input.readAll();
+        mainTemplate.close();
+        /**
+          * Replace the parts tagged with ` ` with user specific data.
+          */
+        templateText.replace("`TASKNAME`", taskName->text());
+        templateText.replace("`DATE`",
+                                   QDate::currentDate().toString("dd.MM.yyyy"));
+        templateText.replace("`EXPAND'", fileArgs);
+        for(int i = 1; i <= 4; i++)
+            templateText.replace("`ARGNO" + QString::number(i) + "`",
+                                               QString::number(inputs + 6 - i));
+        templateText.replace("`ARGNO`", QString::number(inputs + 6));
+        templateText.replace("`INFILES`", inFiles);
+    }
+    else
+    {
+        /**
+          * This shouldn't happen. The mainTemplate.cpp file should always be
+          * available.
+          */
+        qDebug() << "generateMainFile(QString,int) could not open mainTemplate";
+    }
 
     QFile mainCpp(path);
-    mainCpp.open(QIODevice::WriteOnly);
     QTextStream output(&mainCpp);
-    output << templateText;
-    mainCpp.close();
 
-    return true;
+    /**
+      * Opening a file in write mode will create it if it doesn't exist.
+      */
+    if(mainCpp.open(QIODevice::WriteOnly))
+    {
+        output << templateText;
+        mainCpp.close();
+        return true;
+    }
+    else
+    {
+        /**
+          * There was a problem with opening the main.cpp file, so the task
+          * will not have an autogenerated main.cpp file.
+          */
+        return false;
+    }
 }

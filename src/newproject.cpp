@@ -378,4 +378,26 @@ void NewProject::slotCreateProject()
 }
 NewProject::~NewProject()
 {
+    delete(layoutWidget);
+    delete(buttonLayout);
+    delete(cancelButton);
+    delete(layoutWidget_2);
+    delete(verticalLayout);
+    delete(horizontalLayout);
+    delete(projNameLabel);
+    delete(line);
+    delete(horizontalLayout_5);
+    delete(projectName);
+    delete(projectLocation);
+    delete(setprojectLocation);
+    delete(templateInfo);
+    delete(label_3);
+    delete(label_4);
+    delete(label_6);
+    delete(label_8);
+    delete(label_9);
+    delete(templateImage);
+    delete(page);
+    delete(line_2);
+    delete(templateProj);
 }

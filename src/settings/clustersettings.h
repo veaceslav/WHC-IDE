@@ -21,6 +21,11 @@
  *
  * ============================================================ */
 
+
+/**
+ *  Deprecated remove when needed, not used
+ */
+
 #ifndef CLUSTERSETTINGS_H
 #define CLUSTERSETTINGS_H
 

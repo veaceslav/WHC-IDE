@@ -38,6 +38,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent,
 
 SyntaxHighlighter::~SyntaxHighlighter()
 {
+    delete(endSpace);
 }
 
 void SyntaxHighlighter::highlightBlock(const QString &text)
