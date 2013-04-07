@@ -73,6 +73,11 @@ AddTask::AddTask(QDomDocument* proj, Ide *parent)
 
 AddTask::~AddTask()
 {
+    Ide::destroyObj(&buttonBox);
+    Ide::destroyObj(&taskLabel);
+    Ide::destroyObj(&taskName);
+    Ide::destroyObj(&xLabel);
+    Ide::destroyObj(&xPoz);
 }
 
 void AddTask::slotAddTask()
