@@ -164,12 +164,12 @@ Ide::~Ide()
     delete contextData;
 
     destroyObj(&creditsPage);
-    destroyObj(&projectXml);
     destroyObj(&build);
     destroyObj(&diagram);
     destroyObj(&diagramSubW);
     destroyObj(&devices);
     destroyObj(&exec);
+
     destroyObj(&status_bar_info);
     destroyObj(&editorSettings);
     destroyObj(&findtool);
@@ -757,7 +757,7 @@ void Ide::slotCloseProject()
     destroyObj(&model);
     destroyObj(&diagram);
     destroyObj(&diagramSubW);
-    qDebug() << QString("0x%0").arg((qlonglong)diagramSubW,8,16,QLatin1Char('0')) ;
+
     disableMenuOptions(true);
 }
 
