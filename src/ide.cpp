@@ -72,7 +72,6 @@ Ide::Ide(QWidget *parent) :
     diagram     = 0;
     diagramSubW = 0;
     devices     = 0;
-    exec        = 0;
     model       = 0;
     outWindow   = 0;
     editorSettings  = 0;
@@ -756,6 +755,7 @@ void Ide::slotCloseProject()
     destroyObj(&model);
     destroyObj(&diagram);
     destroyObj(&diagramSubW);
+    destroyObj(&exec);
 
     disableMenuOptions(true);
 }
@@ -1000,10 +1000,12 @@ MdiTextEditor *Ide::getCurrentMdiTextEditor() const
 
 void Ide::on_actionStop_triggered()
 {
-    exec->stopExec();
+    if(exec != 0)
+        exec->stopExec();
 }
 
 void Ide::on_actionForce_Stop_triggered()
 {
-    exec->forceStop();
+    if(exec != 0)
+        exec->forceStop();
 }
