@@ -34,8 +34,8 @@
 
 
 OneProcess::OneProcess(CommandLine* cmd, QStringList& lst, Node* nod,Ide* parent)
-    :taskNode(nod),cmdL(cmd),list(lst),
-     model(parent->model),projXml(parent->getProjectXml())
+    :taskNode(nod), cmdL(cmd), list(lst),
+     model(parent->model), projXml(parent->getProjectXml())
 {
     proc = new QProcess();
 
@@ -142,7 +142,7 @@ void OneProcess::copytoData()
         if(taskNode->link[inputs].at(i)->type == 1) // Data type
         {
             Node* data = taskNode->link[inputs].at(i);
-            
+
             QString destDir = dir.cleanPath(buildPath
                                             +"../../../../data/" + data->Name);
             QString dest = dir.cleanPath(destDir + "/" + filename);
@@ -167,11 +167,11 @@ void OneProcess::copytoData()
                     qDebug() << "copyToData: impossible to remove file";
 
             }
-            
+
             /** Create output folder if not present **/
             if (!dir.exists(destDir))
                 dir.mkdir(destDir);
-            
+
             if(!QFile::copy(source,dest))
                 qDebug() << "copyToData: Error! file was not copied";
         }

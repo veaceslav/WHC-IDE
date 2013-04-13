@@ -107,9 +107,9 @@ public:
 
     inline Ui::Ide* getUi() const {return ui;}
 
-    inline QDomDocument* getProjectXml() const {return model->getProjectXml(); }
+    QDomDocument* getProjectXml() const;
 
-    MdiTextEditor *getCurrentMdiTextEditor() const;
+    MdiTextEditor* getCurrentMdiTextEditor() const;
 
     template <typename T>
     static void destroyObj(T ** p) {*p != NULL ? (delete *p) : void(0); *p = NULL;}

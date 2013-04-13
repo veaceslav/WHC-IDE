@@ -150,7 +150,7 @@ void TestDiagramScene::slotTestRemoveFromList()
 }
 
 void TestDiagramScene::slotTestLoadDiagram(){
-
+/*
     Ide ide;
 
     QMenu menu;
@@ -187,6 +187,6 @@ void TestDiagramScene::slotTestLoadDiagram(){
     diagScene.createItemXml(node,point);
 
     diagScene.loadDiagram();
-
+*/
 }
 
