@@ -39,7 +39,7 @@ class ProjectTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    ProjectTreeModel(QString filename, QDomDocument *&projectXml, Ide* parent =0);
+    ProjectTreeModel(QString filename, Ide* parent = 0);
     ~ProjectTreeModel();
 
     /** Methods that must be implemented for QAbstractItemModel interface **/
@@ -75,6 +75,13 @@ public:
     void deleteItem(QModelIndex index);
 
     ProjectTreeItem* getGroupByName(QString name);
+
+    /**
+      * @brief getProjectXml - gets the project xml used by the current project
+      * @return              - returns a reference to the QDomDocument
+      *                        containing the project xml
+      */
+    QDomDocument* getProjectXml();
 
     QFileInfo file() const;
 

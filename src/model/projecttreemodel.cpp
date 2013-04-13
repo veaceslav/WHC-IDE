@@ -29,8 +29,7 @@
 #include "projecttreemodel.h"
 #include "ide.h"
 
-ProjectTreeModel::ProjectTreeModel(QString filename,
-                                   QDomDocument*& projectXml, Ide *parent)
+ProjectTreeModel::ProjectTreeModel(QString filename, Ide *parent)
     : QAbstractItemModel(parent),projectInfo(filename),parentIde(parent)
 {
 
@@ -49,9 +48,6 @@ ProjectTreeModel::ProjectTreeModel(QString filename,
     rootItem = new ProjectTreeItem(project, 0);
 
     setupModelData(project, rootItem);
-
-    projectXml = &project;
-
 }
 
 ProjectTreeModel::~ProjectTreeModel()
@@ -298,6 +294,12 @@ ProjectTreeItem* ProjectTreeModel::getGroupByName(QString name)
     }
     return 0;
 }
+
+QDomDocument* ProjectTreeModel::getProjectXml()
+{
+    return &project;
+}
+
 QModelIndex ProjectTreeModel::tasksIndex() const
 {
     QModelIndex root = index(0, 0, QModelIndex());

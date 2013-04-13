@@ -107,7 +107,7 @@ public:
 
     inline Ui::Ide* getUi() const {return ui;}
 
-    inline QDomDocument* getProjectXml() const {return projectXml; }
+    inline QDomDocument* getProjectXml() const {return model->getProjectXml(); }
 
     MdiTextEditor *getCurrentMdiTextEditor() const;
 
@@ -273,7 +273,6 @@ private:
     Ui::Ide *ui;
     QLabel *status_bar_info;
     QDialog* creditsPage;
-    QDomDocument* projectXml;
     ProjectBuild* build;
     ProjectSettings* settings;
 
@@ -292,7 +291,7 @@ private:
     Execute* exec;
 
     /**
-     * Fiend class is used for testing Ide functionality and it need to have
+     * Friend class is used for testing Ide functionality and it need to have
      * access to all private members
      */
     friend class TestIde;

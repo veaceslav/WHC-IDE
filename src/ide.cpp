@@ -67,7 +67,6 @@ Ide::Ide(QWidget *parent) :
     this->setWindowIcon(icon);
 
     creditsPage = 0;
-    projectXml  = 0;
     build       = 0;
     exec        = 0;
     diagram     = 0;
@@ -194,7 +193,7 @@ void Ide::writeXmltoFile()
 
     QFile file(whcFile);
     file.open(QFile::WriteOnly);
-    QByteArray data(projectXml->toByteArray());
+    QByteArray data(model->getProjectXml()->toByteArray());
     QDataStream stream( &file );
     stream.writeRawData(data.data(), data.size());
     file.close();
@@ -467,13 +466,13 @@ void Ide::startNewProject(QString whcFiles)
     whcFile = whcFiles;
 
     ui->mdiArea->closeAllSubWindows();
-    model = new ProjectTreeModel(whcFile,projectXml, this);
+    model = new ProjectTreeModel(whcFile, this);
 
     ui->projectsView->setModel(model);
     ui->projectsView->expandToDepth(1);
 
     /** Init and show Diagram **/
-    diagram = new DiagramWindow(projectXml, this);
+    diagram = new DiagramWindow(model->getProjectXml(), this);
 
     diagramSubW = new MdiDiagram(diagram,ui->mdiArea,
                               Qt::CustomizeWindowHint |
@@ -663,7 +662,7 @@ void Ide::slotAddCloseButtons()
 void Ide::slotNewTask()
 {
 
-    AddTask* at = new AddTask(projectXml,this);
+    AddTask* at = new AddTask(model->getProjectXml(), this);
     at->show();
 }
 
@@ -672,7 +671,7 @@ void Ide::slotAddNewFile()
     /**
      * If no task is available, return.
      */
-    QDomNodeList tasks = projectXml->elementsByTagName("task");
+    QDomNodeList tasks = model->getProjectXml()->elementsByTagName("task");
     if(tasks.isEmpty())
     {
         QMessageBox msg;
@@ -689,7 +688,7 @@ void Ide::slotAddNewFile()
 
         if(lst.size()>0)
            index = lst.at(0);
-    AddNewFile* anf = new AddNewFile(projectXml,this,index);
+    AddNewFile* anf = new AddNewFile(model->getProjectXml(), this, index);
     anf->show();
 }
 void Ide::slotAddFiles()
@@ -697,7 +696,7 @@ void Ide::slotAddFiles()
     /**
      * If no task is available, return.
      */
-    QDomNodeList tasks = projectXml->elementsByTagName("task");
+    QDomNodeList tasks = model->getProjectXml()->elementsByTagName("task");
     if(tasks.isEmpty())
     {
         QMessageBox msg;
@@ -712,16 +711,16 @@ void Ide::slotAddFiles()
     QModelIndex index;
     QModelIndexList lst = ui->projectsView->selectionModel()->selectedIndexes();
 
-        if(lst.size()>0)
-           index = lst.at(0);
+    if(lst.size() > 0)
+        index = lst.at(0);
 
-    AddFiles* af = new AddFiles(projectXml,this,index);
+    AddFiles* af = new AddFiles(model->getProjectXml(), this, index);
     af->show();
 }
 
 void Ide::slotAddDataGroup()
 {
-    DataGroup* gd = new DataGroup(projectXml,this);
+    DataGroup* gd = new DataGroup(model->getProjectXml(), this);
     gd->show();
 }
 
@@ -731,7 +730,7 @@ void Ide::slotAddDataFiles()
      * data files can be added only to a specific data group.
      * If, no data groups available, return.
      */
-    QDomNodeList tasks = projectXml->elementsByTagName("group");
+    QDomNodeList tasks = model->getProjectXml()->elementsByTagName("group");
     if(tasks.isEmpty())
     {
         QMessageBox msg;
@@ -747,7 +746,7 @@ void Ide::slotAddDataFiles()
     if(!lst.isEmpty())
         index = lst.at(0);
 
-    AddData* ad = new AddData(projectXml,this,index);
+    AddData* ad = new AddData(model->getProjectXml(), this, index);
     ad->show();
 }
 void Ide::slotCloseProject()
@@ -767,7 +766,7 @@ void Ide::slotDeleteItem()
 
     QModelIndexList lst = sel->selectedIndexes();
 
-    StaticMethods::deleteItem(this,lst);
+    StaticMethods::deleteItem(this, lst);
 
     writeXmltoFile();
 
@@ -775,11 +774,13 @@ void Ide::slotDeleteItem()
 void Ide::slotBuild()
 {
     if(!build)
-      build = new ProjectBuild(projectXml,this,settings,outWindow);
+        build = new ProjectBuild(model->getProjectXml(), this, settings,
+                                                                    outWindow);
     else
     {
         delete build;
-        build = new ProjectBuild(projectXml,this,settings,outWindow);
+        build = new ProjectBuild(model->getProjectXml(), this, settings,
+                                                                    outWindow);
     }
     build->startBuild();
 }
@@ -788,12 +789,14 @@ void Ide::slotClean()
 {
     if(!build)
     {
-        build = new ProjectBuild(projectXml,this,settings,outWindow);
+        build = new ProjectBuild(model->getProjectXml(), this, settings,
+                                                                    outWindow);
     }
     else
     {
         delete build;
-        build = new ProjectBuild(projectXml,this,settings,outWindow);
+        build = new ProjectBuild(model->getProjectXml(), this, settings,
+                                                                    outWindow);
     }
     build->clean();
 }
