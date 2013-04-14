@@ -378,26 +378,26 @@ void NewProject::slotCreateProject()
 }
 NewProject::~NewProject()
 {
-    delete(layoutWidget);
-    delete(buttonLayout);
-    delete(cancelButton);
-    delete(layoutWidget_2);
-    delete(verticalLayout);
-    delete(horizontalLayout);
-    delete(projNameLabel);
-    delete(line);
-    delete(horizontalLayout_5);
-    delete(projectName);
-    delete(projectLocation);
-    delete(setprojectLocation);
-    delete(templateInfo);
-    delete(label_3);
-    delete(label_4);
-    delete(label_6);
-    delete(label_8);
-    delete(label_9);
-    delete(templateImage);
-    delete(page);
-    delete(line_2);
-    delete(templateProj);
+    Ide::destroyObj(&layoutWidget);
+    Ide::destroyObj(&buttonLayout);
+    Ide::destroyObj(&cancelButton);
+    Ide::destroyObj(&layoutWidget_2);
+    Ide::destroyObj(&verticalLayout);
+    Ide::destroyObj(&horizontalLayout);
+    Ide::destroyObj(&projNameLabel);
+    Ide::destroyObj(&line);
+    Ide::destroyObj(&horizontalLayout_5);
+    Ide::destroyObj(&projectName);
+    Ide::destroyObj(&projectLocation);
+    Ide::destroyObj(&setprojectLocation);
+    Ide::destroyObj(&templateInfo);
+    Ide::destroyObj(&label_3);
+    Ide::destroyObj(&label_4);
+    Ide::destroyObj(&label_6);
+    Ide::destroyObj(&label_8);
+    Ide::destroyObj(&label_9);
+    Ide::destroyObj(&templateImage);
+    Ide::destroyObj(&page);
+    Ide::destroyObj(&line_2);
+    Ide::destroyObj(&templateProj);
 }
