@@ -378,11 +378,13 @@ void NewProject::slotCreateProject()
 }
 NewProject::~NewProject()
 {
-    Ide::destroyObj(&layoutWidget);
+    /*
     Ide::destroyObj(&buttonLayout);
+    Ide::destroyObj(&finishButton);
     Ide::destroyObj(&cancelButton);
-    Ide::destroyObj(&layoutWidget_2);
-    Ide::destroyObj(&verticalLayout);
+    //Ide::destroyObj(&layoutWidget);
+    //Ide::destroyObj(&verticalLayout);
+    //Ide::destroyObj(&layoutWidget_2);
     Ide::destroyObj(&horizontalLayout);
     Ide::destroyObj(&projNameLabel);
     Ide::destroyObj(&line);
@@ -396,8 +398,8 @@ NewProject::~NewProject()
     Ide::destroyObj(&label_6);
     Ide::destroyObj(&label_8);
     Ide::destroyObj(&label_9);
-    Ide::destroyObj(&templateImage);
     Ide::destroyObj(&page);
     Ide::destroyObj(&line_2);
     Ide::destroyObj(&templateProj);
+    */
 }
