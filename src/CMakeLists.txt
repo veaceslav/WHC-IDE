@@ -10,14 +10,14 @@ set(CMAKE_CXX_FLAGS "-Wall -O2")
 
 #Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	SET (EXTRA_LIBS ${EXTRA_LIBS} OpenCL)
-	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/x64 ${CMAKE_SOURCE_DIR}/lib/x86)
+        SET (EXTRA_LIBS ${EXTRA_LIBS} OpenCL)
+        LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/x64 ${CMAKE_SOURCE_DIR}/lib/x86)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 #Windows support
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/x64 ${CMAKE_SOURCE_DIR}/lib/x86)
-	SET (EXTRA_LIBS ${EXTRA_LIBS} OpenCL.lib)
+        LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/x64 ${CMAKE_SOURCE_DIR}/lib/x86)
+        SET (EXTRA_LIBS ${EXTRA_LIBS} OpenCL.lib)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 set(model_SOURCES
@@ -124,7 +124,7 @@ set(projExe_SOURCES
     projectExec/sorttask.cpp
     projectExec/devicequery.cpp
     projectExec/oneprocess.cpp
-    
+
 )
 set(test_HEADERS
     projBuild/test/testCommandLine.h
@@ -133,7 +133,7 @@ set(test_HEADERS
     tests/testdiagramscene.h
     runtests.h
     )
-    
+
 set(test_SOURCES
     projBuild/test/testCommandLine.cpp
     tests/testide.cpp
@@ -189,7 +189,8 @@ set(whc_FORMS
     forms/clustercontrol.ui
     forms/clusterconnect.ui
     forms/credits.ui
-	forms/settingsDialog.ui
+    forms/settingsDialog.ui
+    forms/projectdialog.ui
 )
 
 set(whc_RESOURCES
@@ -201,14 +202,14 @@ qt4_wrap_cpp(whc_HEADERS_MOC ${whc_HEADERS})
 qt4_wrap_ui(whc_FORMS_UIC ${whc_FORMS})
 qt4_add_resources(whc_RESOURCES_RCC ${whc_RESOURCES})
 
-add_executable(whc 
-	${whc_SOURCES}
+add_executable(whc
+        ${whc_SOURCES}
         ${whc_HEADERS_MOC}
         ${whc_FORMS_UIC}
         ${whc_RESOURCES_RCC}
 )
 
-target_link_libraries(whc 
+target_link_libraries(whc
     ${QT_LIBRARIES}
     ${QT_QTTEST_LIBRARY}
     ${LIBSSH_LIBRARIES}
