@@ -143,6 +143,7 @@ Ide::Ide(QWidget *parent) :
      * while no project is open, this options must be disabled
      */
     disableMenuOptions(true);
+    disableStopExec(true);
     editorSettings = new EditorSettingsVar(this);
 
     connect(ui->actionClose_Project,SIGNAL(triggered()),this,SLOT(slotCloseProject()));
@@ -498,6 +499,11 @@ void Ide::slotReplaceString()
             findtool = NULL;
         }
     }
+}
+
+void Ide::slotFinishedExec()
+{
+    disableStopExec(true);
 }
 
 void Ide::startNewProject(QString whcFiles)
@@ -865,6 +871,12 @@ void Ide::disableMenuOptions(bool val)
     ui->actionRun->setDisabled(val);
 }
 
+void Ide::disableStopExec(bool val)
+{
+    ui->actionStop->setDisabled(val);
+    ui->actionForce_Stop->setDisabled(val);
+}
+
 void Ide::addItemsToLayout(QWidget *widget)
 {
     ui->verticalLayout->addWidget(widget);
@@ -966,15 +978,9 @@ void Ide::on_actionRun_triggered()
 
     SortTasks *srt = new SortTasks(this, tmp);
 
-    if(!exec)
-        exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
-                               outWindow);
-    else
-    {
-        delete exec;
-        exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this,
-                              outWindow);
-    }
+    Ide::destroyObj(&exec);
+    disableStopExec(false);
+    exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this, outWindow);
 }
 
 void Ide::contextMenu(const QPoint &poz)

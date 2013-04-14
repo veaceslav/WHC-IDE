@@ -57,7 +57,7 @@ class Ide : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Ide(QWidget *parent = 0);
+    explicit Ide(QWidget *parent = NULL);
     ~Ide();
     FindToolUI *findtool;
     GoTo *gotoTool;
@@ -91,17 +91,17 @@ public:
      * @brief removeItems - remove idget from main window
      * @param widget - widget to be removed
      */
-    void removeItems(QWidget* widget);
+    void removeItems(QWidget *widget);
 
-    void addDeviceList(QWidget* widget);
+    void addDeviceList(QWidget *widget);
 
-    void deleteDevWindow(QWidget* widget);
+    void deleteDevWindow(QWidget *widget);
 
     inline QMdiArea *getArea() const {return ui->mdiArea;}
 
-    inline DiagramWindow* getDiagram() const {return diagram; }
+    inline DiagramWindow *getDiagram() const {return diagram; }
 
-    inline CommandLine* getCmd() const {return outWindow; }
+    inline CommandLine *getCmd() const {return outWindow; }
 
     virtual void closeEvent(QCloseEvent *);
 
@@ -125,6 +125,10 @@ public slots:
      */
     void slotReplaceString();
 
+    /**
+     * @brief Tells the IDE that all tasks have finished execution.
+     */
+    void slotFinishedExec();
     void slotFindButtonTriggered();
     void slotReplaceButtonTriggered();
     void slotReplaceAllButtonTriggered();
@@ -234,7 +238,7 @@ private slots:
      * contextMenu(const Qpoint& poz) - based on item under cursor, Task or Data
      *                                  execute contextTask or contextData
      */
-    void contextMenu(const QPoint& poz);
+    void contextMenu(const QPoint &poz);
 
     void on_actionQuery_Devices_triggered();
 
@@ -250,7 +254,7 @@ private slots:
 
 private:
 
-    void keyPressEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent *event);
     /**
      * @brief createContextMenus() - create Task and Data custom context Menus
      */
@@ -263,6 +267,12 @@ private:
      * @param val - true - disable, false -enable
      */
     void disableMenuOptions(bool val);
+
+    /**
+     * @brife disableStopExec - disable/enable stop and force stop menu options.
+     * @param val             - true == disable, false == enable
+     */
+    void disableStopExec(bool val);
 
     bool isProjectModified();
 
