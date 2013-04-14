@@ -156,7 +156,6 @@ Ide::~Ide()
         destroyObj(&h);
     }
 
-    destroyObj(&ui);
     destroyObj(&settings);
     destroyObj(&contextTask);
     destroyObj(&contextFile);
@@ -175,6 +174,7 @@ Ide::~Ide()
     destroyObj(&gotoTool);
     destroyObj(&model);
     destroyObj(&outWindow);
+    destroyObj(&ui);
 }
 
 void Ide::slot_New_Project()
