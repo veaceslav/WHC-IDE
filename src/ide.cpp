@@ -66,15 +66,15 @@ Ide::Ide(QWidget *parent) :
                  QIcon::Normal, QIcon::Off);
     this->setWindowIcon(icon);
 
-    creditsPage = 0;
-    build       = 0;
-    exec        = 0;
-    diagram     = 0;
-    diagramSubW = 0;
-    devices     = 0;
-    model       = 0;
-    outWindow   = 0;
-    editorSettings  = 0;
+    creditsPage     = NULL;
+    build           = NULL;
+    exec            = NULL;
+    diagram         = NULL;
+    diagramSubW     = NULL;
+    devices         = NULL;
+    model           = NULL;
+    outWindow       = NULL;
+    editorSettings  = NULL;
 
     settings = new ProjectSettings();
     readSettingsfromFile();
@@ -1000,12 +1000,12 @@ MdiTextEditor *Ide::getCurrentMdiTextEditor() const
 
 void Ide::on_actionStop_triggered()
 {
-    if(exec != 0)
+    if(exec != NULL)
         exec->stopExec();
 }
 
 void Ide::on_actionForce_Stop_triggered()
 {
-    if(exec != 0)
+    if(exec != NULL)
         exec->forceStop();
 }

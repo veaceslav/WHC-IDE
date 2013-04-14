@@ -256,7 +256,7 @@ private:
      */
     void createContextMenus();
 
-    MdiSubWindow *findMdiChild(const QString &fileName);
+    MdiSubWindow* findMdiChild(const QString &fileName);
     /**
      * @brief disableMenuOptions - disable entries that
      *                             must be unavailable when no project is open
@@ -272,23 +272,23 @@ private:
     void readSettingsfromFile();
     Ui::Ide *ui;
     QLabel *status_bar_info;
-    QDialog* creditsPage;
-    ProjectBuild* build;
-    ProjectSettings* settings;
+    QDialog *creditsPage;
+    ProjectBuild *build;
+    ProjectSettings *settings;
 
-    DiagramWindow* diagram;
-    MdiDiagram* diagramSubW;
+    DiagramWindow *diagram;
+    MdiDiagram *diagramSubW;
     bool diagramShow;
 
-    QMenu* contextTask;
-    QMenu* contextData;
-    QMenu* contextFile;
+    QMenu *contextTask;
+    QMenu *contextData;
+    QMenu *contextFile;
 
-    CommandLine* outWindow;
+    CommandLine *outWindow;
 
-    DeviceQuery* devices;
+    DeviceQuery *devices;
 
-    Execute* exec;
+    Execute *exec;
 
     /**
      * Friend class is used for testing Ide functionality and it need to have
