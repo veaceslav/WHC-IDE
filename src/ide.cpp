@@ -106,15 +106,16 @@ Ide::Ide(QWidget *parent) :
     connect(ui->actionReplace, SIGNAL(triggered()),
             this, SLOT(slotReplaceString()));
 
-    connect(ui->action_New_File_or_Project,SIGNAL(triggered()),
-            this,SLOT(slot_New_Project()));
+    connect(ui->action_New_File_or_Project, SIGNAL(triggered()),
+            this, SLOT(slot_New_Project()));
 
-    connect(ui->actionCredits,SIGNAL(triggered()),
-            this,SLOT(slotCredits()));
-    connect(ui->mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)),
-            this,SLOT(slotAddCloseButtons()));
-    connect(ui->actionBuild_Project,SIGNAL(triggered()),this,SLOT(slotBuild()));
-    connect(ui->actionClean_All,SIGNAL(triggered()),this,SLOT(slotClean()));
+    connect(ui->actionCredits, SIGNAL(triggered()),
+            this, SLOT(slotCredits()));
+    connect(ui->mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
+            this, SLOT(slotAddCloseButtons()));
+    connect(ui->actionBuild_Project, SIGNAL(triggered()),
+            this, SLOT(slotBuild()));
+    connect(ui->actionClean_All, SIGNAL(triggered()), this, SLOT(slotClean()));
     connect(ui->actionSave, SIGNAL(triggered()),
             this, SLOT(slotSavePressed()));
     connect(ui->actionRemove_end_line_spaces, SIGNAL(triggered()),
@@ -122,15 +123,19 @@ Ide::Ide(QWidget *parent) :
 
     ui->projectsView->setContextMenuPolicy(Qt::CustomContextMenu);
     createContextMenus();
-    connect(ui->projectsView,SIGNAL(customContextMenuRequested(QPoint)),
-            this,SLOT(contextMenu(QPoint)));
+    connect(ui->projectsView, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(contextMenu(QPoint)));
 
-    connect(ui->actionAddTask,SIGNAL(triggered()),this,SLOT(slotNewTask()));
-    connect(ui->actionNew_File,SIGNAL(triggered()),this,SLOT(slotAddNewFile()));
-    connect(ui->actionAddFile,SIGNAL(triggered()),this,SLOT(slotAddFiles()));
-    connect(ui->actionAddDataGroup,SIGNAL(triggered()),this,SLOT(slotAddDataGroup()));
-    connect(ui->actionAddData,SIGNAL(triggered()),this,SLOT(slotAddDataFiles()));
-    connect(ui->actionDelete_Selected,SIGNAL(triggered()),this,
+    connect(ui->actionAddTask, SIGNAL(triggered()), this, SLOT(slotNewTask()));
+    connect(ui->actionNew_File, SIGNAL(triggered()),
+            this, SLOT(slotAddNewFile()));
+    connect(ui->actionAddFile, SIGNAL(triggered()),
+            this, SLOT(slotAddFiles()));
+    connect(ui->actionAddDataGroup, SIGNAL(triggered()),
+            this, SLOT(slotAddDataGroup()));
+    connect(ui->actionAddData, SIGNAL(triggered()),
+            this, SLOT(slotAddDataFiles()));
+    connect(ui->actionDelete_Selected, SIGNAL(triggered()), this,
             SLOT(slotDeleteItem()));
 
     /**
@@ -146,7 +151,8 @@ Ide::Ide(QWidget *parent) :
     disableStopExec(true);
     editorSettings = new EditorSettingsVar(this);
 
-    connect(ui->actionClose_Project,SIGNAL(triggered()),this,SLOT(slotCloseProject()));
+    connect(ui->actionClose_Project, SIGNAL(triggered()),
+            this, SLOT(slotCloseProject()));
 }
 
 Ide::~Ide()
@@ -503,7 +509,9 @@ void Ide::slotReplaceString()
 
 void Ide::slotFinishedExec()
 {
+    Ide::destroyObj(&exec);
     disableStopExec(true);
+    disableMenuOptions(false);
 }
 
 void Ide::startNewProject(QString whcFiles)
@@ -528,13 +536,14 @@ void Ide::startNewProject(QString whcFiles)
     diagramShow = true;
     diagramSubW->show();
 
-    connect(model, SIGNAL(updateDiagram(QString,QString)),
-            diagram, SLOT(renameDiagItems(QString,QString)));
+    connect(model, SIGNAL(updateDiagram(QString, QString)),
+            diagram, SLOT(renameDiagItems(QString, QString)));
 
     /**
      * after staring the project, we must enable this options
      */
     disableMenuOptions(false);
+    disableStopExec(true);
 }
 
 void Ide::on_actionOpenProject_triggered()
@@ -658,12 +667,12 @@ void Ide::cursor_position_changed()
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
         return;
-    status_bar_info->setText(QString("Column: ")+
+    status_bar_info->setText(QString("Column: ") +
                              QString::number(currentDoc->textCursor().
-                                             columnNumber(), 10)+
-                             QString("  Line: ")+
+                                             columnNumber(), 10) +
+                             QString("  Line: ") +
                              QString::number(currentDoc->textCursor().
-                                             blockNumber()+1, 10));
+                                             blockNumber() + 1, 10));
 }
 
 void Ide::on_actionCluster_Control_triggered()
@@ -811,6 +820,7 @@ void Ide::slotCloseProject()
     destroyObj(&exec);
 
     disableMenuOptions(true);
+    disableStopExec(true);
 }
 
 void Ide::slotDeleteItem()
@@ -978,8 +988,8 @@ void Ide::on_actionRun_triggered()
 
     SortTasks *srt = new SortTasks(this, tmp);
 
-    Ide::destroyObj(&exec);
     disableStopExec(false);
+    disableMenuOptions(true);
     exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this, outWindow);
 }
 

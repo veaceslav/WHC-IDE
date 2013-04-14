@@ -61,6 +61,7 @@ public:
     ~Ide();
     FindToolUI *findtool;
     GoTo *gotoTool;
+    //is this ever used?
     bool modified;
     QString whcFile;
     ProjectTreeModel *model;
