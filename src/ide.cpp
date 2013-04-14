@@ -619,7 +619,7 @@ MdiSubWindow *Ide::findMdiChild(const QString &fileName)
 
 void Ide::on_projectsView_doubleClicked(const QModelIndex &index)
 {
-    ProjectTreeItem *item = 0;
+    ProjectTreeItem *item = NULL;
     if (index.isValid())
         item = static_cast<ProjectTreeItem*>(index.internalPointer());
     if (!item)
@@ -794,6 +794,7 @@ void Ide::slotAddDataFiles()
     AddData *ad = new AddData(model->getProjectXml(), this, index);
     ad->show();
 }
+
 void Ide::slotCloseProject()
 {
     ui->mdiArea->closeAllSubWindows();
@@ -817,6 +818,7 @@ void Ide::slotDeleteItem()
     writeXmltoFile();
 
 }
+
 void Ide::slotBuild()
 {
     if(!build)
@@ -846,6 +848,7 @@ void Ide::slotClean()
     }
     build->clean();
 }
+
 void Ide::disableMenuOptions(bool val)
 {
     ui->actionAddData->setDisabled(val);
