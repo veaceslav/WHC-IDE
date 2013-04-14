@@ -45,8 +45,8 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted,QVector<int> devices,
 
     for(int i=0;i<devices.size();i++)
     {
-        OneProcess* proc = 0;
-        exec2[devices[i]]=proc;
+        OneProcess *proc = 0;
+        exec2[devices[i]] = proc;
     }
 
     cmd->showM();
@@ -154,8 +154,8 @@ void Execute::fillQueue(Node *nod)
     QString tempPath;
     QString dirPath = path + "src/" + nod->Name + "/Execute";
     QDir dir;
-    
-    
+
+
     // Check if /Execute folder exists and if not exists it is created
     if (!dir.exists(dirPath))
         dir.mkdir(dirPath);

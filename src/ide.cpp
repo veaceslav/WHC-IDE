@@ -151,15 +151,16 @@ Ide::Ide(QWidget *parent) :
 Ide::~Ide()
 {
 
-    foreach(Highlighter* h, langs){
+    foreach(Highlighter* h, langs)
+    {
         destroyObj(&h);
     }
 
-    delete ui;
-    delete settings;
-    delete contextTask;
-    delete contextFile;
-    delete contextData;
+    destroyObj(&ui);
+    destroyObj(&settings);
+    destroyObj(&contextTask);
+    destroyObj(&contextFile);
+    destroyObj(&contextData);
 
     destroyObj(&creditsPage);
     destroyObj(&build);
@@ -200,21 +201,22 @@ void Ide::writeXmltoFile()
 
 void Ide::slotFindButtonTriggered()
 {
-    if(findtool->search_solution == NULL){
+    if(findtool->search_solution == NULL)
         QMessageBox::warning(0, tr("Note:"), tr("Something went wrong!\n"));
-    }
-    if(findtool->search_solution->isChecked()){
-        if(whcFile.isNull()){
+    if(findtool->search_solution->isChecked())
+    {
+        if(whcFile.isNull())
             QMessageBox::warning(0, tr("Note:"), tr("No project opened!\n"));
-        }
-        else{
+        else
+        {
             findtool->showSearchInFilesResults(
                         QFileInfo(whcFile).absolutePath());
             ui->verticalLayout->removeWidget(findtool->search_sol_w);
             ui->verticalLayout->addWidget(findtool->search_sol_w);
         }
     }
-    else{
+    else
+    {
         if(!findText())
             QMessageBox::warning(0, tr("Note:"), tr("Nothing found\n"));
     }
@@ -228,65 +230,82 @@ bool Ide::findText()
     if(!currentDoc)
         return false;
 
-    if(findtool->next_prev_bt->isChecked()){
-        if(findtool->regex_bt->isChecked()){
+    if(findtool->next_prev_bt->isChecked())
+    {
+        if(findtool->regex_bt->isChecked())
+        {
             QRegExp expression = QRegExp(findtool->searchedText());
             QTextDocument *doc = currentDoc->document();
             QTextCursor founded =  doc->find(expression,
                                              currentDoc->textCursor(),
                                              QTextDocument::FindBackward);
-            if(founded == QTextCursor()){
+            if(founded == QTextCursor())
+            {
                 return false;
             }
-            else{
+            else
+            {
                 currentDoc->find(founded.selectedText(),
                                  QTextDocument::FindBackward);
                 return true;
             }
         }
-        else{
-            if(findtool->sensitive_bt->isChecked()){
-
+        else
+        {
+            if(findtool->sensitive_bt->isChecked())
+            {
                 if(!currentDoc->find(findtool->searchedText(),
                                      QTextDocument::FindBackward |
-                                     QTextDocument::FindCaseSensitively)){
+                                     QTextDocument::FindCaseSensitively))
+                {
                     return false;
                 }
                 return true;
             }
-            else{
+            else
+            {
                 if(!currentDoc->find(findtool->searchedText(),
-                                     QTextDocument::FindBackward)){
+                                     QTextDocument::FindBackward))
+                {
                     return false;
                 }
                 return true;
             }
         }
     }
-    else{
-        if(findtool->regex_bt->isChecked()){
+    else
+    {
+        if(findtool->regex_bt->isChecked())
+        {
             QRegExp expression = QRegExp(findtool->searchedText());
             QTextDocument *doc = currentDoc->document();
             QTextCursor founded =  doc->find(expression,
                                              currentDoc->textCursor());
-            if(founded == QTextCursor()){
+            if(founded == QTextCursor())
+            {
                 return false;
             }
-            else{
+            else
+            {
                 currentDoc->find(founded.selectedText());
                 return true;
             }
         }
-        else{
-            if(findtool->sensitive_bt->isChecked()){
+        else
+        {
+            if(findtool->sensitive_bt->isChecked())
+            {
                 if(!currentDoc->find(findtool->searchedText(),
-                                     QTextDocument::FindCaseSensitively)){
+                                     QTextDocument::FindCaseSensitively))
+                {
                     return false;
                 }
                 return true;
             }
-            else{
-                if(!currentDoc->find(findtool->searchedText())){
+            else
+            {
+                if(!currentDoc->find(findtool->searchedText()))
+                {
                     return false;
                 }
                 return true;
@@ -300,15 +319,19 @@ void Ide::slotReplaceButtonTriggered()
     MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
     if(!currentDoc)
         return;
-    if(currentDoc->textCursor() == QTextCursor()){
-        if(findText()){
+    if(currentDoc->textCursor() == QTextCursor())
+    {
+        if(findText())
+        {
             currentDoc->textCursor().insertText(findtool->rplc->text());
         }
-        else{
+        else
+        {
             QMessageBox::warning(0, tr("Note:"), tr("Nothing found\n"));
         }
     }
-    else{
+    else
+    {
         currentDoc->textCursor().insertText(findtool->rplc->text());
     }
 }
@@ -321,27 +344,31 @@ void Ide::slotReplaceAllButtonTriggered()
     QTextCursor cursor = currentDoc->textCursor();
     cursor.setPosition(QTextCursor::Start);
     currentDoc->setTextCursor(cursor);
-    while(findText()){
+    while(findText())
+    {
         currentDoc->textCursor().insertText(findtool->rplc->text());
     }
 }
 
 void Ide::slotActionGoToLine()
 {
-    if(findtool != NULL){
+    if(findtool != NULL)
+    {
         ui->verticalLayout->removeWidget(findtool->getFindUI());
         disconnect(SLOT(slotFindButtonTriggered()));
         delete findtool;
         findtool = NULL;
     }
-    if(gotoTool == NULL){
+    if(gotoTool == NULL)
+    {
         gotoTool = new GoTo();
         ui->verticalLayout->addWidget(gotoTool->getGotoObj());
         gotoTool->getLineEdit()->setFocus();
         connect(gotoTool->getLineEdit(), SIGNAL(returnPressed()),
                 this, SLOT(slotGoToPressed()));
     }
-    else{
+    else
+    {
         disconnect(this, SLOT(slotGoToPressed()));
         delete gotoTool;
         gotoTool = NULL;
@@ -351,19 +378,23 @@ void Ide::slotActionGoToLine()
 void Ide::slotSavePressed()
 {
     bool success = true;
-    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList()) {
-        if (MdiSubWindow *mdiSubWindow = qobject_cast<MdiSubWindow*>(window)){
-            if(!mdiSubWindow->saveDocument()){
+    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
+    {
+        if (MdiSubWindow *mdiSubWindow = qobject_cast<MdiSubWindow*>(window))
+        {
+            if(!mdiSubWindow->saveDocument())
+            {
                 success = false;
             }
-            else{
+            else
+            {
                 mdiSubWindow->setUnmodified();
             }
         }
     }
-    if(!success){
-        QMessageBox::warning(0,
-                             tr("Warrning:"),
+    if(!success)
+    {
+        QMessageBox::warning(0, tr("Warrning:"),
                              tr("One or more files could not be saved.\nPlease check files permissions."));
     }
 }
@@ -375,10 +406,12 @@ void Ide::slotGoToPressed()
         return;
     bool ok;
     int to = gotoTool->getText().toInt(&ok);
-    if(ok){
+    if(ok)
+    {
         currentDoc->goTo(to);
     }
-    else{
+    else
+    {
         QMessageBox::warning(0,
                              tr("Warning!"),
                              tr("Bad things or nothing inserted.\n"
@@ -388,36 +421,41 @@ void Ide::slotGoToPressed()
 
 void Ide::slotFindString()
 {
-    if(findtool == NULL){
+    if(findtool == NULL)
+    {
         findtool = new FindToolUI();
         ui->verticalLayout->addWidget(findtool->find_w);
         connect(findtool->find_bt, SIGNAL(clicked()),
                 this, SLOT(slotFindButtonTriggered()));
         connect(findtool->srch, SIGNAL(returnPressed()), this, SLOT(slotFindButtonTriggered()));
         findtool->srch->setFocus();
-    }else{
-        if(findtool->replace_w == NULL){
+    }
+    else
+    {
+        if(findtool->replace_w == NULL)
+        {
             disconnect(SLOT(slotFindButtonTriggered()));
             ui->verticalLayout->removeWidget(findtool->find_w);
             ui->verticalLayout->removeWidget(findtool->search_sol_w);
             delete findtool;
             findtool = NULL;
         }
-        else{
+        else
+        {
             disconnect(SLOT(slotReplaceButtonTriggered()));
             disconnect(SLOT(slotReplaceAllButtonTriggered()));
             ui->verticalLayout->removeWidget(findtool->replace_w);
             findtool->collapseReplace();
             findtool->searchInFilesMainGUI();
         }
-
     }
 }
 
 
 void Ide::slotReplaceString()
 {
-    if(findtool == NULL){
+    if(findtool == NULL)
+    {
         /*If no tool is activated*/
         findtool = new FindToolUI();
         findtool->removeSearchInFileUI();
@@ -435,10 +473,11 @@ void Ide::slotReplaceString()
         connect(findtool->replace_all_bt, SIGNAL(clicked()),
                 this, SLOT(slotReplaceAllButtonTriggered()));
         findtool->srch->setFocus();
-
     }
-    else{
-        if(findtool->getReplaceUI() == NULL){
+    else
+    {
+        if(findtool->getReplaceUI() == NULL)
+        {
             findtool->removeSearchInFileUI();
             findtool->extendReplaceGUI();
             ui->verticalLayout->addWidget(findtool->getReplaceUI());
@@ -448,7 +487,8 @@ void Ide::slotReplaceString()
             connect(findtool->replace_all_bt, SIGNAL(clicked()),
                     this, SLOT(slotReplaceAllButtonTriggered()));
         }
-        else{
+        else
+        {
             disconnect(SLOT(slotFindButtonTriggered()));
             disconnect(SLOT(slotReplaceButtonTriggered()));
             disconnect(SLOT(slotReplaceAllButtonTriggered()));
@@ -505,8 +545,10 @@ void Ide::on_actionOpenProject_triggered()
 
 void Ide::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Escape){
-        if(findtool != NULL){
+    if(event->key() == Qt::Key_Escape)
+    {
+        if(findtool != NULL)
+        {
             ui->verticalLayout->removeWidget(findtool->find_w);
             ui->verticalLayout->removeWidget(findtool->replace_w);
             ui->verticalLayout->removeWidget(findtool->search_sol_w);
@@ -516,13 +558,13 @@ void Ide::keyPressEvent(QKeyEvent *event)
             delete findtool;
             findtool = NULL;
         }
-        if(gotoTool != NULL){
+        if(gotoTool != NULL)
+        {
 
             delete gotoTool;
             gotoTool = NULL;
         }
     }
-
 }
 
 void Ide::createContextMenus()
@@ -565,7 +607,8 @@ MdiSubWindow *Ide::findMdiChild(const QString &fileName)
 {
     QString canonicalFilePath = QFileInfo(fileName).canonicalFilePath();
 
-    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList()) {
+    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
+    {
         if (MdiSubWindow *mdiSubWindow = qobject_cast<MdiSubWindow*>(window))
             if (mdiSubWindow->currentFile() == canonicalFilePath)
                 return (MdiSubWindow*)window;
@@ -583,14 +626,17 @@ void Ide::on_projectsView_doubleClicked(const QModelIndex &index)
         return;
 
     QString fileName(index.data(ProjectTreeModel::FileNameRole).toString());
-    if (!fileName.isEmpty()){
+    if (!fileName.isEmpty())
+    {
         // create mdi child
         MdiSubWindow *child = findMdiChild(fileName);
         if (child == NULL){
             child = new MdiSubWindow(fileName, this);
             ui->mdiArea->addSubWindow(child);
             child->show();
-        } else {
+        }
+        else
+        {
             ui->mdiArea->setActiveSubWindow((QMdiSubWindow*)child);
         }
         MdiTextEditor *currentDoc = getCurrentMdiTextEditor();
@@ -612,21 +658,23 @@ void Ide::cursor_position_changed()
                              QString("  Line: ")+
                              QString::number(currentDoc->textCursor().
                                              blockNumber()+1, 10));
-
-
 }
 
 void Ide::on_actionCluster_Control_triggered()
 {
-    ClusterConnect* clusterConnect = new ClusterConnect();
+    ClusterConnect *clusterConnect = new ClusterConnect();
     clusterConnect->show();
 }
 
+//Dead code
 void Ide::on_actionGenerate_IWF_triggered()
 {
-    if (model){
+    if(model)
+    {
         Iwf iwf(model->file().canonicalFilePath());
-    } else {
+    }
+    else
+    {
         QMessageBox::warning(this, "No open project", "Open a project first.");
     }
 }
@@ -643,7 +691,7 @@ void Ide::slotCredits()
 
     uiCred.setupUi(creditsPage);
 
-    connect(uiCred.pushOk,SIGNAL(clicked()),creditsPage,SLOT(close()));
+    connect(uiCred.pushOk, SIGNAL(clicked()), creditsPage, SLOT(close()));
 
     creditsPage->show();
 
@@ -651,7 +699,7 @@ void Ide::slotCredits()
 
 void Ide::slotAddCloseButtons()
 {
-    Q_FOREACH (QTabBar* tab, ui->mdiArea->findChildren<QTabBar*>())
+    Q_FOREACH (QTabBar *tab, ui->mdiArea->findChildren<QTabBar*>())
     {
        tab->setTabsClosable(true);
        tab->setMovable(true);
@@ -661,7 +709,7 @@ void Ide::slotAddCloseButtons()
 void Ide::slotNewTask()
 {
 
-    AddTask* at = new AddTask(model->getProjectXml(), this);
+    AddTask *at = new AddTask(model->getProjectXml(), this);
     at->show();
 }
 
@@ -678,16 +726,15 @@ void Ide::slotAddNewFile()
         msg.setText("Project have no tasks.");
         msg.setInformativeText("Please add at least one task before adding files");
         msg.exec();
-
         return;
     }
 
     QModelIndex index;
     QModelIndexList lst = ui->projectsView->selectionModel()->selectedIndexes();
 
-        if(lst.size()>0)
-           index = lst.at(0);
-    AddNewFile* anf = new AddNewFile(model->getProjectXml(), this, index);
+    if(lst.size()>0)
+        index = lst.at(0);
+    AddNewFile *anf = new AddNewFile(model->getProjectXml(), this, index);
     anf->show();
 }
 void Ide::slotAddFiles()
@@ -699,11 +746,10 @@ void Ide::slotAddFiles()
     if(tasks.isEmpty())
     {
         QMessageBox msg;
-        msg.resize(400,150);
+        msg.resize(400, 150);
         msg.setText("Project have no tasks.");
         msg.setInformativeText("Please add at least one task before adding files");
         msg.exec();
-
         return;
     }
 
@@ -713,13 +759,13 @@ void Ide::slotAddFiles()
     if(lst.size() > 0)
         index = lst.at(0);
 
-    AddFiles* af = new AddFiles(model->getProjectXml(), this, index);
+    AddFiles *af = new AddFiles(model->getProjectXml(), this, index);
     af->show();
 }
 
 void Ide::slotAddDataGroup()
 {
-    DataGroup* gd = new DataGroup(model->getProjectXml(), this);
+    DataGroup *gd = new DataGroup(model->getProjectXml(), this);
     gd->show();
 }
 
@@ -745,7 +791,7 @@ void Ide::slotAddDataFiles()
     if(!lst.isEmpty())
         index = lst.at(0);
 
-    AddData* ad = new AddData(model->getProjectXml(), this, index);
+    AddData *ad = new AddData(model->getProjectXml(), this, index);
     ad->show();
 }
 void Ide::slotCloseProject()
@@ -762,7 +808,7 @@ void Ide::slotCloseProject()
 
 void Ide::slotDeleteItem()
 {
-    QItemSelectionModel* sel = ui->projectsView->selectionModel();
+    QItemSelectionModel *sel = ui->projectsView->selectionModel();
 
     QModelIndexList lst = sel->selectedIndexes();
 
@@ -816,12 +862,12 @@ void Ide::disableMenuOptions(bool val)
     ui->actionRun->setDisabled(val);
 }
 
-void Ide::addItemsToLayout(QWidget* widget)
+void Ide::addItemsToLayout(QWidget *widget)
 {
     ui->verticalLayout->addWidget(widget);
 }
 
-void Ide::removeItems(QWidget* widget)
+void Ide::removeItems(QWidget *widget)
 {
     ui->verticalLayout->removeWidget(widget);
 }
@@ -838,8 +884,10 @@ void Ide::deleteDevWindow(QWidget *widget)
 
 bool Ide::isProjectModified()
 {
-    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList()) {
-        if (MdiSubWindow *mdiSubWindow = qobject_cast<MdiSubWindow*>(window)){
+    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
+    {
+        if (MdiSubWindow *mdiSubWindow = qobject_cast<MdiSubWindow*>(window))
+        {
             if(mdiSubWindow->isModified())
                 return true;
         }
@@ -849,23 +897,28 @@ bool Ide::isProjectModified()
 
 void Ide::closeEvent(QCloseEvent *event)
 {
-    if(isProjectModified()){
+    if(isProjectModified())
+    {
         QMessageBox::StandardButton answ = QMessageBox::question(this, tr("WHC"),
                      tr("The project has been modified.\n"
                         "Do you want to save your changes?"),
                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        if(answ == QMessageBox::Save){
+        if(answ == QMessageBox::Save)
+        {
             slotSavePressed();
             event->accept();
         }
-        if(answ == QMessageBox::Discard){
+        if(answ == QMessageBox::Discard)
+        {
             event->accept();
         }
-        if(answ == QMessageBox::Cancel){
+        if(answ == QMessageBox::Cancel)
+        {
             event->ignore();
         }
     }
-    else{
+    else
+    {
         event->accept();
     }
 }
@@ -877,14 +930,13 @@ QDomDocument *Ide::getProjectXml() const
 
 void Ide::on_actionOptions_triggered()
 {
-    GeneralSettings* gs = new GeneralSettings(this,settings);
-
+    GeneralSettings *gs = new GeneralSettings(this, settings);
     gs->show();
 }
 
 void Ide::readSettingsfromFile()
 {
-    QSettings sets("WHC","WHC IDE");
+    QSettings sets("WHC", "WHC IDE");
 
     if(sets.allKeys().count() == 0)
         return;
@@ -909,18 +961,17 @@ void Ide::on_actionRun_triggered()
 
     QVector<QPair<ExecNode,ExecNode> > tmp = diagram->getExecData();
 
-    SortTasks* srt = new SortTasks(this,tmp);
+    SortTasks *srt = new SortTasks(this, tmp);
 
     if(!exec)
-        exec = new Execute(whcFile,srt->getExecutionOrder(),devs,this,
+        exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
                                outWindow);
     else
     {
         delete exec;
-        exec = new Execute(whcFile,srt->getExecutionOrder(),devs,this,
+        exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this,
                               outWindow);
     }
-
 }
 
 void Ide::contextMenu(const QPoint &poz)
@@ -959,7 +1010,6 @@ void Ide::on_actionQuery_Devices_triggered()
 void Ide::on_actionRename_triggered()
 {
     QModelIndexList lst = ui->projectsView->selectionModel()->selectedIndexes();
-
     if(!lst.isEmpty())
     {
         QModelIndex index = lst.at(0);
