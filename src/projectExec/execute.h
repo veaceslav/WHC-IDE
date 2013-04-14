@@ -46,8 +46,7 @@ class Execute : public QObject
     Q_OBJECT
 public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent,CommandLine *cmd);
-
+            Ide *parent, CommandLine *cmd);
 
     void stopExec();
 
@@ -62,6 +61,8 @@ private slots:
 
 signals:
 
+    void signalFinishedExec();
+    //maybe dead...
     void signaldataGained();
 
 private:
@@ -79,7 +80,7 @@ private:
      * @param nod       - Task's node, used to get info from input connectors
      *                    about data folders
      */
-    void fillQueue(Node* nod);
+    void fillQueue(Node *nod);
 
     /**
      * @brief start    pop one element from queue and execute it. It's called
@@ -87,24 +88,17 @@ private:
      */
     void start(int devId);
 
-    /**
-      * @brief removeDirectory - remove a directory recursively before running
-      * @param aDir - reference to the directory to be removed
-      * @return - check if the directory was removed
-     **/
-    bool removeDirectory(QDir &aDir);
-
     QString path;
     int taskIndex;
 
-    QQueue<QPair<Node*,QStringList> > q;
+    QQueue<QPair<Node*, QStringList> > q;
     QVector<Node*> execOrder;
 
-    Ide* parent;
-    CommandLine* cmd;
+    Ide *parent;
+    CommandLine *cmd;
 
-    OneProcess* exec;
-    QMap<int,OneProcess*> exec2;
+    OneProcess *exec;
+    QMap<int, OneProcess*> exec2;
 
     bool stop;
     int devCount;
