@@ -179,11 +179,15 @@ Ide::~Ide()
 
 void Ide::slot_New_Project()
 {
-    NewProject np(this);
-
+    NewProject *np = new NewProject(this);
+    //QDialog *dl = new QDialog(this);
+    //dl->show ();
+    np->show();
+/**
     setUpdatesEnabled(false);
     np.show();
     setUpdatesEnabled(true);
+    **/
 
 }
 

@@ -47,6 +47,7 @@
 #include <QDomText>
 
 #include "ide.h"
+#include "ui_projectdialog.h"
 
 class Ide;
 
@@ -59,37 +60,11 @@ public:
     NewProject(Ide *parent);
     ~NewProject();
 
+    Ui_ProjectDialog ui;
     /**
      * GUI elements
      */
     Ide *parent;
-    QWidget *layoutWidget;
-    QHBoxLayout *buttonLayout;
-    QPushButton *cancelButton;
-    QPushButton *finishButton;
-    QWidget *layoutWidget_2;
-    QVBoxLayout *verticalLayout;
-    QHBoxLayout *horizontalLayout;
-    QLabel *projNameLabel;
-    QLineEdit *projectName;
-    QFrame *line;
-    QHBoxLayout *horizontalLayout_5;
-    QLabel *locationLabel;
-    QLineEdit *projectLocation;
-    QPushButton *setprojectLocation;
-    QTextEdit *templateInfo;
-    QLabel *label_4;
-    QStackedWidget *templateImage;
-    QWidget *page;
-    QLabel *label_6;
-    QWidget *page_3;
-    QLabel *label_8;
-    QWidget *page_4;
-    QLabel *label_9;
-    QWidget *page_5;
-    QLabel *label_3;
-    QComboBox *templateProj;
-    QFrame *line_2;
 
 private Q_SLOTS:
 
@@ -103,7 +78,7 @@ private Q_SLOTS:
      * Change text from QTextEdit according with
      * option selected in QComboBox
      */
-    void slotUpdateTemplateInfo();
+    //void slotUpdateTemplateInfo();
 
     /**
      * Open a folder select window
