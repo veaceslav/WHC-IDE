@@ -108,8 +108,6 @@ public:
 
     inline Ui::Ide* getUi() const {return ui;}
 
-    QDomDocument* getProjectXml() const;
-
     MdiTextEditor* getCurrentMdiTextEditor() const;
 
     template <typename T>

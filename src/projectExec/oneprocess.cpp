@@ -33,9 +33,10 @@
 #include "model/projecttreemodel.h"
 
 
-OneProcess::OneProcess(CommandLine* cmd, QStringList& lst, Node* nod,Ide* parent)
+OneProcess::OneProcess(CommandLine* cmd, QStringList& lst,
+                       Node* nod, ProjectTreeModel* model)
     :taskNode(nod), cmdL(cmd), list(lst),
-     model(parent->model), projXml(parent->getProjectXml())
+     model(model), projXml(model->getProjectXml())
 {
     proc = new QProcess();
 

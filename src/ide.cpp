@@ -952,11 +952,6 @@ void Ide::closeEvent(QCloseEvent *event)
     }
 }
 
-QDomDocument *Ide::getProjectXml() const
-{
-    return model->getProjectXml();
-}
-
 void Ide::on_actionOptions_triggered()
 {
     GeneralSettings *gs = new GeneralSettings(this, settings);

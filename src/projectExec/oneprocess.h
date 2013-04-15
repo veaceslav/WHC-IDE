@@ -56,14 +56,14 @@ public:
      * @param lst - command line arguments + buildpath at beginning
      * @param nod - Task Node that keeps info about outputs
      */
-    explicit OneProcess(CommandLine* cmd, QStringList &lst, Node* nod,
-                        Ide* parent);
+    explicit OneProcess(CommandLine *cmd, QStringList &lst, Node *nod,
+                        ProjectTreeModel *model);
     ~OneProcess();
     /**
      * @brief startExecution - execute task with given arguments
      */
     void startExecution();
-    
+
 signals:
 
     /**
@@ -94,15 +94,15 @@ private:
      */
     QString getExecutableName(QString path);
 
-    QProcess* proc;
-    Node* taskNode;
-    CommandLine* cmdL;
-    QStringList&  list;
+    QProcess *proc;
+    Node *taskNode;
+    CommandLine *cmdL;
+    QStringList &list;
     QString buildPath;
     QString tempPath;
 
-    ProjectTreeModel* model;
-    QDomDocument* projXml;
+    ProjectTreeModel *model;
+    QDomDocument *projXml;
 
     int device;
 };
