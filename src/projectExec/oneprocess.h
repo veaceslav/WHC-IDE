@@ -42,8 +42,8 @@ class Ide;
 /**
  * @brief The OneProcess class is designed to execute a task one time with
  *          one set of command line arguments, on one device
- *          It also watch if task have data folders connected to output and
- *          copy the result from temporary folder to data folders.
+ *          It also watches if the task has data folders connected to output and
+ *          copies the result from the temporary folder to data folders.
  *
  */
 class OneProcess : public QObject
