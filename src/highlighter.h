@@ -57,7 +57,7 @@ typedef QPair<QString, QVector<QRegExp> > Type;
 typedef QPair<QString, QTextCharFormat> Style;
 
 /**
-  * \class highlighter Is the main instance for a language's highight.
+  * @class highlighter Is the main instance for a language's highight.
   * In the constructor are loaded the data about a certain language,
   * nad then with the highlight() method are applied on a certain subwindow.
   */
@@ -67,52 +67,52 @@ public:
     Highlighter(QString filetype, EditorSettingsVar *es);
     ~Highlighter();
     /**
-      * \Return Returns an attribute for a MditextEditor with the settings
+      * @return Returns an attribute for a MditextEditor with the settings
       * from current highlight instance
       */
     SyntaxHighlighter *highlight(MdiSubWindow *child);
 
     /**
-      * \return Returns the groups of keywords
+      * @return Returns the groups of keywords
       */
     inline QVector<Type*> getTypes() const {return types;}
 
     /**
-      * \brief Return the current styles for highlights
+      * @brief Return the current styles for highlights
       */
     inline QVector<Style*> getStyles() const {return styles;}
 
     /**
-      * \brief Sets the name of the language
+      * @brief Sets the name of the language
       */
     inline void setName(QString name){this->name = name;}
 
     /**
-      * \return Returns the name of the language
+      * @return Returns the name of the language
       */
     inline QString getName() const {return name;}
 
     /**
-      * \return Returns the keyowrd for a specific goup
-      * \param key Is the name of the group
+      * @return Returns the keyowrd for a specific goup
+      * @param key Is the name of the group
       */
     QVector<QRegExp> getType(QString &key);
 
     /**
-      * \return Returns the style for a specific group
-      * \param key Is the name of the group
+      * @return Returns the style for a specific group
+      * @param key Is the name of the group
       */
     QTextCharFormat getStyle(QString &key);
 
     /**
-      * \brief Set style for a specific group to cf
-      * \param key the group
-      * \param cf the style
+      * @brief Set style for a specific group to cf
+      * @param key the group
+      * @param cf the style
       */
     void setStyle(QString &key, QTextCharFormat &cf);
 
     /**
-      * \brief Read the licence for the highlight xml support files
+      * @brief Read the licence for the highlight xml support files
       */
     QString getLicence() const;
 
@@ -121,25 +121,26 @@ public:
 private:
 
     /**
-      * \brief Reads syntax highlighting rules for a specific language
+      * @brief Reads syntax highlighting rules for a specific language
       */
     void readLanguages(const QDomDocument &doc);
 
     /**
-      * \brief Reads details about the font used on highlight
+      * @brief Reads details about the font used on highlight
       */
     void readFormat(const QDomDocument &doc);
 
     /**
-      * \param types The groups of keywords
+      * @param types The groups of keywords
       */
     QVector<Type*> types;
+
     /**
-      * \param styles The styles for each group
+      * @param styles The styles for each group
       */
     QVector<Style*> styles;
     /**
-      * \param name The name of the language
+      * @param name The name of the language
       */
     QString name;
 
