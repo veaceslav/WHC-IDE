@@ -219,11 +219,11 @@ void Execute::start(int devId)
     list << QString::number(devId);
 
     if(!exec)
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent);
+        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
     else
     {
         delete exec;
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent);
+        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
     }
 
     connect(exec2[devId], SIGNAL(signalEnd(int)),

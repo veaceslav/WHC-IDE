@@ -25,6 +25,7 @@
 #include "../diagram/diagramwindow.h"
 #include "../diagram/diagramscene.h"
 #include "../diagram/diagramitem.h"
+#include "../model/projecttreemodel.h"
 #include "../diagram/connector.h"
 #include "../diagram/containers.h"
 #include <QtTest/QtTest>
@@ -150,15 +151,12 @@ void TestDiagramScene::slotTestRemoveFromList()
 }
 
 void TestDiagramScene::slotTestLoadDiagram(){
-/*
+
     Ide ide;
 
     QMenu menu;
 
     QDomDocument docXml;
-
-    ide.projectXml = &docXml;
-
 
     DiagramWindow dw(&docXml,&ide);
 
@@ -184,9 +182,13 @@ void TestDiagramScene::slotTestLoadDiagram(){
 
     DiagramScene diagScene(&menu, &docXml, &dw);
 
+    ide.model = new ProjectTreeModel("", &ide);
+
+    ide.model->project = docXml;
+
     diagScene.createItemXml(node,point);
 
     diagScene.loadDiagram();
-*/
+
 }
 

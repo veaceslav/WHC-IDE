@@ -34,7 +34,8 @@
 class Highlighter;
 class MdiTextEditor;
 
-namespace Ui {
+namespace Ui
+{
     class Ide;
 }
 
@@ -72,7 +73,7 @@ public:
     /**
      * @brief startNewProject - open new created project
      *                          used by NewProject object;
-     * @param whcFile - absolute path to .whc file
+     * @param whcFile         - absolute path to .whc file
      */
     void startNewProject(QString whcFiles);
 
@@ -106,11 +107,9 @@ public:
 
     virtual void closeEvent(QCloseEvent *);
 
-    inline Ui::Ide* getUi() const {return ui;}
+    inline Ui::Ide *getUi() const {return ui;}
 
-    QDomDocument* getProjectXml() const;
-
-    MdiTextEditor* getCurrentMdiTextEditor() const;
+    MdiTextEditor *getCurrentMdiTextEditor() const;
 
     template <typename T>
     static void destroyObj(T ** p) {*p != NULL ? (delete *p) : void(0); *p = NULL;}
@@ -261,7 +260,7 @@ private:
      */
     void createContextMenus();
 
-    MdiSubWindow* findMdiChild(const QString &fileName);
+    MdiSubWindow *findMdiChild(const QString &fileName);
     /**
      * @brief disableMenuOptions - disable entries that
      *                             must be unavailable when no project is open
@@ -306,7 +305,6 @@ private:
      * access to all private members
      */
     friend class TestIde;
-    friend class TestDiagramScene;
 };
 
 #endif // IDE_H
