@@ -305,7 +305,6 @@ private:
      * access to all private members
      */
     friend class TestIde;
-    friend class TestDiagramScene;
 };
 
 #endif // IDE_H

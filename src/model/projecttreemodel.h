@@ -117,6 +117,6 @@ private:
     QDomDocument project;
     QFileInfo projectInfo;
     Ide* parentIde;
-
+    friend class TestDiagramScene;
 };
 #endif // PROJECTTREEMODEL_H
