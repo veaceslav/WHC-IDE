@@ -150,15 +150,12 @@ void TestDiagramScene::slotTestRemoveFromList()
 }
 
 void TestDiagramScene::slotTestLoadDiagram(){
-/*
+
     Ide ide;
 
     QMenu menu;
 
     QDomDocument docXml;
-
-    ide.projectXml = &docXml;
-
 
     DiagramWindow dw(&docXml,&ide);
 
@@ -184,9 +181,9 @@ void TestDiagramScene::slotTestLoadDiagram(){
 
     DiagramScene diagScene(&menu, &docXml, &dw);
 
-    diagScene.createItemXml(node,point);
+    //diagScene.createItemXml(node,point);
 
     diagScene.loadDiagram();
-*/
+
 }
 
