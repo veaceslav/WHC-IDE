@@ -36,6 +36,10 @@ ProjectTreeModel::ProjectTreeModel(QString filename, Ide *parent)
     project =  QDomDocument("WHC");
     QFile file(filename);
 
+    //Initially the rootItem is NULL, but will be changed later if we can open
+    //the project file.
+    rootItem = NULL;
+
     if (!file.open(QIODevice::ReadOnly))
         return;
     if (!project.setContent(&file)){
@@ -52,7 +56,7 @@ ProjectTreeModel::ProjectTreeModel(QString filename, Ide *parent)
 
 ProjectTreeModel::~ProjectTreeModel()
 {
-    delete rootItem;
+    Ide::destroyObj(&rootItem);
 }
 
 int ProjectTreeModel::columnCount(const QModelIndex &parent) const
