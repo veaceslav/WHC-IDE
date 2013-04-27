@@ -310,8 +310,11 @@ void EditorSettings::onChooseCOlorClicked()
     QTextCharFormat cf;
     cf.setForeground(QBrush(color));
     Highlighter *h = getCurrentHighlighter();
-    QString tmp_currentIndex = win->listWidget_2->currentItem()->text();
-    h->sh->setStyle(tmp_currentIndex, cf);
+    QString tmp_currentIndex;
+    if (win->listWidget_2->currentItem()) {
+        tmp_currentIndex = win->listWidget_2->currentItem()->text();
+        h->sh->setStyle(tmp_currentIndex, cf);
+     }
 }
 
 void EditorSettings::saveHighlightSettings()
