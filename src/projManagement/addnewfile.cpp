@@ -24,6 +24,7 @@
 #include "projManagement/addnewfile.h"
 #include <QApplication>
 #include "model/projecttreemodel.h"
+#include "projManagement/overwritefile.h"
 #include <QLineEdit>
 #include <QDomDocument>
 
@@ -82,6 +83,32 @@ AddNewFile::~AddNewFile()
 
 void AddNewFile::slotAddNewFile()
 {
+    QString path = parent->whcFile;
+
+    path.remove(path.split("/").last());
+
+    path.append("src/" +
+                comboBox->itemText(comboBox->currentIndex()) + "/");
+    QString fileName = lineEdit->text();
+    path.append(fileName);
+
+    QFile file(path);
+    if(!file.open(QFile::ReadOnly))
+    {
+        slotWriteNewFile();
+    }
+    else
+    {
+        file.close();
+        OverwriteFile *of = new OverwriteFile(this, fileName);
+        QObject::connect(of, SIGNAL(signalOvewriteAccepted()),
+                         this, SLOT(slotWriteNewFile()));
+        of->show();
+    }
+}
+
+void AddNewFile::slotWriteNewFile()
+{
     /**
      *  No need to search node by name,
      *  we put them in order in combobox
@@ -96,6 +123,7 @@ void AddNewFile::slotAddNewFile()
 
     parent->model->addItem(new ProjectTreeItem(elem, taskItem), taskItem);
 
+
     QString path = parent->whcFile;
 
     path.remove(path.split("/").last());
@@ -104,14 +132,13 @@ void AddNewFile::slotAddNewFile()
                 comboBox->itemText(comboBox->currentIndex()) +
                 + "/" + lineEdit->text());
 
+    QFile file(path);
     /**
       * Opening a file in write mode
       * will create a new file if it doesn't exist
       */
-    QFile file(path);
     file.open(QFile::WriteOnly);
     file.close();
-
     this->close();
 }
 

@@ -52,7 +52,7 @@ private slots:
      * @brief slotAddNewFile -add selected fiels to .whc
      */
     void slotAddNewFile();
-
+    void slotWriteNewFile();
 private:
 
     QDomNodeList lst;
