@@ -79,6 +79,11 @@ AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
 
 AddNewFile::~AddNewFile()
 {
+    Ide::destroyObj(&buttonBox);
+    Ide::destroyObj(&label);
+    Ide::destroyObj(&lineEdit);
+    Ide::destroyObj(&label_2);
+    Ide::destroyObj(&comboBox);
 }
 
 void AddNewFile::slotAddNewFile()
@@ -87,8 +92,7 @@ void AddNewFile::slotAddNewFile()
 
     path.remove(path.split("/").last());
 
-    path.append("src/" +
-                comboBox->itemText(comboBox->currentIndex()) + "/");
+    path.append("src/" + comboBox->itemText(comboBox->currentIndex()) + "/");
     QString fileName = lineEdit->text();
     path.append(fileName);
 
