@@ -75,6 +75,8 @@ AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
     /** set default task that was selected when context menu is opened **/
     if(selected.isValid())
         comboBox->setCurrentIndex(selected.row());
+
+    overwriteDialog = NULL;
 }
 
 AddNewFile::~AddNewFile()
@@ -104,10 +106,10 @@ void AddNewFile::slotAddNewFile()
     else
     {
         file.close();
-        OverwriteFile *of = new OverwriteFile(this, fileName);
-        QObject::connect(of, SIGNAL(signalOvewriteAccepted()),
+        overwriteDialog = new OverwriteFile(this, fileName);
+        QObject::connect(overwriteDialog, SIGNAL(signalOvewriteAccepted()),
                          this, SLOT(slotWriteNewFile()));
-        of->show();
+        overwriteDialog->show();
     }
 }
 
