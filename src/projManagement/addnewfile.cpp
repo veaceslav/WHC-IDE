@@ -27,7 +27,7 @@
 #include <QLineEdit>
 #include <QDomDocument>
 
-AddNewFile::AddNewFile(QDomDocument* proj, Ide* parent, QModelIndex selected)
+AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
     :QDialog(parent)
 {
     Q_UNUSED(proj);
@@ -88,20 +88,20 @@ void AddNewFile::slotAddNewFile()
      *  so the index is just enough
      */
     QDomNode task = lst.at(comboBox->currentIndex());
-    ProjectTreeItem* taskItem = tasksItem->child(comboBox->currentIndex());
+    ProjectTreeItem *taskItem = tasksItem->child(comboBox->currentIndex());
 
     QDomElement elem = projectXml->createElement("file");
-    elem.setAttribute("name",lineEdit->text());
+    elem.setAttribute("name", lineEdit->text());
     task.appendChild(elem);
 
-    parent->model->addItem(new ProjectTreeItem(elem,taskItem),taskItem);
+    parent->model->addItem(new ProjectTreeItem(elem, taskItem), taskItem);
 
     QString path = parent->whcFile;
 
     path.remove(path.split("/").last());
 
     path.append("src/" +
-                comboBox->itemText(comboBox->currentIndex())+
+                comboBox->itemText(comboBox->currentIndex()) +
                 + "/" + lineEdit->text());
 
     /**
