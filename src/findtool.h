@@ -82,7 +82,7 @@ protected:
 
 
 /**
-  * \class Class for find tool interface and core
+  * @class Class for find tool interface and core
   * Basically in GUI are three main components: The find component,
   * the replace component and the output list for search in entire
   * project results.
@@ -133,7 +133,7 @@ public:
     QWidget* getReplaceUI();
 
     /**
-      \return Returns the text from the main text field
+      * @return Returns the text from the main text field
       */
     QString searchedText();
 
@@ -141,53 +141,53 @@ public:
     void extendReplaceGUI();
 
     /**
-      * \brief Removes the replace GUI features
+      * @brief Removes the replace GUI features
       */
     void collapseReplace();
 
     /**
-      * \brief Put the results of the search in a list and shows it
+      * @brief Put the results of the search in a list and shows it
       */
     void showSearchInFilesResults(QString toSearch);
 
     /**
-      * \brief Make a recursive search in the project directory
+      * @brief Make a recursive search in the project directory
       * the function yelds results trough \param searchResults
       */
     void makeSearchInFiles(QDir &dirName, QList<QString> &searchResult);
 
     /**
-      * \brief Removes only the field for files extensions filter
+      * @brief Removes only the field for files extensions filter
       * and eventually the output list
       */
     void collapseSearchInFileUI();
 
     /**
-      * \brief A new text field appear for searching the entire project
+      * @brief A new text field appear for searching the entire project
       * filtering the files
       */
     void expandSearchInFilesGUI();
 
     /**
-      * \brief Removes the checkbox for "Search entire project" and eventualy
+      * @brief Removes the checkbox for "Search entire project" and eventualy
       * its extension (when replace form appear)
       */
     void removeSearchInFileUI();
 
     /**
-      * \brief Constructs the Checkbox and frame for "search in files" GUI
+      * @brief Constructs the Checkbox and frame for "search in files" GUI
       */
     void searchInFilesMainGUI();
 
 
 public slots:
     /**
-      * \brief When switching the next/previous direction
+      * @brief When switching the next/previous direction
       */
     void on_next_prev_button_toggle();
 
     /**
-      * \brief It activates when the checkbutton for
+      * @brief It activates when the checkbutton for
       * "Search entire project" is pressed
       */
     void on_switch_simple_complex_search();

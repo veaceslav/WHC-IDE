@@ -2,24 +2,15 @@
 * Workflow graphics remake 
 
 	- toolbox/entities reorganization (add new tools maybe ?)
-	- delete digram items when a task/data is deleted from projectTree
-
 
 * Task execution
-    - LIFO Task execution
     - Workflow optimization
-    - List available devices
 
 *Gui and usability:
 	- Settings menu [Ongoing ...]
 	- If possible, a separate context menu for tasks and data
 	- Gui polish
-	- Remove x,y drom data and add task/data window
-	- Rename file in projecttreemodel
-	- Add option to add data files
 	- Editor settings - doesn't look ok when default applicattion font is bigger
-	- check if execute folder is present
-	- check if output folder is present
 	
 
 *Editor
@@ -41,3 +32,13 @@ List of closed files:
     - clearer interconnections between entities [DONE]
     - cleaner graphics, clear differentiation of processes ( in a box, circle etc ) [DONE]
     - Get data from diagram in a container for processing [DONE]
+    - Rename file in projecttreemodel[DONE]
+    - LIFO Task execution[DONE]
+    
+    18.04.2013 update:
+    - delete digram items when a task/data is deleted from projectTree[DONE]
+    - check if execute folder is present
+    - check if output folder is present[DONE]
+    - Remove x,y from data and add task/data window[DONE]
+    - Add option to add data files[DONE]
+    - List available devices[DONE]

@@ -1,0 +1,32 @@
+This is a basic list of recomendations before sending a patch/adding a commit
+
+1. Project use camelCase, please don't use other styles
+
+2. Every method from .h should have a comment in doxygen format, here is an example
+    
+    /**
+     *  @brief method name - what it should do
+     *  @param param1      - param 1 description
+     *  @param param2      - param 2 description
+     *  @return            - if function have return type, describe what method
+     *                        return
+     */
+
+3. Never exceed the limit of 80 characters per line
+
+4. Use int *a instead of int* a
+
+5. Use /** Comment **/ instead of //Comment for one line comments
+
+6. Always check if none of test fails after you changes, do not delete any test,
+   fix it.
+
+7. Intend with 4 spaces(no tabs)
+
+8. Use Linux coding style:
+
+    int function()
+    {
+        return 0;
+    }
+ 

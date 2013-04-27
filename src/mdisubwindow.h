@@ -46,7 +46,7 @@ public:
     inline bool isModified() const {return modified;}
     inline void setUnmodified(){getEditor()->document()->setModified(false);}
     /**
-     * \brief returns null if the file type is not known, for now detects the file type
+     * @brief returns null if the file type is not known, for now detects the file type
      * only by extension
      */
     QString getFileType(QString filename);
