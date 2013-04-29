@@ -32,10 +32,11 @@ class SyntaxHighlighter : public QSyntaxHighlighter
 
 public:
     SyntaxHighlighter(QTextDocument *parent,
-                      const  QVector<QPair<QVector<Type*>, QVector<Style*> >* > &rules,
+                      const  QVector<QPair<QVector<Type*>,
+                      QVector<Style*> >* > &rules,
                       EditorSettingsVar *es);
     ~SyntaxHighlighter();
-	void setStyle(QString &key, QTextCharFormat &form);
+    void setStyle(QString &key, QTextCharFormat &form);
     QVector<Type*> types;
     QVector<Style*> styles;
     QTextCharFormat format;
@@ -43,7 +44,7 @@ public:
 protected:
     void highlightBlock(const QString &cf);
 private:
-    QRegExp* endSpace;
+    QRegExp *endSpace;
     QTextCharFormat endSpaceFormat;
     EditorSettingsVar *es;
 };

@@ -78,7 +78,7 @@ private:
     QAbstractItemModel *modelFromFile();
     QWidget *lineNumberArea;
     QCompleter *c;
-    Ide* ide;
+    Ide *ide;
     int tabSize, fontSize;
     bool tabToSpaces;
     QString fontFamily;
@@ -89,16 +89,19 @@ private:
 class LineNumberArea : public QWidget
 {
 public:
-    LineNumberArea(MdiTextEditor *editor) : QWidget(editor) {
+    LineNumberArea(MdiTextEditor *editor) : QWidget(editor)
+    {
         codeEditor = editor;
     }
 
-    QSize sizeHint() const {
+    QSize sizeHint() const
+    {
         return QSize(codeEditor->lineNumberAreaWidth(), 0);
     }
 
 protected:
-    void paintEvent(QPaintEvent *event) {
+    void paintEvent(QPaintEvent *event)
+    {
         codeEditor->lineNumberAreaPaintEvent(event);
     }
 
@@ -107,4 +110,3 @@ private:
 };
 
 #endif
-

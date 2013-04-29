@@ -24,10 +24,11 @@
 #include "projManagement/addnewfile.h"
 #include <QApplication>
 #include "model/projecttreemodel.h"
+#include "projManagement/overwritefile.h"
 #include <QLineEdit>
 #include <QDomDocument>
 
-AddNewFile::AddNewFile(QDomDocument* proj, Ide* parent, QModelIndex selected)
+AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
     :QDialog(parent)
 {
     Q_UNUSED(proj);
@@ -74,13 +75,45 @@ AddNewFile::AddNewFile(QDomDocument* proj, Ide* parent, QModelIndex selected)
     /** set default task that was selected when context menu is opened **/
     if(selected.isValid())
         comboBox->setCurrentIndex(selected.row());
+
+    overwriteDialog = NULL;
 }
 
 AddNewFile::~AddNewFile()
 {
+    Ide::destroyObj(&buttonBox);
+    Ide::destroyObj(&label);
+    Ide::destroyObj(&lineEdit);
+    Ide::destroyObj(&label_2);
+    Ide::destroyObj(&comboBox);
 }
 
 void AddNewFile::slotAddNewFile()
+{
+    QString path = parent->whcFile;
+
+    path.remove(path.split("/").last());
+
+    path.append("src/" + comboBox->itemText(comboBox->currentIndex()) + "/");
+    QString fileName = lineEdit->text();
+    path.append(fileName);
+
+    QFile file(path);
+    if(!file.open(QFile::ReadOnly))
+    {
+        slotWriteNewFile();
+    }
+    else
+    {
+        file.close();
+        overwriteDialog = new OverwriteFile(this, fileName);
+        QObject::connect(overwriteDialog, SIGNAL(signalOvewriteAccepted()),
+                         this, SLOT(slotWriteNewFile()));
+        overwriteDialog->show();
+    }
+}
+
+void AddNewFile::slotWriteNewFile()
 {
     /**
      *  No need to search node by name,
@@ -88,30 +121,30 @@ void AddNewFile::slotAddNewFile()
      *  so the index is just enough
      */
     QDomNode task = lst.at(comboBox->currentIndex());
-    ProjectTreeItem* taskItem = tasksItem->child(comboBox->currentIndex());
+    ProjectTreeItem *taskItem = tasksItem->child(comboBox->currentIndex());
 
     QDomElement elem = projectXml->createElement("file");
-    elem.setAttribute("name",lineEdit->text());
+    elem.setAttribute("name", lineEdit->text());
     task.appendChild(elem);
 
-    parent->model->addItem(new ProjectTreeItem(elem,taskItem),taskItem);
+    parent->model->addItem(new ProjectTreeItem(elem, taskItem), taskItem);
+
 
     QString path = parent->whcFile;
 
     path.remove(path.split("/").last());
 
     path.append("src/" +
-                comboBox->itemText(comboBox->currentIndex())+
+                comboBox->itemText(comboBox->currentIndex()) +
                 + "/" + lineEdit->text());
 
+    QFile file(path);
     /**
       * Opening a file in write mode
       * will create a new file if it doesn't exist
       */
-    QFile file(path);
     file.open(QFile::WriteOnly);
     file.close();
-
     this->close();
 }
 
