@@ -44,8 +44,8 @@ class ProjectBuild : public QWidget
 {
     Q_OBJECT
 public:
-    ProjectBuild(QDomDocument *proj, Ide* parent, ProjectSettings* settings,
-                 CommandLine* cmd);
+    ProjectBuild(QDomDocument *proj, Ide *parent, ProjectSettings *settings,
+                 CommandLine *cmd);
     ~ProjectBuild();
     /**
      * @brief start - start building tasks
@@ -89,13 +89,13 @@ private:
     /**
      * @brief setEnvironmentVariables -set variables linke path,lib,include
      */
-    void setEnvironmentVariables(ProjectSettings* setting);
+    void setEnvironmentVariables(ProjectSettings *setting);
 
 
     /** Display configure/build output **/
-    QTextEdit* standardOut;
-    Ide* parent;
-    QToolButton* closeButton;
+    QTextEdit *standardOut;
+    Ide *parent;
+    QToolButton *closeButton;
     /** Project path **/
     QString path;
     /** current path -shared by configureTask() and buildTask() **/
@@ -107,11 +107,11 @@ private:
     /** Task Paths **/
     QStringList paths;
     /** current process -- needed by slotUpdateError/Text **/
-    QProcess* proc;
+    QProcess *proc;
     /** set process paths - Windows only **/
     QProcessEnvironment env;
 
-    CommandLine* cmd;
+    CommandLine *cmd;
 
 };
 
