@@ -25,7 +25,8 @@
 
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent,
-                                     const  QVector<QPair<QVector<Type*> , QVector<Style*> >* > &rules,
+                                     const  QVector<QPair<QVector<Type*>,
+                                     QVector<Style*> >* > &rules,
                                      EditorSettingsVar *es)
     : QSyntaxHighlighter(parent)
 {
@@ -44,35 +45,42 @@ SyntaxHighlighter::~SyntaxHighlighter()
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
     int index;
-    if(es->endLineSpace){
+    if(es->endLineSpace)
+    {
         index = endSpace->indexIn(text);
-        if(index != -1){
+        if(index != -1)
+        {
             setFormat(index, endSpace->matchedLength(), endSpaceFormat);
         }
     }
 
     for(int i = 0; i < types.size(); i++){
-        for(int j = 0; j < types[i]->second.size(); j++){
+        for(int j = 0; j < types[i]->second.size(); j++)
+        {
             if(previousBlockState() != 1 ||
-                    types[i]->first.startsWith("end")
-                    || currentBlockState() == 2){
+               types[i]->first.startsWith("end") ||
+               currentBlockState() == 2)
+            {
                 QRegExp expression = (types[i]->second)[j];
                 index = expression.indexIn(text);
 
                 if(types[i]->first.startsWith("end") && index > -1)
                     setCurrentBlockState(2);
 
-                if(types[i]->first.startsWith("start") && index > -1){
+                if(types[i]->first.startsWith("start") && index > -1)
+                {
                     setCurrentBlockState(1);
                     format = styles[i]->second;
                 }
-                while(index >= 0){
+                while(index >= 0)
+                {
                     int length = expression.matchedLength();
                     setFormat(index, length, styles[i]->second);
-                    index = expression.indexIn(text, index+length);
+                    index = expression.indexIn(text, index + length);
                 }
             }
-            else{
+            else
+            {
                 setFormat(0, text.size(), format);
                 setCurrentBlockState(1);
             }
@@ -83,8 +91,10 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
 
 void SyntaxHighlighter::setStyle(QString &key, QTextCharFormat &cf)
 {
-    for(int i = 0; i < styles.size(); i++){
-        if(styles[i]->first == key){
+    for(int i = 0; i < styles.size(); i++)
+    {
+        if(styles[i]->first == key)
+        {
             styles[i]->second.setForeground(cf.foreground());
             this->rehighlight();
             return;

@@ -24,20 +24,20 @@
 #include "newproject.h"
 
 
-NewProject::NewProject(Ide* parent)
+NewProject::NewProject(Ide *parent)
     :QDialog(parent)
 
 {
     ui.setupUi(this);
     this->parent=parent;
     ui.projectLocation->setText(QDir::homePath());
-    connect(ui.setprojectLocation,SIGNAL(clicked()),
-            this,SLOT(slotSelectLocation()));
-    connect(ui.templateProj,SIGNAL(currentIndexChanged(int)),
+    connect(ui.setprojectLocation, SIGNAL(clicked()),
+            this, SLOT(slotSelectLocation()));
+    connect(ui.templateProj, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotUpdateImage()));
 
-    connect(ui.projectFinish,SIGNAL(clicked()),
-            this,SLOT(slotCreateProject()));
+    connect(ui.projectFinish, SIGNAL(clicked()),
+            this, SLOT(slotCreateProject()));
 }
 
 void NewProject::slotUpdateImage()
@@ -49,9 +49,9 @@ void NewProject::slotSelectLocation()
 {
 
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                 QDir::homePath(),
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
+                                              QDir::homePath(),
+                                              QFileDialog::ShowDirsOnly |
+                                              QFileDialog::DontResolveSymlinks);
 
     ui.projectLocation->setText(dir);
 

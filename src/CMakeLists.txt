@@ -90,6 +90,7 @@ set(projMan_SOURCES
     projManagement/datagroup.cpp
     projManagement/adddata.cpp
     projManagement/addnewfile.cpp
+    projManagement/overwritefile.cpp
     projManagement/staticmethods.cpp
 )
 
@@ -99,6 +100,7 @@ set(projMan_HEADERS
     projManagement/datagroup.h
     projManagement/adddata.h
     projManagement/addnewfile.h
+    projManagement/overwritefile.h
     projManagement/staticmethods.h
 )
 

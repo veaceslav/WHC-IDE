@@ -24,6 +24,7 @@
 #ifndef ADDNEWFILE_H
 #define ADDNEWFILE_H
 #include "ide.h"
+#include "projManagement/overwritefile.h"
 #include <QDialog>
 #include <QComboBox>
 #include <QDialogButtonBox>
@@ -52,7 +53,7 @@ private slots:
      * @brief slotAddNewFile -add selected fiels to .whc
      */
     void slotAddNewFile();
-
+    void slotWriteNewFile();
 private:
 
     QDomNodeList lst;
@@ -68,5 +69,9 @@ private:
     QLabel *label_2;
     QComboBox *comboBox;
     QPushButton *pushButton;
+    /**
+     * Instance of the overwrite diablog
+     */
+    OverwriteFile *overwriteDialog;
 };
 #endif // ADDNEWFILE_H

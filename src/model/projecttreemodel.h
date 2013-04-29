@@ -39,7 +39,7 @@ class ProjectTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    ProjectTreeModel(QString filename, Ide* parent = 0);
+    ProjectTreeModel(QString filename, Ide *parent = 0);
     ~ProjectTreeModel();
 
     /** Methods that must be implemented for QAbstractItemModel interface **/
@@ -68,20 +68,20 @@ public:
 
     /** Used by project Management : add file / delete file **/
 
-    ProjectTreeItem* getItem(QModelIndex index);
+    ProjectTreeItem *getItem(QModelIndex index);
 
-    void addItem(ProjectTreeItem* elem, ProjectTreeItem *parentItem);
+    void addItem(ProjectTreeItem *elem, ProjectTreeItem *parentItem);
 
     void deleteItem(QModelIndex index);
 
-    ProjectTreeItem* getGroupByName(QString name);
+    ProjectTreeItem *getGroupByName(QString name);
 
     /**
       * @brief getProjectXml - gets the project xml used by the current project
       * @return              - returns a reference to the QDomDocument
       *                        containing the project xml
       */
-    QDomDocument* getProjectXml();
+    QDomDocument *getProjectXml();
 
     QFileInfo file() const;
 
@@ -90,7 +90,8 @@ public:
     QModelIndex tasksIndex() const;
     QModelIndex dataIndex() const;
 
-    enum {
+    enum
+    {
         IdRole = Qt::UserRole + 1,
         FileNameRole,
         PositionRole
@@ -113,10 +114,10 @@ private:
 
     void setupModelData(QDomNode nodx, ProjectTreeItem *parent);
 
-    ProjectTreeItem* rootItem;
+    ProjectTreeItem *rootItem;
     QDomDocument project;
     QFileInfo projectInfo;
-    Ide* parentIde;
+    Ide *parentIde;
     friend class TestDiagramScene;
 };
 #endif // PROJECTTREEMODEL_H

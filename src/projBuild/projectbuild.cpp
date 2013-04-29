@@ -30,13 +30,13 @@
 #include "commandline.h"
 
 
-ProjectBuild::ProjectBuild(QDomDocument *proj, Ide* parent,
-                           ProjectSettings *settings, CommandLine* cmd)
+ProjectBuild::ProjectBuild(QDomDocument *proj, Ide *parent,
+                           ProjectSettings *settings, CommandLine *cmd)
     : QWidget(parent), cmd(cmd)
 {
 
-    this->parent=parent;
-    proc =0;
+    this->parent = parent;
+    proc = NULL;
 
     QDomNodeList lst = proj->elementsByTagName("task");
 
@@ -44,23 +44,25 @@ ProjectBuild::ProjectBuild(QDomDocument *proj, Ide* parent,
 
     path.remove(path.split("/").last());
 
-    for(int i=0;i<lst.count();i++)
+    for(int i = 0; i<lst.count(); i++)
      {
         QString tmp = lst.at(i).attributes().namedItem("name").nodeValue();
 
-        paths+= path + "src/" + tmp + "/build";
+        paths += path + "src/" + tmp + "/build";
 
      }
     setEnvironmentVariables(settings);
 }
+
 ProjectBuild::~ProjectBuild()
 {
 }
+
 void ProjectBuild::startBuild()
 {
     cmd->showM();
-    this->iter=0;
-    pathTmp=paths.at(iter);
+    this->iter = 0;
+    pathTmp = paths.at(iter);
     /**
      * Because running this process in syncronous mode will freeze GUI,
      * tasks are executed asyncronous - using signals and slots
@@ -75,21 +77,20 @@ void ProjectBuild::clean()
     cmd->showM();
     cmd->clearAll();
 
-    for(int i=0;i<paths.size();i++)
-    {;
-        cmd->addLine("Cleaning " + paths.at(i),Qt::black);
+    for(int i = 0; i<paths.size(); i++)
+    {
+        cmd->addLine("Cleaning " + paths.at(i), Qt::black);
         QDir toRemove(paths.at(i));
 
         removeDirectory(toRemove);
 
-        cmd->addLine("Done!",Qt::black);
+        cmd->addLine("Done!", Qt::black);
     }
 }
 
-
 void ProjectBuild::configureTask()
 {
-    cmd->addLine("*** Running Cmake ***",Qt::darkGreen);
+    cmd->addLine("*** Running Cmake ***", Qt::darkGreen);
     QDir dir;
     dir.mkdir(pathTmp);
 
@@ -107,13 +108,8 @@ void ProjectBuild::configureTask()
 
     file.copy(dest);
 
-    if(!proc)
-        proc = new QProcess();
-    else
-    {
-        delete proc;
-        proc = new QProcess();
-    }
+    Ide::destroyObj(&proc);
+    proc = new QProcess();
 
     proc->setWorkingDirectory(pathTmp);
     QString program("cmake");
@@ -122,10 +118,10 @@ void ProjectBuild::configureTask()
     if(OS == 1)
     {
         proc->setProcessEnvironment(env);
-        arguments+="-G";
-        arguments+="NMake Makefiles";
+        arguments += "-G";
+        arguments += "NMake Makefiles";
     }
-    arguments+="..";
+    arguments += "..";
 
     /**
      * Getting cmake output in real time
@@ -133,18 +129,19 @@ void ProjectBuild::configureTask()
     connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(slotUpdateError()));
     connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(slotUpdateText()));
     connect(proc, SIGNAL(finished(int)), this, SLOT(slotBuildTask()));
-    proc->start(program,arguments);
+    proc->start(program, arguments);
 }
+
 void ProjectBuild::slotBuildTask()
 {
 
-    cmd->addLine("*** Building ***",Qt::darkRed);
+    cmd->addLine("*** Building ***", Qt::darkRed);
     delete proc;
     proc = new QProcess();
     proc->setWorkingDirectory(pathTmp);
     QString program;
     QStringList arguments;
-    if(OS ==1)
+    if(OS == 1)
     {
         program.append(nmakePath);
         proc->setProcessEnvironment(env);
@@ -153,8 +150,8 @@ void ProjectBuild::slotBuildTask()
     {
         program.append("make");
         /** make -j 4 :) **/
-        arguments+="-j";
-        arguments+="4";
+        arguments += "-j";
+        arguments += "4";
     }
     /**
      * Getting build output in realtime
@@ -162,24 +159,27 @@ void ProjectBuild::slotBuildTask()
     connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(slotUpdateError()));
     connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(slotUpdateText()));
     connect(proc, SIGNAL(finished(int)), this, SLOT(slotNextTask()));
-    proc->start(program,arguments);
+    proc->start(program, arguments);
 }
+
 void ProjectBuild::slotUpdateError()
 {
     QByteArray data = proc->readAllStandardError();
-    cmd->addLine(QString(data),Qt::red);
+    cmd->addLine(QString(data), Qt::red);
 }
+
 void ProjectBuild::slotUpdateText()
 {
     QByteArray data = proc->readAllStandardOutput();
-    cmd->addLine(QString(data),Qt::black);
+    cmd->addLine(QString(data), Qt::black);
 }
+
 void ProjectBuild::slotNextTask()
 {
     iter++;
     if(iter >= paths.size())
     {
-        cmd->addLine("Done!",Qt::black);
+        cmd->addLine("Done!", Qt::black);
         proc->close();
         return;
     }
@@ -192,16 +192,16 @@ void ProjectBuild::slotNextTask()
 bool ProjectBuild::removeDirectory(QDir &aDir)
 {
     bool has_err = false;
-    if (aDir.exists())//QDir::NoDotAndDotDot
+    if(aDir.exists())//QDir::NoDotAndDotDot
     {
         QFileInfoList entries = aDir.entryInfoList(QDir::NoDotAndDotDot |
         QDir::Dirs | QDir::Files);
         int count = entries.size();
-        for (int idx = 0; idx < count; idx++)
+        for(int idx = 0; idx < count; idx++)
         {
             QFileInfo entryInfo = entries[idx];
             QString path = entryInfo.absoluteFilePath();
-            if (entryInfo.isDir())
+            if(entryInfo.isDir())
             {
                 QDir next(path);
                 has_err = removeDirectory(next);
@@ -209,12 +209,12 @@ bool ProjectBuild::removeDirectory(QDir &aDir)
             else
             {
                 QFile file(path);
-                if (!file.remove())
+                if(!file.remove())
                 has_err = true;
             }
         }
-        if (!aDir.rmdir(aDir.absolutePath()))
-        has_err = true;
+        if(!aDir.rmdir(aDir.absolutePath()))
+            has_err = true;
     }
 
     return(has_err);

@@ -32,6 +32,7 @@ SOURCES += \
     src/projManagement/datagroup.cpp \
     src/projManagement/adddata.cpp \
     src/projManagement/addnewfile.cpp \
+    src/projManegement/overwritefile.cpp \
     src/projManagement/staticmethods.cpp \
     src/projBuild/projectbuild.cpp \
     src/settings/generalsettings.cpp \
@@ -51,7 +52,8 @@ SOURCES += \
     src/projBuild/test/testCommandLine.cpp \
     src/tests/testide.cpp \
     src/tests/testdiagram.cpp \
-    src/tests/testdiagramscene.cpp
+    src/tests/testdiagramscene.cpp \
+    src/projManagement/overwritefile.cpp
 
 HEADERS += \
     src/ide.h \
@@ -75,6 +77,7 @@ HEADERS += \
     src/projManagement/datagroup.h \
     src/projManagement/adddata.h \
     src/projManagement/addnewfile.h \
+    src/projManegement/overwritefile.h \
     src/projManagement/staticmethods.h \
     src/projBuild/projectbuild.h \
     src/diagram/diagramwindow.h \
@@ -95,7 +98,8 @@ HEADERS += \
     src/runtests.h \
     src/tests/testIde.h \
     src/tests/testdiagram.h \
-    src/tests/testdiagramscene.h
+    src/tests/testdiagramscene.h \
+    src/projManagement/overwritefile.h
 
 FORMS += \
     src/forms/tabproject.ui \

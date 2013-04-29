@@ -34,12 +34,15 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     setFont(font);
 
     QFile file(fileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+    {
         QMessageBox::warning(this, tr("WHC"),
                              tr("Cannot open file %1:\n%2.")
                              .arg(fileName)
                              .arg(file.errorString()));
-    } else {
+    }
+    else
+    {
         QTextStream in(&file);
         QApplication::setOverrideCursor(Qt::WaitCursor);
         setPlainText(in.readAll());
@@ -55,14 +58,14 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
 
     updateLineNumberAreaWidth(0);
     MdiSubWindow *tmp_subwin = qobject_cast<MdiSubWindow*>(parent);
-    Ide* tmp_ide = qobject_cast<Ide*>(tmp_subwin->p);
+    Ide *tmp_ide = qobject_cast<Ide*>(tmp_subwin->p);
     ide = tmp_ide;
-    this->setTabStopWidth(10*tmp_ide->editorSettings->tabSize);
+    this->setTabStopWidth(10 * tmp_ide->editorSettings->tabSize);
 
-    this->setStyleSheet(QString("font: ")+
-                        tmp_ide->editorSettings->fontSize+
-                        "pt \""+
-                        tmp_ide->editorSettings->fontFamily+
+    this->setStyleSheet(QString("font: ") +
+                        tmp_ide->editorSettings->fontSize +
+                        "pt \"" +
+                        tmp_ide->editorSettings->fontFamily +
                         "\";");
 
     c = new QCompleter(parent);
@@ -82,11 +85,13 @@ QAbstractItemModel *MdiTextEditor::modelFromFile()
     QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
     QString str = this->toPlainText();
     int pos = 0;
-    while ((pos = rx.indexIn(str, pos)) != -1) {
+    while ((pos = rx.indexIn(str, pos)) != -1)
+    {
         ls.insert(rx.cap(0));
         pos += rx.matchedLength();
     }
-    foreach(QString s, ls){
+    foreach(QString s, ls)
+    {
         if(s.size() > 3)
             words<<s;
     }
@@ -121,7 +126,7 @@ QCompleter *MdiTextEditor::completer() const
     return c;
 }
 
-void MdiTextEditor::insertCompletion(const QString& completion)
+void MdiTextEditor::insertCompletion(const QString &completion)
 {
     if (c->widget() != this)
         return;
@@ -149,9 +154,11 @@ void MdiTextEditor::focusInEvent(QFocusEvent *e)
 
 void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 {
-    if (c && c->popup()->isVisible()) {
+    if (c && c->popup()->isVisible())
+    {
         // The following keys are forwarded by the completer to the widget
-        switch (e->key()) {
+        switch (e->key())
+        {
         case Qt::Key_Enter:
         case Qt::Key_Return:
         case Qt::Key_Escape:
@@ -162,31 +169,39 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
         default:
             break;
         }
-    }else{
-        if(e->key() == Qt::Key_Return){
+    }
+    else
+    {
+        if(e->key() == Qt::Key_Return)
+        {
             QTextCursor cr = this->textCursor();
             cr.select(QTextCursor::LineUnderCursor);
             QString str = cr.selectedText();
             QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
             int pos = 0;
-            while ((pos = rx.indexIn(str, pos)) != -1) {
-                if(!words.contains(rx.cap(0)) && rx.cap(0).size() > 3){
+            while ((pos = rx.indexIn(str, pos)) != -1)
+            {
+                if(!words.contains(rx.cap(0)) && rx.cap(0).size() > 3)
+                {
                     words.append(rx.cap(0));
                 }
                 pos += rx.matchedLength();
             }
             words.sort();
             completionModel->setStringList(words);
-            if(ide->editorSettings->tabToSpaces){
+            if(ide->editorSettings->tabToSpaces)
+            {
                 pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
                 cr = this->textCursor();
                 cr.insertText(QString("\n"));
-                for(int i = 0; i < ide->editorSettings->tabSize*(pos/ide->editorSettings->tabSize); i++)
+                for(int i = 0; i < ide->editorSettings->tabSize *
+                                        (pos/ide->editorSettings->tabSize); i++)
                     cr.insertText(" ");
                 e->ignore();
                 return;
             }
-            else{
+            else
+            {
                 pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
                 cr = this->textCursor();
                 cr.insertText(QString("\n"));
@@ -196,8 +211,10 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
                 return;
             }
         }
-        if(e->key() == Qt::Key_Tab){
-            if(ide->editorSettings->tabToSpaces == true){
+        if(e->key() == Qt::Key_Tab)
+        {
+            if(ide->editorSettings->tabToSpaces == true)
+            {
                 for(int i = 0; i < ide->editorSettings->tabSize; i++)
                     this->insertPlainText(" ");
                 e->ignore();
@@ -205,7 +222,8 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             }
         }
     }
-    bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_E); // CTRL+E
+    bool isShortcut = ((e->modifiers() & Qt::ControlModifier) &&
+                       e->key() == Qt::Key_E); // CTRL+E
     if (!c || !isShortcut) // dont process the shortcut when we have a completer
         QPlainTextEdit::keyPressEvent(e);
     const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
@@ -216,19 +234,22 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
     QString completionPrefix = textUnderCursor();
 
-    if (!isShortcut && (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3
-                        || eow.contains(e->text().right(1)))) {
+    if (!isShortcut &&
+        (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3 ||
+                                              eow.contains(e->text().right(1))))
+    {
         c->popup()->hide();
         return;
     }
 
-    if (completionPrefix != c->completionPrefix()) {
+    if (completionPrefix != c->completionPrefix())
+    {
         c->setCompletionPrefix(completionPrefix);
         c->popup()->setCurrentIndex(c->completionModel()->index(0, 0));
     }
     QRect cr = cursorRect();
-    cr.setWidth(c->popup()->sizeHintForColumn(0)
-                + c->popup()->verticalScrollBar()->sizeHint().width());
+    cr.setWidth(c->popup()->sizeHintForColumn(0) +
+                c->popup()->verticalScrollBar()->sizeHint().width());
     c->complete(cr); // popup it up!
 }
 
@@ -262,8 +283,10 @@ void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
-    while (block.isValid() && top <= event->rect().bottom()) {
-        if (block.isVisible() && bottom >= event->rect().top()) {
+    while (block.isValid() && top <= event->rect().bottom())
+    {
+        if (block.isVisible() && bottom >= event->rect().top())
+        {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
             painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
@@ -282,7 +305,8 @@ int MdiTextEditor::lineNumberAreaWidth()
 {
     int digits = 1;
     int max = qMax(1, blockCount());
-    while (max >= 10) {
+    while (max >= 10)
+    {
         max /= 10;
         ++digits;
     }
@@ -298,23 +322,21 @@ void MdiTextEditor::updateLineNumberAreaWidth(int)
 
 void MdiTextEditor::updateLineNumberArea(const QRect &rect, int dy)
 {
-    if (dy){
+    if (dy)
         lineNumberArea->scroll(0, dy);
-    }
     else
         lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
 
     if (rect.contains(viewport()->rect()))
         updateLineNumberAreaWidth(0);
-
-
 }
 
 void MdiTextEditor::resizeEvent(QResizeEvent *e)
 {
     QPlainTextEdit::resizeEvent(e);
     QRect cr = contentsRect();
-    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(),
+                                lineNumberAreaWidth(), cr.height()));
 }
 
 void MdiTextEditor::replaceSpacesLineEnd()
@@ -325,7 +347,8 @@ void MdiTextEditor::replaceSpacesLineEnd()
     cursor.setPosition(QTextCursor::Start);
     this->setTextCursor(cursor);
     cursor = doc->find(exp);
-    while(!cursor.isNull()){
+    while(!cursor.isNull())
+    {
         cursor.insertText(QString(""));
         cursor = doc->find(exp);
     }
@@ -333,29 +356,30 @@ void MdiTextEditor::replaceSpacesLineEnd()
 
 void MdiTextEditor::goTo(int to)
 {
-    if(to <= this->blockCount()){
+    if(to <= this->blockCount())
+    {
         this->setFocus();
         QTextCursor c = this->textCursor();
-        int currentLocation =
-                this->textCursor().blockNumber();
-        if(currentLocation < to){
+        int currentLocation = this->textCursor().blockNumber();
+        if(currentLocation < to)
+        {
             c.movePosition(QTextCursor::NextBlock,
                            QTextCursor::MoveAnchor,
                            to - currentLocation-1);
         }
-        else{
+        else
+        {
             c.movePosition(QTextCursor::PreviousBlock,
                            QTextCursor::MoveAnchor,
-                           currentLocation - to+1);
+                           currentLocation - to + 1);
         }
-
         this->setTextCursor(c);
     }
-    else{
+    else
+    {
         QMessageBox::warning(0,
                              tr("Warning!"),
                              tr("This line does not exists.\n"
                                 "Check text field!"));
     }
 }
-
