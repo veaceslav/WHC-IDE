@@ -32,7 +32,6 @@ SOURCES += \
     src/projManagement/datagroup.cpp \
     src/projManagement/adddata.cpp \
     src/projManagement/addnewfile.cpp \
-    src/projManegement/overwritefile.cpp \
     src/projManagement/staticmethods.cpp \
     src/projBuild/projectbuild.cpp \
     src/settings/generalsettings.cpp \
@@ -77,7 +76,6 @@ HEADERS += \
     src/projManagement/datagroup.h \
     src/projManagement/adddata.h \
     src/projManagement/addnewfile.h \
-    src/projManegement/overwritefile.h \
     src/projManagement/staticmethods.h \
     src/projBuild/projectbuild.h \
     src/diagram/diagramwindow.h \
