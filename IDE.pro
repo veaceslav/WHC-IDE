@@ -10,7 +10,6 @@ TEMPLATE = app
 INCLUDEPATH += src \
             lib \
             include
-win32:RC_FILE += IDE.rc
 SOURCES += \
     src/ide.cpp \
     src/highlighter.cpp \
@@ -118,7 +117,7 @@ RESOURCES += \
 OTHER_FILES += \
     src/CMakeLists.txt
 
-CONFIG += qtestlib
+CONFIG += testlib
 
 
 unix:!symbian: LIBS += -L$$PWD/lib/x86/ -lOpenCL
