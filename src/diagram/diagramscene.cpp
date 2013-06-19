@@ -21,7 +21,7 @@
  *
  * ============================================================ */
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "diagramscene.h"
 #include "diagramwindow.h"
