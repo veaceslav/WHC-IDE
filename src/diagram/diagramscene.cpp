@@ -148,14 +148,16 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
     if(myMode == MoveItem)
     {
-        DiagramItem* item =(DiagramItem*)itemAt(mouseEvent->scenePos());
+        // TODO, documentat mai bine despre qtransform
+        QTransform idemtrsf;
+        DiagramItem* item = (DiagramItem*)itemAt(mouseEvent->scenePos(), idemtrsf);
         if(item == 0)
             return;
         if(item->type() == DiagramItem::Type)
-            {
-                item->updatePoz();
-                ((DiagramWindow*)parent())->updateXml();
-            }
+        {
+            item->updatePoz();
+            ((DiagramWindow*)parent())->updateXml();
+        }
     }
 }
 

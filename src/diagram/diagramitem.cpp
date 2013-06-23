@@ -21,7 +21,7 @@
  *
  * ============================================================ */
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "diagramitem.h"
 #include "arrow.h"
@@ -30,15 +30,15 @@
 DiagramItem::DiagramItem(DiagramType diagramType, QMenu * contextMenu,
                          QString name, QDomNode &node, int diagId, int inputs,
                          QGraphicsItem* parent, QGraphicsScene * scene)
-    : QGraphicsItem(parent,scene),itemName(name),itemNode(node),diagId(diagId)
+    : QGraphicsItem(parent, scene),itemName(name),itemNode(node),diagId(diagId)
 
 {
     myDiagramType = diagramType;
     myContextMenu = contextMenu;
 
-    setFlag(QGraphicsItem::ItemIsMovable,true);
-    setFlag(QGraphicsItem::ItemIsSelectable,true);
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges,true);
+    setFlag(QGraphicsItem::ItemIsMovable, true);
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
     myPolygon = QPolygonF(QRectF(0,25,150,50));
 
