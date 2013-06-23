@@ -10,7 +10,6 @@ TEMPLATE = app
 INCLUDEPATH += src \
             lib \
             include
-win32:RC_FILE += IDE.rc
 SOURCES += \
     src/ide.cpp \
     src/highlighter.cpp \
@@ -32,7 +31,6 @@ SOURCES += \
     src/projManagement/datagroup.cpp \
     src/projManagement/adddata.cpp \
     src/projManagement/addnewfile.cpp \
-    src/projManegement/overwritefile.cpp \
     src/projManagement/staticmethods.cpp \
     src/projBuild/projectbuild.cpp \
     src/settings/generalsettings.cpp \
@@ -77,7 +75,6 @@ HEADERS += \
     src/projManagement/datagroup.h \
     src/projManagement/adddata.h \
     src/projManagement/addnewfile.h \
-    src/projManegement/overwritefile.h \
     src/projManagement/staticmethods.h \
     src/projBuild/projectbuild.h \
     src/diagram/diagramwindow.h \
@@ -120,7 +117,7 @@ RESOURCES += \
 OTHER_FILES += \
     src/CMakeLists.txt
 
-CONFIG += qtestlib
+CONFIG += testlib
 
 
 unix:!symbian: LIBS += -L$$PWD/lib/x86/ -lOpenCL
