@@ -30,8 +30,7 @@
 DiagramItem::DiagramItem(DiagramType diagramType, QMenu *contextMenu,
                          QString name, QDomNode &node, int diagId, int inputs,
                          QGraphicsItem* parent, QGraphicsScene *scene)
-    : QGraphicsItem(parent, scene), itemName(name),
-      itemNode(node), diagId(diagId)
+    : QGraphicsItem(parent), itemName(name), itemNode(node), diagId(diagId)
 
 {
     myDiagramType = diagramType;
@@ -45,6 +44,9 @@ DiagramItem::DiagramItem(DiagramType diagramType, QMenu *contextMenu,
 
     taskId = itemNode.attributes().namedItem("id").nodeValue().toInt();
     addChilds(inputs);
+
+    //TODO documentat mai bine
+    scene->addItem(this);
 }
 
 void DiagramItem::addChilds(int inputs)

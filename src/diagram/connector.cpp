@@ -30,12 +30,13 @@
 
 Connector::Connector(QRectF bound,int id, QGraphicsItem* parent,
                      QGraphicsScene* scene)
-    : QGraphicsItem(parent,scene),connectorId(id)
+    : QGraphicsItem(parent), connectorId(id)
 {
     pressed = false;
     bounds = bound;
-    myPolygon =QPolygonF(boundingRect());
-
+    myPolygon = QPolygonF(boundingRect());
+    //TODO documentat mai bine si asta
+    scene->addItem(this);
 }
 
 QRectF Connector::boundingRect() const
@@ -92,7 +93,8 @@ void Connector::removeArrow(Arrow *arrow)
 
  void Connector::removeArrows()
  {
-     foreach (Arrow *arrow, arrows) {
+     foreach (Arrow *arrow, arrows)
+     {
          arrow->startItem()->removeArrow(arrow);
          arrow->endItem()->removeArrow(arrow);
          arrow->removeDomNode();
@@ -114,8 +116,8 @@ QPointF Connector::centerPoz()
 
 void Connector::setArrowParent(int id, int type)
 {
-    for(int i=0;i<arrows.count();i++)
+    for(int i = 0; i < arrows.count(); i++)
     {
-        arrows.at(i)->setParentId(id,type);
+        arrows.at(i)->setParentId(id, type);
     }
 }
