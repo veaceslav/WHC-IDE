@@ -4,7 +4,9 @@
 QT += network
 QT += xml \
     xmlpatterns \
-    widgets
+    widgets \
+    testlib
+
 TARGET = IDE
 TEMPLATE = app
 INCLUDEPATH += src \
@@ -116,9 +118,6 @@ RESOURCES += \
 
 OTHER_FILES += \
     src/CMakeLists.txt
-
-CONFIG += testlib
-
 
 unix:!symbian: LIBS += -L$$PWD/lib/x86/ -lOpenCL
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/x86/ -lOpenCL

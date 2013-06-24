@@ -42,7 +42,8 @@
      myColor = Qt::black;
      setPen(QPen(myColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
      //TODO documentat mai bine
-     scene->addItem(this);
+     if(scene)
+        scene->addItem(this);
  }
 
  QRectF Arrow::boundingRect() const

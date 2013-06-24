@@ -46,7 +46,8 @@ DiagramItem::DiagramItem(DiagramType diagramType, QMenu *contextMenu,
     addChilds(inputs);
 
     //TODO documentat mai bine
-    scene->addItem(this);
+    if(scene)
+        scene->addItem(this);
 }
 
 void DiagramItem::addChilds(int inputs)

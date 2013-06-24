@@ -36,7 +36,8 @@ Connector::Connector(QRectF bound,int id, QGraphicsItem* parent,
     bounds = bound;
     myPolygon = QPolygonF(boundingRect());
     //TODO documentat mai bine si asta
-    scene->addItem(this);
+    if(scene)
+        scene->addItem(this);
 }
 
 QRectF Connector::boundingRect() const
