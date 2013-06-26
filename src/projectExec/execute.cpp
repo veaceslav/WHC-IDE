@@ -219,7 +219,7 @@ void Execute::start(int devId)
 
     list << QString::number(devId);
 
-    if(exec2[dexId])
+    if(exec2[devId])
         delete exec2[devId];
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
