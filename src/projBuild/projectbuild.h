@@ -82,11 +82,6 @@ private:
     void configureTask();
 
     /**
-     * @brief removeDirectory - remove directory recursively
-     */
-    bool removeDirectory(QDir &aDir);
-
-    /**
      * @brief setEnvironmentVariables -set variables linke path,lib,include
      */
     void setEnvironmentVariables(ProjectSettings *setting);

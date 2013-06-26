@@ -35,6 +35,7 @@
 #include "findtool.h"
 #include "newproject.h"
 #include "iwf.h"
+#include "staticmethods.h"
 
 #include "model/projecttreemodel.h"
 #include "cluster/clustercontrol.h"
@@ -44,7 +45,7 @@
 #include "projManagement/adddata.h"
 #include "projManagement/datagroup.h"
 #include "projManagement/addnewfile.h"
-#include "projManagement/staticmethods.h"
+
 
 #include "projBuild/projectbuild.h"
 #include "projBuild/commandline.h"

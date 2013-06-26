@@ -21,6 +21,7 @@ SOURCES += \
     src/mditexteditor.cpp \
     src/mdisubwindow.cpp \
     src/main.cpp \
+    src/staticmethods.cpp \
     lib/iwf.cpp \
     src/settings/clustersettings.cpp \
     src/model/projecttreemodel.cpp \
@@ -33,7 +34,6 @@ SOURCES += \
     src/projManagement/datagroup.cpp \
     src/projManagement/adddata.cpp \
     src/projManagement/addnewfile.cpp \
-    src/projManagement/staticmethods.cpp \
     src/projBuild/projectbuild.cpp \
     src/settings/generalsettings.cpp \
     src/diagram/diagramscene.cpp \
@@ -64,6 +64,7 @@ HEADERS += \
     src/mdisubwindow.h \
     src/newproject.h  \
     src/findtool.h   \
+    src/staticmethods.h \
     include/iwf.h \
     src/settings/generalsettings.h \
     src/settings/clustersettings.h \
@@ -77,7 +78,6 @@ HEADERS += \
     src/projManagement/datagroup.h \
     src/projManagement/adddata.h \
     src/projManagement/addnewfile.h \
-    src/projManagement/staticmethods.h \
     src/projBuild/projectbuild.h \
     src/diagram/diagramwindow.h \
     src/diagram/diagramscene.h \
