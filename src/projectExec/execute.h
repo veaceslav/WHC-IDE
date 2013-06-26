@@ -48,6 +48,8 @@ public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
             Ide *parent, CommandLine *cmd);
 
+    ~Execute();
+
     void stopExec();
 
     void forceStop();

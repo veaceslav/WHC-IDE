@@ -29,6 +29,7 @@
 #include <QToolButton>
 #include <QTextEdit>
 #include "projBuild/commandline.h"
+#include "ide.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
                  Ide *parent, CommandLine *cmd):execOrder(sorted), cmd(cmd)
@@ -54,6 +55,10 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     cmd->showM();
     execute();
+}
+
+Execute::~Execute()
+{
 }
 
 void Execute::stopExec()
@@ -88,7 +93,8 @@ void Execute::execute()
     while(taskIndex < execOrder.size() && execOrder[taskIndex]->type != 0)
         taskIndex++;
 
-    if(taskIndex >= execOrder.count()) {
+    if(taskIndex >= execOrder.count())
+    {
         /**
           * Finished running all tasks.
           */
@@ -219,7 +225,9 @@ void Execute::start(int devId)
     list << QString::number(devId);
 
     if(!exec)
+    {
         exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
+    }
     else
     {
         delete exec;
