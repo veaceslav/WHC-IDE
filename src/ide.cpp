@@ -985,11 +985,11 @@ void Ide::on_actionRun_triggered()
 
     QVector<QPair<ExecNode,ExecNode> > tmp = diagram->getExecData();
 
-    SortTasks srt(this, tmp);
+    SortTasks *srt = new SortTasks(this, tmp);
 
     disableStopExec(false);
     disableMenuOptions(true);
-    exec = new Execute(whcFile,srt.getExecutionOrder(), devs, this, outWindow);
+    exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this, outWindow);
 }
 
 void Ide::contextMenu(const QPoint &poz)
