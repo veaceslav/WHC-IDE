@@ -883,6 +883,7 @@ void Ide::disableMenuOptions(bool val)
     ui->actionBuild_Project->setDisabled(val);
     ui->actionClean_All->setDisabled(val);
     ui->actionRun->setDisabled(val);
+    ui->actionShow_Diagram->setDisabled(val);
 }
 
 void Ide::disableStopExec(bool val)
