@@ -67,8 +67,9 @@ public:
 signals:
 
     /**
-     * @brief signalEnd - emit this signal when both execution and data copy is
-     *                    so the Execute class can go to next element in queue
+     * @brief signalEnd - emit this signal when both execution and data copy are
+     *                    done, so the Execute class can go to next element in
+     *                    queue
      */
     void signalEnd(int);
 
@@ -76,7 +77,7 @@ private slots:
 
     /**
      * @brief copytoData - after execution, check if data folders are connected
-     *                   to output and copy data to them
+     *                     to output and copy data to them
      */
     void copytoData();
 

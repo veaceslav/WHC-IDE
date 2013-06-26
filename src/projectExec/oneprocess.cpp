@@ -122,7 +122,7 @@ QString OneProcess::getExecutableName(QString path)
             // return name of the executable
             return listOfWords[0];
         }
-    } while (!in.atEnd());
+    }while(!in.atEnd());
 
     file.close();
     // return "" if the name of the executable was not found in the parsed file

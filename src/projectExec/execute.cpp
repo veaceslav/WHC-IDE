@@ -29,7 +29,6 @@
 #include <QToolButton>
 #include <QTextEdit>
 #include "projBuild/commandline.h"
-#include "ide.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
                  Ide *parent, CommandLine *cmd):execOrder(sorted), cmd(cmd)
@@ -42,13 +41,9 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     devCount     = devices.count();
     devFinished  = 0;
-    exec         = 0;
 
     for(int i = 0; i < devices.size(); i++)
-    {
-        OneProcess *proc = 0;
-        exec2[devices[i]] = proc;
-    }
+        exec2[devices[i]] = 0;
 
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
@@ -224,15 +219,10 @@ void Execute::start(int devId)
 
     list << QString::number(devId);
 
-    if(!exec)
-    {
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
-    }
-    else
-    {
-        delete exec;
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
-    }
+    if(exec2[dexId])
+        delete exec2[devId];
+
+    exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
     connect(exec2[devId], SIGNAL(signalEnd(int)),
             this, SLOT(slotNextProcess(int)));
