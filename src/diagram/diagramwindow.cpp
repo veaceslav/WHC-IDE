@@ -31,7 +31,7 @@
 #include "diagramitem.h"
 #include "diagramscene.h"
 #include "arrow.h"
-#include "ide.h"
+#include "staticmethods.h"
 
 
 DiagramWindow::DiagramWindow(QDomDocument* proj,Ide* parent):parent(parent)
@@ -66,9 +66,9 @@ DiagramWindow::DiagramWindow(QDomDocument* proj,Ide* parent):parent(parent)
 
 DiagramWindow::~DiagramWindow()
 {
-    Ide::destroyObj(&itemMenu);
-    Ide::destroyObj(&taskMenu);
-    Ide::destroyObj(&dataMenu);
+    StaticMethods::destroyObj(&itemMenu);
+    StaticMethods::destroyObj(&taskMenu);
+    StaticMethods::destroyObj(&dataMenu);
 }
 
 bool DiagramWindow::itemListEmpty(int id)

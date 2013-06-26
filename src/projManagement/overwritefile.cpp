@@ -22,7 +22,7 @@
  * ============================================================ */
 
 #include "projManagement/overwritefile.h"
-#include "ide.h"
+#include "staticmethods.h"
 
 OverwriteFile::OverwriteFile(QDialog *parent, QString fileName)
     :QDialog(parent)
@@ -48,8 +48,8 @@ OverwriteFile::OverwriteFile(QDialog *parent, QString fileName)
 
 OverwriteFile::~OverwriteFile()
 {
-    Ide::destroyObj(&overrideFileChoice);
-    Ide::destroyObj(&warnLabel);
+    StaticMethods::destroyObj(&overrideFileChoice);
+    StaticMethods::destroyObj(&warnLabel);
 }
 
 void OverwriteFile::slotCannotOverwrite()

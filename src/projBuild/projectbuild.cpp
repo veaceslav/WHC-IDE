@@ -30,7 +30,6 @@
 #include "settings/projectsettings.h"
 #include "commandline.h"
 
-
 ProjectBuild::ProjectBuild(QDomDocument *proj, Ide *parent,
                            ProjectSettings *settings, CommandLine *cmd)
     : QWidget(parent), cmd(cmd)
@@ -109,7 +108,7 @@ void ProjectBuild::configureTask()
 
     file.copy(dest);
 
-    Ide::destroyObj(&proc);
+    StaticMethods::destroyObj(&proc);
     proc = new QProcess();
 
     proc->setWorkingDirectory(pathTmp);

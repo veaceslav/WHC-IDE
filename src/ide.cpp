@@ -159,44 +159,36 @@ Ide::Ide(QWidget *parent) :
 Ide::~Ide()
 {
 
-    foreach(Highlighter* h, langs)
+    foreach(Highlighter *h, langs)
     {
-        destroyObj(&h);
+        StaticMethods::destroyObj(&h);
     }
 
-    destroyObj(&settings);
-    destroyObj(&contextTask);
-    destroyObj(&contextFile);
-    destroyObj(&contextData);
+    StaticMethods::destroyObj(&settings);
+    StaticMethods::destroyObj(&contextTask);
+    StaticMethods::destroyObj(&contextFile);
+    StaticMethods::destroyObj(&contextData);
 
-    destroyObj(&creditsPage);
-    destroyObj(&build);
-    destroyObj(&diagram);
-    destroyObj(&diagramSubW);
-    destroyObj(&devices);
-    destroyObj(&exec);
+    StaticMethods::destroyObj(&creditsPage);
+    StaticMethods::destroyObj(&build);
+    StaticMethods::destroyObj(&diagram);
+    StaticMethods::destroyObj(&diagramSubW);
+    StaticMethods::destroyObj(&devices);
+    StaticMethods::destroyObj(&exec);
 
-    destroyObj(&status_bar_info);
-    destroyObj(&editorSettings);
-    destroyObj(&findtool);
-    destroyObj(&gotoTool);
-    destroyObj(&model);
-    destroyObj(&outWindow);
-    destroyObj(&ui);
+    StaticMethods::destroyObj(&status_bar_info);
+    StaticMethods::destroyObj(&editorSettings);
+    StaticMethods::destroyObj(&findtool);
+    StaticMethods::destroyObj(&gotoTool);
+    StaticMethods::destroyObj(&model);
+    StaticMethods::destroyObj(&outWindow);
+    StaticMethods::destroyObj(&ui);
 }
 
 void Ide::slot_New_Project()
 {
     NewProject *np = new NewProject(this);
-    //QDialog *dl = new QDialog(this);
-    //dl->show ();
     np->show();
-/**
-    setUpdatesEnabled(false);
-    np.show();
-    setUpdatesEnabled(true);
-    **/
-
 }
 
 
@@ -514,7 +506,7 @@ void Ide::slotReplaceString()
 
 void Ide::slotFinishedExec()
 {
-    Ide::destroyObj(&exec);
+    StaticMethods::destroyObj(&exec);
     disableStopExec(true);
     disableMenuOptions(false);
 }
@@ -819,10 +811,10 @@ void Ide::slotCloseProject()
 {
     ui->mdiArea->closeAllSubWindows();
     ui->projectsView->setModel(new QStandardItemModel(this));
-    destroyObj(&model);
-    destroyObj(&diagram);
-    destroyObj(&diagramSubW);
-    destroyObj(&exec);
+    StaticMethods::destroyObj(&model);
+    StaticMethods::destroyObj(&diagram);
+    StaticMethods::destroyObj(&diagramSubW);
+    StaticMethods::destroyObj(&exec);
 
     disableMenuOptions(true);
     disableStopExec(true);

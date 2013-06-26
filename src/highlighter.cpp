@@ -22,6 +22,7 @@
  * ============================================================ */
 
 #include "highlighter.h"
+#include "staticmethods.h"
 #include "syntaxhighlighter.h"
 
 Highlighter::Highlighter(QString filetype, EditorSettingsVar *es)
@@ -79,11 +80,13 @@ Highlighter::Highlighter(QString filetype, EditorSettingsVar *es)
 
 Highlighter::~Highlighter()
 {
-    Ide::destroyObj(&sh);
-    foreach(Type* t, types){
+    StaticMethods::destroyObj(&sh);
+    foreach(Type *t, types)
+    {
         delete t;
     }
-    foreach(Style* s, styles){
+    foreach(Style *s, styles)
+    {
         delete s;
     }
 }

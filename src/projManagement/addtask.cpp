@@ -30,6 +30,7 @@
 #include <QTextStream>
 #include <QDate>
 
+#include "staticmethods.h"
 #include "model/projecttreemodel.h"
 #include "model/projecttreemodel.h"
 #include "diagram/diagramwindow.h"
@@ -73,11 +74,11 @@ AddTask::AddTask(QDomDocument* proj, Ide *parent)
 
 AddTask::~AddTask()
 {
-    Ide::destroyObj(&buttonBox);
-    Ide::destroyObj(&taskLabel);
-    Ide::destroyObj(&taskName);
-    Ide::destroyObj(&xLabel);
-    Ide::destroyObj(&xPoz);
+    StaticMethods::destroyObj(&buttonBox);
+    StaticMethods::destroyObj(&taskLabel);
+    StaticMethods::destroyObj(&taskName);
+    StaticMethods::destroyObj(&xLabel);
+    StaticMethods::destroyObj(&xPoz);
 }
 
 void AddTask::slotAddTask()

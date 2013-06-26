@@ -31,14 +31,6 @@
 #include "model/projecttreemodel.h"
 #include "diagram/diagramwindow.h"
 
-StaticMethods::StaticMethods()
-{
-}
-
-StaticMethods::~StaticMethods()
-{
-}
-
 void StaticMethods::deleteItem(Ide *parent, QModelIndexList indexes)
 {
     /**
