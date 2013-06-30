@@ -963,6 +963,7 @@ void Ide::readSettingsfromFile()
     settings->libclPath     = sets.value("libclPath").toString();
     settings->MsSDKPath     = sets.value("MsSDKPath").toString();
     settings->VStudioPath   = sets.value("VStudioPath").toString();
+    settings->saveFlow      = sets.value("saveFlow").toBool();
 }
 
 void Ide::on_actionRun_triggered()

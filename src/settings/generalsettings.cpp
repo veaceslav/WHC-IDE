@@ -124,6 +124,8 @@ void GeneralSettings::loadSettings()
     if(!settings->VStudioPath.isEmpty())
         ui->vsLine->setText(settings->VStudioPath);
 
+    ui->saveFlow->setChecked(settings->saveFlow);
+
 }
 
 void GeneralSettings::slotSaveSettings()
@@ -140,6 +142,8 @@ void GeneralSettings::slotSaveSettings()
 
     settings->VStudioPath = ui->vsLine->text();
 
+    settings->saveFlow = ui->saveFlow->isChecked();
+
     setSettingsToFile();
 }
 
@@ -151,6 +155,7 @@ void GeneralSettings::setSettingsToFile()
     sets.setValue("libclPath", settings->libclPath);
     sets.setValue("MsSDKPath", settings->MsSDKPath);
     sets.setValue("VStudioPath", settings->VStudioPath);
+    sets.setValue("saveFlow", settings->saveFlow);
 
     sets.sync();
 }

@@ -295,7 +295,7 @@
        <property name="title">
         <string>Running Workflow</string>
        </property>
-       <widget class="QCheckBox" name="seveFlow">
+       <widget class="QCheckBox" name="saveFlow">
         <property name="geometry">
          <rect>
           <x>4</x>
