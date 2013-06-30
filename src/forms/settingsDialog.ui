@@ -456,10 +456,10 @@
       <widget class="QPushButton" name="pushButton_3">
        <property name="geometry">
         <rect>
-         <x>444</x>
-         <y>290</y>
-         <width>111</width>
-         <height>23</height>
+         <x>440</x>
+         <y>272</y>
+         <width>131</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
