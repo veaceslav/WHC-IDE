@@ -30,7 +30,7 @@ class Node
 {
 public:
 
-    enum Color {Black, White};
+    enum Color {Black, White, Grey};
     int diagId;
     QString Name;
     int type;
@@ -67,15 +67,24 @@ public:
     QVector<Node*> getExecutionOrder() const
                     { return execOrder; }
 
+    /**
+     * @brief containsCycle -
+     * @return
+     */
+    bool containsCycle() const
+                    { return hasCycle; }
+
 private:
 
     /**
-     * @brief dfs -Dfs used for Topological Sort
-     * @param nod - node to expand
+     * @brief dfs  - Dfs used for Topological Sort.
+     * @param nod  - node to expand
      * @param time - time when node was discovered
+     * @return     - It returns 0 in case there is no cycle, 1 otherwise
      */
-    void dfs(Node *nod, int &time);
-    QMap<int, Node*> graph;
+    int dfs(Node *nod, int &time);
 
+    bool hasCycle;
+    QMap<int, Node*> graph;
     QVector<Node*> execOrder;
 };
