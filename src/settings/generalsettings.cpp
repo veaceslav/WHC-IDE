@@ -28,7 +28,7 @@
 
 
 GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
-    : QDialog(parent),ui(new Ui::settingsDialog())
+    : QDialog(parent), ui(new Ui::settingsDialog())
 {
 
     ui->setupUi(this);
@@ -39,8 +39,8 @@ GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
     compiler->setIcon(QIcon(":/images/logoWHC.png"));
     ui->listWidget->addItem(compiler);
 
-    connect(ui->listWidget,SIGNAL(itemSelectionChanged()),
-            this,SLOT(slotUpdateWidget()));
+    connect(ui->listWidget, SIGNAL(itemSelectionChanged()),
+            this, SLOT(slotUpdateWidget()));
 
 
     QListWidgetItem* editor = new QListWidgetItem("Editor");
@@ -48,46 +48,41 @@ GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
     editor->setIcon(QIcon(":/images/logoWHC.png"));
     ui->listWidget->addItem(editor);
 
-    connect(ui->clButton,SIGNAL(clicked()),
-            this,SLOT(slotSetClDir()));
+    connect(ui->clButton, SIGNAL(clicked()), this, SLOT(slotSetClDir()));
 
-    connect(ui->libClButton,SIGNAL(clicked()),
-            this,SLOT(slotSetLibClDir()));
+    connect(ui->libClButton, SIGNAL(clicked()), this, SLOT(slotSetLibClDir()));
 
-    connect(ui->sdkButton,SIGNAL(clicked()),
-            this,SLOT(slotSetSDKDir()));
+    connect(ui->sdkButton, SIGNAL(clicked()), this, SLOT(slotSetSDKDir()));
 
-    connect(ui->vsButton,SIGNAL(clicked()),
-            this,SLOT(slotSetVSDir()));
+    connect(ui->vsButton, SIGNAL(clicked()), this, SLOT(slotSetVSDir()));
 
-    connect(ui->buttonBox,SIGNAL(accepted()),
-            this,SLOT(slotSaveSettings()));
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(slotSaveSettings()));
 
     QPushButton* applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
-    connect(applyButton,SIGNAL(clicked()),this,SLOT(slotSaveSettings()));
+    connect(applyButton, SIGNAL(clicked()), this, SLOT(slotSaveSettings()));
 
 
     ui->stackedWidget->setCurrentIndex(0);
     editor_settings = new EditorSettings(parent, ui);
     loadSettings();
 }
+
 GeneralSettings::~GeneralSettings()
 {
     delete editor_settings;
+    delete ui;
 }
-
-
 
 void GeneralSettings::setDir(QLineEdit *line)
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                 QDir::homePath(),
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
+    QString dir =
+            QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                              QDir::homePath(),
+                                              QFileDialog::ShowDirsOnly |
+                                              QFileDialog::DontResolveSymlinks);
 
     line->setText(dir);
 }
-
 
 void GeneralSettings::slotUpdateWidget()
 {
@@ -99,6 +94,7 @@ void GeneralSettings::slotSetVSDir()
 {
     setDir(ui->vsLine);
 }
+
 void GeneralSettings::slotSetSDKDir()
 {
     setDir(ui->sdkLine);
@@ -128,7 +124,10 @@ void GeneralSettings::loadSettings()
     if(!settings->VStudioPath.isEmpty())
         ui->vsLine->setText(settings->VStudioPath);
 
+    ui->saveFlow->setChecked(settings->saveFlow);
+
 }
+
 void GeneralSettings::slotSaveSettings()
 {
     qDebug() << "Save Settings";
@@ -143,17 +142,20 @@ void GeneralSettings::slotSaveSettings()
 
     settings->VStudioPath = ui->vsLine->text();
 
+    settings->saveFlow = ui->saveFlow->isChecked();
+
     setSettingsToFile();
 }
 
 void GeneralSettings::setSettingsToFile()
 {
-    QSettings sets("WHC","WHC IDE");
+    QSettings sets("WHC", "WHC IDE");
 
-    sets.setValue("clPath",settings->clPath);
-    sets.setValue("libclPath",settings->libclPath);
-    sets.setValue("MsSDKPath",settings->MsSDKPath);
-    sets.setValue("VStudioPath",settings->VStudioPath);
+    sets.setValue("clPath", settings->clPath);
+    sets.setValue("libclPath", settings->libclPath);
+    sets.setValue("MsSDKPath", settings->MsSDKPath);
+    sets.setValue("VStudioPath", settings->VStudioPath);
+    sets.setValue("saveFlow", settings->saveFlow);
 
     sets.sync();
 }

@@ -21,7 +21,7 @@
  *
  * ============================================================ */
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "arrow.h"
 #include "containers.h"
@@ -34,13 +34,16 @@
 
  Arrow::Arrow(Connector *startItem, Connector *endItem, QDomNode nod,
           QGraphicsItem *parent, QGraphicsScene *scene)
-     : QGraphicsLineItem(parent, scene),arrowNod(nod)
+     : QGraphicsLineItem(parent), arrowNod(nod)
  {
      myStartItem = startItem;
      myEndItem = endItem;
      setFlag(QGraphicsItem::ItemIsSelectable, true);
      myColor = Qt::black;
      setPen(QPen(myColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+     //TODO documentat mai bine
+     if(scene)
+        scene->addItem(this);
  }
 
  QRectF Arrow::boundingRect() const

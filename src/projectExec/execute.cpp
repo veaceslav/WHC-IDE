@@ -41,19 +41,19 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     devCount     = devices.count();
     devFinished  = 0;
-    exec         = 0;
 
     for(int i = 0; i < devices.size(); i++)
-    {
-        OneProcess *proc = 0;
-        exec2[devices[i]] = proc;
-    }
+        exec2[devices[i]] = 0;
 
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
 
     cmd->showM();
     execute();
+}
+
+Execute::~Execute()
+{
 }
 
 void Execute::stopExec()
@@ -88,7 +88,8 @@ void Execute::execute()
     while(taskIndex < execOrder.size() && execOrder[taskIndex]->type != 0)
         taskIndex++;
 
-    if(taskIndex >= execOrder.count()) {
+    if(taskIndex >= execOrder.count())
+    {
         /**
           * Finished running all tasks.
           */
@@ -114,7 +115,7 @@ void Execute::fillQueue(Node *nod)
     if(stop)
         return;
 
-    int inputs = nod->link.size() - 5;
+    int inputs = nod->link.size() - 1;
 
     QVector<QStringList> v(inputs);
 
@@ -218,13 +219,10 @@ void Execute::start(int devId)
 
     list << QString::number(devId);
 
-    if(!exec)
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
-    else
-    {
-        delete exec;
-        exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
-    }
+    if(exec2[devId])
+        delete exec2[devId];
+
+    exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
     connect(exec2[devId], SIGNAL(signalEnd(int)),
             this, SLOT(slotNextProcess(int)));

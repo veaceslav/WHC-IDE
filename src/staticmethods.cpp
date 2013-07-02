@@ -21,7 +21,7 @@
  *
  * ============================================================ */
 
-#include "projManagement/staticmethods.h"
+#include "staticmethods.h"
 #include <QMessageBox>
 #include <QDebug>
 #include <QDomDocument>
@@ -31,15 +31,7 @@
 #include "model/projecttreemodel.h"
 #include "diagram/diagramwindow.h"
 
-StaticMethods::StaticMethods()
-{
-}
-
-StaticMethods::~StaticMethods()
-{
-}
-
-void StaticMethods::deleteItem(Ide* parent, QModelIndexList indexes)
+void StaticMethods::deleteItem(Ide *parent, QModelIndexList indexes)
 {
     /**
      * Not the best solution, layout can't be changed
@@ -49,14 +41,14 @@ void StaticMethods::deleteItem(Ide* parent, QModelIndexList indexes)
 
     delMsg.setText("Do you really want to delete selected files?");
 
-    QCheckBox deleteFile("Delete File from filesystem",&delMsg);
+    QCheckBox deleteFile("Delete File from filesystem", &delMsg);
 
     deleteFile.blockSignals(true);
 
     delMsg.addButton(&deleteFile, QMessageBox::ActionRole);
 
-    QAbstractButton* pYES = (QAbstractButton*)delMsg.addButton(QMessageBox::Yes);
-    QAbstractButton* pNO  = (QAbstractButton*)delMsg.addButton(QMessageBox::No);
+    QAbstractButton *pYES = (QAbstractButton*)delMsg.addButton(QMessageBox::Yes);
+    QAbstractButton *pNO  = (QAbstractButton*)delMsg.addButton(QMessageBox::No);
     Q_UNUSED(pYES); // it's used, but to supress warnings //
     delMsg.exec();
 
@@ -64,7 +56,6 @@ void StaticMethods::deleteItem(Ide* parent, QModelIndexList indexes)
         return;
     Q_FOREACH(QModelIndex index, indexes)
     {
-
 
         QDomNode toDelete = parent->model->getItem(index)->getNode();
 
@@ -106,13 +97,13 @@ void StaticMethods::deleteItem(Ide* parent, QModelIndexList indexes)
         if(toDelete.nodeName() == "task")
         {
             int itemId = toDelete.attributes().namedItem("id").nodeValue().toInt();
-            parent->getDiagram()->deleteItemById(itemId,0);
+            parent->getDiagram()->deleteItemById(itemId, 0);
         }
 
         if(toDelete.nodeName() == "group")
         {
             int itemId = toDelete.attributes().namedItem("id").nodeValue().toInt();
-            parent->getDiagram()->deleteItemById(itemId,1);
+            parent->getDiagram()->deleteItemById(itemId, 1);
         }
 
         QDomNode parents = toDelete.parentNode();
@@ -123,19 +114,20 @@ void StaticMethods::deleteItem(Ide* parent, QModelIndexList indexes)
         parent->model->deleteItem(index);
     }
 }
+
 bool StaticMethods::removeDirectory(QDir &aDir)
 {
     bool has_err = false;
-    if (aDir.exists())//QDir::NoDotAndDotDot
+    if(aDir.exists())//QDir::NoDotAndDotDot
     {
         QFileInfoList entries = aDir.entryInfoList(QDir::NoDotAndDotDot |
         QDir::Dirs | QDir::Files);
         int count = entries.size();
-        for (int idx = 0; idx < count; idx++)
+        for(int idx = 0; idx < count; idx++)
         {
             QFileInfo entryInfo = entries[idx];
             QString path = entryInfo.absoluteFilePath();
-            if (entryInfo.isDir())
+            if(entryInfo.isDir())
             {
                 QDir next(path);
                 has_err = removeDirectory(next);
@@ -147,9 +139,9 @@ bool StaticMethods::removeDirectory(QDir &aDir)
                 has_err = true;
             }
         }
-        if (!aDir.rmdir(aDir.absolutePath()))
+        if(!aDir.rmdir(aDir.absolutePath()))
         has_err = true;
     }
-return(has_err);
 
+    return(has_err);
 }

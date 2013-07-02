@@ -47,7 +47,7 @@ public:
 
     enum {Type = UserType + 14};
 
-    Connector(QRectF bound,int id,
+    Connector(QRectF bound, int id,
               QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
 
 
