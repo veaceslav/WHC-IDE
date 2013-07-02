@@ -60,9 +60,10 @@ public:
     ~SortTasks();
 
     /**
-     * @brief getExecutionOrder - return a vector with execution order for
+     * @brief getExecutionOrder - returns a vector with execution order for
      *                            Execute class
-     * @return
+     * @return                  - returns true if the graph has a cycle,
+     *                            false otherwise
      */
     QVector<Node*> getExecutionOrder() const
                     { return execOrder; }
