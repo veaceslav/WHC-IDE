@@ -43,7 +43,7 @@ public:
 
     Node(int conMax,int diagId,QString name, int type)
     {
-        link = QVector<QVector<Node*> >(conMax + 4);
+        link = QVector<QVector<Node*> >(conMax);
         this->diagId = diagId;
         this->Name = name;
         this->type = type;

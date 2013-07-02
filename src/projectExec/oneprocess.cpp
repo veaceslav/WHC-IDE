@@ -131,7 +131,7 @@ QString OneProcess::getExecutableName(QString path)
 
 void OneProcess::copytoData()
 {
-    int inputs = taskNode->link.size() - 5;
+    int inputs = taskNode->link.size() - 1;
     if(taskNode->link[inputs].isEmpty())
     {
         emit signalEnd(device);

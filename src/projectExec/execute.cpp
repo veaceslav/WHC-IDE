@@ -115,7 +115,7 @@ void Execute::fillQueue(Node *nod)
     if(stop)
         return;
 
-    int inputs = nod->link.size() - 5;
+    int inputs = nod->link.size() - 1;
 
     QVector<QStringList> v(inputs);
 

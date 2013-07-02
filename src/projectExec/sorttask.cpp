@@ -85,8 +85,7 @@ void SortTasks::dfs(Node *nod, int &time)
     nod->nodeColor = Node::Black;
     time++;
 
-    /** Vector link is with 4 units bigger that usual **/
-    int outIndex = nod->link.size() - 5;
+    int outIndex = nod->link.size() - 1;
 
     QVector<Node*> lst = nod->link[outIndex];
 
