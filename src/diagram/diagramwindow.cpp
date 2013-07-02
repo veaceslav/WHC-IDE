@@ -21,7 +21,7 @@
  *
  * ============================================================ */
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QLabel>
 #include <QDomDocument>
 #include <QDebug>
@@ -31,6 +31,7 @@
 #include "diagramitem.h"
 #include "diagramscene.h"
 #include "arrow.h"
+#include "staticmethods.h"
 
 
 DiagramWindow::DiagramWindow(QDomDocument* proj,Ide* parent):parent(parent)
@@ -65,7 +66,9 @@ DiagramWindow::DiagramWindow(QDomDocument* proj,Ide* parent):parent(parent)
 
 DiagramWindow::~DiagramWindow()
 {
-    delete itemMenu;
+    StaticMethods::destroyObj(&itemMenu);
+    StaticMethods::destroyObj(&taskMenu);
+    StaticMethods::destroyObj(&dataMenu);
 }
 
 bool DiagramWindow::itemListEmpty(int id)
@@ -120,14 +123,14 @@ void DiagramWindow::addTask(QString name, int in, int out, int id)
     DiagramNode nod;
 
     nod.name = name;
-    nod.inputs= in;
+    nod.inputs = in;
     nod.outputs = out;
     nod.id = id;
 
     tasks.append(nod);
 
-    QAction* ac = new QAction(name,taskMenu);
-    ac->setData(tasks.size()-1);
+    QAction* ac = new QAction(name, taskMenu);
+    ac->setData(tasks.size() - 1);
     /** First element added, set button text **/
     if(tasks.size() == 1)
     {
@@ -149,7 +152,7 @@ void DiagramWindow::addData(QString name, int id)
     data.append(nod);
 
     QAction* ac = new QAction(name,dataMenu);
-    ac->setData(data.size()-1);
+    ac->setData(data.size() - 1);
     if(data.size() == 1)
     {
         buttonGroup->button(1)->setText(name);
@@ -169,8 +172,8 @@ QVector<QPair<ExecNode, ExecNode> > DiagramWindow::getExecData()
 
     QList<Arrow*> arr = scene->getArrows();
 
-    tmp.reserve(arr.size()+1);
-    for(int i=0;i<arr.size();i++)
+    tmp.reserve(arr.size() + 1);
+    for(int i = 0; i < arr.size(); i++)
     {
         tmp.append(arr.at(i)->getExecData());
     }
@@ -460,7 +463,7 @@ void DiagramWindow::loadData(QDomDocument* project)
         nod.outputs = 1;
 
         data.append(nod);
-        QAction* ac = new QAction(nod.name,dataMenu);
+        QAction* ac = new QAction(nod.name, dataMenu);
         ac->setData(i);
         dataMenu->addAction(ac);
     }

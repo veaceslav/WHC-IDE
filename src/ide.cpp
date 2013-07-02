@@ -35,6 +35,7 @@
 #include "findtool.h"
 #include "newproject.h"
 #include "iwf.h"
+#include "staticmethods.h"
 
 #include "model/projecttreemodel.h"
 #include "cluster/clustercontrol.h"
@@ -44,7 +45,7 @@
 #include "projManagement/adddata.h"
 #include "projManagement/datagroup.h"
 #include "projManagement/addnewfile.h"
-#include "projManagement/staticmethods.h"
+
 
 #include "projBuild/projectbuild.h"
 #include "projBuild/commandline.h"
@@ -158,44 +159,36 @@ Ide::Ide(QWidget *parent) :
 Ide::~Ide()
 {
 
-    foreach(Highlighter* h, langs)
+    foreach(Highlighter *h, langs)
     {
-        destroyObj(&h);
+        StaticMethods::destroyObj(&h);
     }
 
-    destroyObj(&settings);
-    destroyObj(&contextTask);
-    destroyObj(&contextFile);
-    destroyObj(&contextData);
+    StaticMethods::destroyObj(&settings);
+    StaticMethods::destroyObj(&contextTask);
+    StaticMethods::destroyObj(&contextFile);
+    StaticMethods::destroyObj(&contextData);
 
-    destroyObj(&creditsPage);
-    destroyObj(&build);
-    destroyObj(&diagram);
-    destroyObj(&diagramSubW);
-    destroyObj(&devices);
-    destroyObj(&exec);
+    StaticMethods::destroyObj(&creditsPage);
+    StaticMethods::destroyObj(&build);
+    StaticMethods::destroyObj(&diagram);
+    StaticMethods::destroyObj(&diagramSubW);
+    StaticMethods::destroyObj(&devices);
+    StaticMethods::destroyObj(&exec);
 
-    destroyObj(&status_bar_info);
-    destroyObj(&editorSettings);
-    destroyObj(&findtool);
-    destroyObj(&gotoTool);
-    destroyObj(&model);
-    destroyObj(&outWindow);
-    destroyObj(&ui);
+    StaticMethods::destroyObj(&status_bar_info);
+    StaticMethods::destroyObj(&editorSettings);
+    StaticMethods::destroyObj(&findtool);
+    StaticMethods::destroyObj(&gotoTool);
+    StaticMethods::destroyObj(&model);
+    StaticMethods::destroyObj(&outWindow);
+    StaticMethods::destroyObj(&ui);
 }
 
 void Ide::slot_New_Project()
 {
     NewProject *np = new NewProject(this);
-    //QDialog *dl = new QDialog(this);
-    //dl->show ();
     np->show();
-/**
-    setUpdatesEnabled(false);
-    np.show();
-    setUpdatesEnabled(true);
-    **/
-
 }
 
 
@@ -513,7 +506,7 @@ void Ide::slotReplaceString()
 
 void Ide::slotFinishedExec()
 {
-    Ide::destroyObj(&exec);
+    StaticMethods::destroyObj(&exec);
     disableStopExec(true);
     disableMenuOptions(false);
 }
@@ -818,10 +811,10 @@ void Ide::slotCloseProject()
 {
     ui->mdiArea->closeAllSubWindows();
     ui->projectsView->setModel(new QStandardItemModel(this));
-    destroyObj(&model);
-    destroyObj(&diagram);
-    destroyObj(&diagramSubW);
-    destroyObj(&exec);
+    StaticMethods::destroyObj(&model);
+    StaticMethods::destroyObj(&diagram);
+    StaticMethods::destroyObj(&diagramSubW);
+    StaticMethods::destroyObj(&exec);
 
     disableMenuOptions(true);
     disableStopExec(true);
@@ -883,6 +876,7 @@ void Ide::disableMenuOptions(bool val)
     ui->actionBuild_Project->setDisabled(val);
     ui->actionClean_All->setDisabled(val);
     ui->actionRun->setDisabled(val);
+    ui->actionShow_Diagram->setDisabled(val);
 }
 
 void Ide::disableStopExec(bool val)
@@ -969,6 +963,7 @@ void Ide::readSettingsfromFile()
     settings->libclPath     = sets.value("libclPath").toString();
     settings->MsSDKPath     = sets.value("MsSDKPath").toString();
     settings->VStudioPath   = sets.value("VStudioPath").toString();
+    settings->saveFlow      = sets.value("saveFlow").toBool();
 }
 
 void Ide::on_actionRun_triggered()

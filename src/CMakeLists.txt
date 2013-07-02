@@ -91,7 +91,6 @@ set(projMan_SOURCES
     projManagement/adddata.cpp
     projManagement/addnewfile.cpp
     projManagement/overwritefile.cpp
-    projManagement/staticmethods.cpp
 )
 
 set(projMan_HEADERS
@@ -101,7 +100,6 @@ set(projMan_HEADERS
     projManagement/adddata.h
     projManagement/addnewfile.h
     projManagement/overwritefile.h
-    projManagement/staticmethods.h
 )
 
 set(projBuild_HEADERS
@@ -162,6 +160,7 @@ set(whc_SOURCES
     mditexteditor.cpp
     highlighter.cpp
     syntaxhighlighter.cpp
+    staticmethods.cpp
 )
 
 
@@ -183,6 +182,7 @@ set(whc_HEADERS
     mdidiagram.h
     highlighter.h
     syntaxhighlighter.h
+    staticmethods.h
 )
 
 set(whc_FORMS

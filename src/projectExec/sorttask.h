@@ -43,7 +43,7 @@ public:
 
     Node(int conMax,int diagId,QString name, int type)
     {
-        link = QVector<QVector<Node*> >(conMax+4);
+        link = QVector<QVector<Node*> >(conMax);
         this->diagId = diagId;
         this->Name = name;
         this->type = type;
@@ -56,7 +56,7 @@ public:
 class SortTasks
 {
 public:
-    SortTasks(Ide* parent, QVector<QPair<ExecNode, ExecNode> > data);
+    SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data);
     ~SortTasks();
 
     /**
@@ -74,8 +74,8 @@ private:
      * @param nod - node to expand
      * @param time - time when node was discovered
      */
-    void dfs(Node* nod, int& time);
-    QMap<int,Node*> graph;
+    void dfs(Node *nod, int &time);
+    QMap<int, Node*> graph;
 
     QVector<Node*> execOrder;
 };

@@ -21,12 +21,15 @@
  *
  * ============================================================ */
 
-#include "projManagement/addnewfile.h"
 #include <QApplication>
-#include "model/projecttreemodel.h"
-#include "projManagement/overwritefile.h"
 #include <QLineEdit>
 #include <QDomDocument>
+
+#include "staticmethods.h"
+#include "model/projecttreemodel.h"
+#include "projManagement/addnewfile.h"
+#include "projManagement/overwritefile.h"
+
 
 AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
     :QDialog(parent)
@@ -81,11 +84,11 @@ AddNewFile::AddNewFile(QDomDocument *proj, Ide *parent, QModelIndex selected)
 
 AddNewFile::~AddNewFile()
 {
-    Ide::destroyObj(&buttonBox);
-    Ide::destroyObj(&label);
-    Ide::destroyObj(&lineEdit);
-    Ide::destroyObj(&label_2);
-    Ide::destroyObj(&comboBox);
+    StaticMethods::destroyObj(&buttonBox);
+    StaticMethods::destroyObj(&label);
+    StaticMethods::destroyObj(&lineEdit);
+    StaticMethods::destroyObj(&label_2);
+    StaticMethods::destroyObj(&comboBox);
 }
 
 void AddNewFile::slotAddNewFile()

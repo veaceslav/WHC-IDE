@@ -25,10 +25,10 @@
 #include <QDomDocument>
 #include <QDir>
 
+#include "staticmethods.h"
 #include "projectbuild.h"
 #include "settings/projectsettings.h"
 #include "commandline.h"
-
 
 ProjectBuild::ProjectBuild(QDomDocument *proj, Ide *parent,
                            ProjectSettings *settings, CommandLine *cmd)
@@ -82,7 +82,7 @@ void ProjectBuild::clean()
         cmd->addLine("Cleaning " + paths.at(i), Qt::black);
         QDir toRemove(paths.at(i));
 
-        removeDirectory(toRemove);
+        StaticMethods::removeDirectory(toRemove);
 
         cmd->addLine("Done!", Qt::black);
     }
@@ -108,7 +108,7 @@ void ProjectBuild::configureTask()
 
     file.copy(dest);
 
-    Ide::destroyObj(&proc);
+    StaticMethods::destroyObj(&proc);
     proc = new QProcess();
 
     proc->setWorkingDirectory(pathTmp);
@@ -186,38 +186,6 @@ void ProjectBuild::slotNextTask()
     pathTmp = paths.at(iter);
 
     configureTask();
-
-}
-
-bool ProjectBuild::removeDirectory(QDir &aDir)
-{
-    bool has_err = false;
-    if(aDir.exists())//QDir::NoDotAndDotDot
-    {
-        QFileInfoList entries = aDir.entryInfoList(QDir::NoDotAndDotDot |
-        QDir::Dirs | QDir::Files);
-        int count = entries.size();
-        for(int idx = 0; idx < count; idx++)
-        {
-            QFileInfo entryInfo = entries[idx];
-            QString path = entryInfo.absoluteFilePath();
-            if(entryInfo.isDir())
-            {
-                QDir next(path);
-                has_err = removeDirectory(next);
-            }
-            else
-            {
-                QFile file(path);
-                if(!file.remove())
-                has_err = true;
-            }
-        }
-        if(!aDir.rmdir(aDir.absolutePath()))
-            has_err = true;
-    }
-
-    return(has_err);
 
 }
 

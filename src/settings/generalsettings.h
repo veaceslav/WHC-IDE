@@ -40,7 +40,7 @@ class GeneralSettings : public QDialog
     Q_OBJECT
 
 public:
-    GeneralSettings(Ide* parent, ProjectSettings *settings);
+    GeneralSettings(Ide *parent, ProjectSettings *settings);
     ~GeneralSettings();
 
 private slots:

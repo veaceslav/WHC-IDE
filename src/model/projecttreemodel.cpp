@@ -27,7 +27,7 @@
 #include <QDir>
 #include "projecttreeitem.h"
 #include "projecttreemodel.h"
-#include "ide.h"
+#include "staticmethods.h"
 
 ProjectTreeModel::ProjectTreeModel(QString filename, Ide *parent)
     : QAbstractItemModel(parent), projectInfo(filename), parentIde(parent)
@@ -59,7 +59,7 @@ ProjectTreeModel::ProjectTreeModel(QString filename, Ide *parent)
 
 ProjectTreeModel::~ProjectTreeModel()
 {
-    Ide::destroyObj(&rootItem);
+    StaticMethods::destroyObj(&rootItem);
 }
 
 int ProjectTreeModel::columnCount(const QModelIndex &parent) const

@@ -48,7 +48,8 @@ public :
     /** CL/cl.h path **/
     QString clPath;
 
-    /** Other settings here **/
+    /** Save execution workflow **/
+    bool saveFlow;
 
 public:
     ProjectSettings(){ };

@@ -22,6 +22,7 @@
  * ============================================================ */
 
 #include "syntaxhighlighter.h"
+#include "staticmethods.h"
 
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent,
@@ -39,7 +40,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent,
 
 SyntaxHighlighter::~SyntaxHighlighter()
 {
-    Ide::destroyObj(&endSpace);
+    StaticMethods::destroyObj(&endSpace);
 }
 
 void SyntaxHighlighter::highlightBlock(const QString &text)
