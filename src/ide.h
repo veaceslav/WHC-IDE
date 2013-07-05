@@ -99,6 +99,8 @@ public:
 
     void deleteDevWindow(QWidget *widget);
 
+    bool mustSaveFlow() const;
+
     inline QMdiArea *getArea() const {return ui->mdiArea;}
 
     inline DiagramWindow *getDiagram() const {return diagram; }

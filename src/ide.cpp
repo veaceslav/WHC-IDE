@@ -905,6 +905,11 @@ void Ide::deleteDevWindow(QWidget *widget)
     ui->verticalLayout_2->removeWidget(widget);
 }
 
+bool Ide::mustSaveFlow() const
+{
+    return settings->saveFlow;
+}
+
 bool Ide::isProjectModified()
 {
     foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
@@ -991,6 +996,8 @@ void Ide::on_actionRun_triggered()
     {
         disableStopExec(false);
         disableMenuOptions(true);
+
+        StaticMethods::destroyObj(&exec);
         exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
                            outWindow);
     }

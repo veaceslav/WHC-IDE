@@ -21,19 +21,30 @@
  *
  * ============================================================ */
 
-#include "execute.h"
-#include "sorttask.h"
 #include <QDebug>
 #include <QDir>
 #include <QProcess>
 #include <QToolButton>
 #include <QTextEdit>
+
 #include "projBuild/commandline.h"
+#include "execute.h"
+#include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
                  Ide *parent, CommandLine *cmd):execOrder(sorted), cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
+
+    if(parent->mustSaveFlow())
+    {
+        execProgress = new QFile(path + "/flow");
+        execProgress->open(QIODevice::WriteOnly);
+    }
+    else
+    {
+        execProgress = NULL;
+    }
 
     this->parent = parent;
     taskIndex    = 0;
@@ -43,7 +54,7 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
     devFinished  = 0;
 
     for(int i = 0; i < devices.size(); i++)
-        exec2[devices[i]] = 0;
+        exec2[devices[i]] = NULL;
 
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
@@ -54,6 +65,11 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
 Execute::~Execute()
 {
+    if(execProgress)
+    {
+        execProgress->close();
+        delete execProgress;
+    }
 }
 
 void Execute::stopExec()

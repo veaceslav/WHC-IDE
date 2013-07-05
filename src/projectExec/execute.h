@@ -99,6 +99,7 @@ private:
     Ide *parent;
     CommandLine *cmd;
 
+    QFile *execProgress;
     QMap<int, OneProcess*> exec2;
 
     bool stop;
