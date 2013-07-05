@@ -71,7 +71,7 @@ signals:
      *                    done, so the Execute class can go to next element in
      *                    queue
      */
-    void signalEnd(int, int);
+    void signalEnd(int, int, QStringList *);
 
 private slots:
 
@@ -98,7 +98,7 @@ private:
     QProcess *proc;
     Node *taskNode;
     CommandLine *cmdL;
-    QStringList &list;
+    QStringList *args;
     QString buildPath;
     QString tempPath;
 

@@ -90,17 +90,26 @@ void Execute::forceStop()
     emit signalFinishedExec();
 }
 
-void Execute::slotNextProcess(int dev, int finishedTask)
+void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
 {
     cmd->addLine("Done!", Qt::darkGreen);
     if(saveExecProgress)
     {
         (*saveStream)<<finishedTask<<" ";
+        for(int i = 1; i < args->size(); i++)
+        {
+            if(args->at(i) != "-out")
+                (*saveStream)<<args->at(i)<<" ";
+            else
+                i = args->size();
+        }
+        (*saveStream)<<"\n";
         saveStream->flush();
     }
+    delete args;
+
     if(!stop)
         start(dev);
-
 }
 
 void Execute::execute()
@@ -248,8 +257,8 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int, int)),
-            this, SLOT(slotNextProcess(int, int)));
+    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *)),
+            this, SLOT(slotNextProcess(int, int, QStringList *)));
 
     exec2[devId]->startExecution();
 
