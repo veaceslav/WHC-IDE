@@ -32,6 +32,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QDir>
+#include <QTextStream>
 #include "oneprocess.h"
 
 class Node;
@@ -59,7 +60,7 @@ private slots:
      * @brief slotNextProcess - after finishing, calls one again start()
      *                          to execute next element
      */
-    void slotNextProcess(int dev);
+    void slotNextProcess(int dev, int finishedTask);
 
 signals:
 
@@ -99,7 +100,12 @@ private:
     Ide *parent;
     CommandLine *cmd;
 
-    QFile *execProgress;
+    /**
+     * @brief execProgress    file used to save the execution workflow.
+     */
+    QFile *saveExecProgress;
+    QTextStream *saveStream;
+
     QMap<int, OneProcess*> exec2;
 
     bool stop;

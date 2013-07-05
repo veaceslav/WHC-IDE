@@ -38,12 +38,14 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     if(parent->mustSaveFlow())
     {
-        execProgress = new QFile(path + "/flow");
-        execProgress->open(QIODevice::WriteOnly);
+        saveExecProgress = new QFile(path + "/flow");
+        saveExecProgress->open(QIODevice::WriteOnly);
+
+        saveStream = new QTextStream(saveExecProgress);
     }
     else
     {
-        execProgress = NULL;
+        saveExecProgress = NULL;
     }
 
     this->parent = parent;
@@ -65,10 +67,11 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
 Execute::~Execute()
 {
-    if(execProgress)
+    if(saveExecProgress)
     {
-        execProgress->close();
-        delete execProgress;
+        saveExecProgress->close();
+        delete saveExecProgress;
+        delete saveStream;
     }
 }
 
@@ -87,9 +90,14 @@ void Execute::forceStop()
     emit signalFinishedExec();
 }
 
-void Execute::slotNextProcess(int dev)
+void Execute::slotNextProcess(int dev, int finishedTask)
 {
     cmd->addLine("Done!", Qt::darkGreen);
+    if(saveExecProgress)
+    {
+        (*saveStream)<<finishedTask<<" ";
+        saveStream->flush();
+    }
     if(!stop)
         start(dev);
 
@@ -240,8 +248,8 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int)),
-            this, SLOT(slotNextProcess(int)));
+    connect(exec2[devId], SIGNAL(signalEnd(int, int)),
+            this, SLOT(slotNextProcess(int, int)));
 
     exec2[devId]->startExecution();
 

@@ -99,6 +99,7 @@ void OneProcess::startExecution()
     proc->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     proc->start(program, list);
 }
+
 QString OneProcess::getExecutableName(QString path)
 {
     QFile file(path);
@@ -134,7 +135,7 @@ void OneProcess::copytoData()
     int inputs = taskNode->link.size() - 1;
     if(taskNode->link[inputs].isEmpty())
     {
-        emit signalEnd(device);
+        emit signalEnd(device, taskNode->diagId);
         return;
     }
 
@@ -178,5 +179,5 @@ void OneProcess::copytoData()
             if(!QFile::copy(source, dest))
                 qDebug() << "copyToData: Error! file was not copied";
         }
-    emit signalEnd(device);
+    emit signalEnd(device, taskNode->diagId);
 }

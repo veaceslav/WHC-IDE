@@ -71,7 +71,7 @@ signals:
      *                    done, so the Execute class can go to next element in
      *                    queue
      */
-    void signalEnd(int);
+    void signalEnd(int, int);
 
 private slots:
 
