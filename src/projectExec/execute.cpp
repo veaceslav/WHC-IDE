@@ -96,13 +96,8 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
     if(saveExecProgress)
     {
         (*saveStream)<<finishedTask<<" ";
-        for(int i = 1; i < args->size(); i++)
-        {
-            if(args->at(i) != "-out")
-                (*saveStream)<<args->at(i)<<" ";
-            else
-                i = args->size();
-        }
+        for(int i = 0; i < args->size() - 2; i++)
+            (*saveStream)<<args->at(i)<<" ";
         (*saveStream)<<"\n";
         saveStream->flush();
     }
