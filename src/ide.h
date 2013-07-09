@@ -29,6 +29,7 @@
 #include "ui_ide.h"
 #include "ui_credits.h"
 #include "mditexteditor.h"
+#include "projectExec/execute.h"
 #include "settings/editorSettingsVar.h"
 
 class Highlighter;
@@ -280,8 +281,11 @@ private:
      * @brief startProjectExec - Starts the project execution after the user
      *                           hits run or restore.
      * @param fileMode         - The mode used to open the flow file
+     * @param exclusionList    - The tasks that have been finished and will be
+     *                           skipped (empty list in case of a fresh run)
      */
-    void startProjectExec(QIODevice::OpenMode fileMode);
+    void startProjectExec(QIODevice::OpenMode fileMode,
+                          QLinkedList<Exclusion> exclusionList);
 
     bool isProjectModified();
 

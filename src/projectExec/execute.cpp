@@ -26,14 +26,16 @@
 #include <QProcess>
 #include <QToolButton>
 #include <QTextEdit>
+#include <QLinkedList>
 
 #include "projBuild/commandline.h"
 #include "execute.h"
 #include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd,
-                 QIODevice::OpenMode fileMode):execOrder(sorted), cmd(cmd)
+                 Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+                 QLinkedList<Exclusion> exclusionList):execOrder(sorted),
+                 cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
 

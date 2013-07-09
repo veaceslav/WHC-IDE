@@ -29,6 +29,7 @@
 #include <QStandardItemModel>
 #include <QSettings>
 #include <QString>
+#include <QLinkedList>
 
 #include "mdidiagram.h"
 #include "diagram/diagramwindow.h"
@@ -972,7 +973,8 @@ void Ide::readSettingsfromFile()
     settings->saveFlow      = sets.value("saveFlow").toBool();
 }
 
-void Ide::startProjectExec(QIODevice::OpenMode fileMode)
+void Ide::startProjectExec(QIODevice::OpenMode fileMode,
+                           QLinkedList<Exclusion> exclusionList)
 {
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
@@ -999,14 +1001,14 @@ void Ide::startProjectExec(QIODevice::OpenMode fileMode)
 
         StaticMethods::destroyObj(&exec);
         exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
-                           outWindow, fileMode);
+                           outWindow, fileMode, exclusionList);
     }
 }
 
 void Ide::on_actionRun_triggered()
 {
-
-    startProjectExec(QIODevice::WriteOnly);
+    QLinkedList<Exclusion> ex;
+    startProjectExec(QIODevice::WriteOnly, ex);
 }
 
 void Ide::contextMenu(const QPoint &poz)
@@ -1097,5 +1099,35 @@ void Ide::on_actionForce_Stop_triggered()
 
 void Ide::on_actionRestore_triggered()
 {
-    startProjectExec(QIODevice::Append);
+    //TODO Put "flow" in define so it will not be hardcoded
+    QString path = whcFile.remove(whcFile.split("/").last()) + "flow";
+    QFile flow(path);
+    QTextStream readStream(&flow);
+    QLinkedList<Exclusion> exclusionList;
+    Exclusion excl;
+    QString skip;
+
+    flow.open(QIODevice::ReadOnly);
+
+    while(!readStream.atEnd())
+    {
+        readStream>>excl.taskId;
+        readStream>>skip;
+        readStream>>excl.inFile;
+        readStream>>skip;
+        readStream>>excl.outFile;
+
+        exclusionList.append(excl);
+    }
+
+    /**
+     * Removing the last entry because it's empty (the wile loop executes
+     * one more time after the last line, because there is still a \n left
+     * before the end-of-file.
+     */
+    exclusionList.removeLast();
+
+    flow.close();
+
+    startProjectExec(QIODevice::Append, exclusionList);
 }

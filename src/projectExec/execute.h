@@ -42,12 +42,20 @@ class QToolButton;
 class Ide;
 class CommandLine;
 
+struct Exclusion
+{
+    int taskId;
+    QString inFile;
+    QString outFile;
+};
+
 class Execute : public QObject
 {
     Q_OBJECT
 public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode);
+            Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+            QLinkedList<Exclusion> exclusionList);
 
     ~Execute();
 
