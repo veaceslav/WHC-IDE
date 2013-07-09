@@ -47,7 +47,7 @@ class Execute : public QObject
     Q_OBJECT
 public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent, CommandLine *cmd);
+            Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode);
 
     ~Execute();
 

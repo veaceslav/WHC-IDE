@@ -972,9 +972,8 @@ void Ide::readSettingsfromFile()
     settings->saveFlow      = sets.value("saveFlow").toBool();
 }
 
-void Ide::on_actionRun_triggered()
+void Ide::startProjectExec(QIODevice::OpenMode fileMode)
 {
-
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
     {
@@ -1000,8 +999,14 @@ void Ide::on_actionRun_triggered()
 
         StaticMethods::destroyObj(&exec);
         exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
-                           outWindow);
+                           outWindow, fileMode);
     }
+}
+
+void Ide::on_actionRun_triggered()
+{
+
+    startProjectExec(QIODevice::WriteOnly);
 }
 
 void Ide::contextMenu(const QPoint &poz)
@@ -1088,4 +1093,9 @@ void Ide::on_actionForce_Stop_triggered()
 {
     if(exec != NULL)
         exec->forceStop();
+}
+
+void Ide::on_actionRestore_triggered()
+{
+    startProjectExec(QIODevice::Append);
 }

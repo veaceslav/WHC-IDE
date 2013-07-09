@@ -252,6 +252,8 @@ private slots:
 
     void on_actionForce_Stop_triggered();
 
+    void on_actionRestore_triggered();
+
 private:
 
     void keyPressEvent(QKeyEvent *event);
@@ -269,10 +271,17 @@ private:
     void disableMenuOptions(bool val);
 
     /**
-     * @brife disableStopExec - disable/enable stop and force stop menu options.
+     * @brief disableStopExec - disable/enable stop and force stop menu options.
      * @param val             - true == disable, false == enable
      */
     void disableStopExec(bool val);
+
+    /**
+     * @brief startProjectExec - Starts the project execution after the user
+     *                           hits run or restore.
+     * @param fileMode         - The mode used to open the flow file
+     */
+    void startProjectExec(QIODevice::OpenMode fileMode);
 
     bool isProjectModified();
 

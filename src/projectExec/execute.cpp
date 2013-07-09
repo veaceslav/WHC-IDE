@@ -32,14 +32,15 @@
 #include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd):execOrder(sorted), cmd(cmd)
+                 Ide *parent, CommandLine *cmd,
+                 QIODevice::OpenMode fileMode):execOrder(sorted), cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
 
     if(parent->mustSaveFlow())
     {
         saveExecProgress = new QFile(path + "/flow");
-        saveExecProgress->open(QIODevice::WriteOnly);
+        saveExecProgress->open(fileMode);
 
         saveStream = new QTextStream(saveExecProgress);
     }
