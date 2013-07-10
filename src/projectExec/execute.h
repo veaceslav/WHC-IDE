@@ -29,9 +29,10 @@
 #include <QQueue>
 #include <QObject>
 #include <QPair>
-#include <QStringList>
 #include <QMap>
+#include <QSet>
 #include <QDir>
+#include <QLinkedList>
 #include <QTextStream>
 #include "oneprocess.h"
 
@@ -45,7 +46,7 @@ class CommandLine;
 struct Exclusion
 {
     int taskId;
-    QStringList inFiles;
+    QSet<QString> inFiles;
     QString outFile;
 };
 
@@ -104,6 +105,7 @@ private:
 
     QQueue<QPair<Node*, QStringList> > q;
     QVector<Node*> execOrder;
+    QLinkedList<Exclusion> exclusions;
 
     Ide *parent;
     CommandLine *cmd;
