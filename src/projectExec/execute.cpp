@@ -21,19 +21,38 @@
  *
  * ============================================================ */
 
-#include "execute.h"
-#include "sorttask.h"
 #include <QDebug>
 #include <QDir>
 #include <QProcess>
 #include <QToolButton>
 #include <QTextEdit>
+#include <QLinkedList>
+
 #include "projBuild/commandline.h"
+#include "execute.h"
+#include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd):execOrder(sorted), cmd(cmd)
+                 Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+                 QLinkedList<Exclusion> exclusionList):execOrder(sorted),
+                 cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
+
+    if(parent->mustSaveFlow())
+    {
+        QDir logDir(path);
+        logDir.mkdir("log");
+
+        saveExecProgress = new QFile(path + "/log/flow");
+        saveExecProgress->open(fileMode);
+
+        saveStream = new QTextStream(saveExecProgress);
+    }
+    else
+    {
+        saveExecProgress = NULL;
+    }
 
     this->parent = parent;
     taskIndex    = 0;
@@ -43,7 +62,7 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
     devFinished  = 0;
 
     for(int i = 0; i < devices.size(); i++)
-        exec2[devices[i]] = 0;
+        exec2[devices[i]] = NULL;
 
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
@@ -54,6 +73,12 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
 Execute::~Execute()
 {
+    if(saveExecProgress)
+    {
+        saveExecProgress->close();
+        delete saveExecProgress;
+        delete saveStream;
+    }
 }
 
 void Execute::stopExec()
@@ -71,12 +96,21 @@ void Execute::forceStop()
     emit signalFinishedExec();
 }
 
-void Execute::slotNextProcess(int dev)
+void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
 {
     cmd->addLine("Done!", Qt::darkGreen);
+    if(saveExecProgress)
+    {
+        (*saveStream)<<finishedTask<<" ";
+        for(int i = 1; i < args->size() - 2; i++)
+            (*saveStream)<<args->at(i)<<" ";
+        (*saveStream)<<"\n";
+        saveStream->flush();
+    }
+    delete args;
+
     if(!stop)
         start(dev);
-
 }
 
 void Execute::execute()
@@ -224,8 +258,8 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int)),
-            this, SLOT(slotNextProcess(int)));
+    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *)),
+            this, SLOT(slotNextProcess(int, int, QStringList *)));
 
     exec2[devId]->startExecution();
 

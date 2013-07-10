@@ -35,11 +35,10 @@
 
 OneProcess::OneProcess(CommandLine *cmd, QStringList &lst,
                        Node *nod, ProjectTreeModel *model)
-    :taskNode(nod), cmdL(cmd), list(lst),
-     model(model), projXml(model->getProjectXml())
+    :taskNode(nod), cmdL(cmd), model(model), projXml(model->getProjectXml())
 {
     proc = new QProcess();
-
+    args = new QStringList(lst);
     device = lst.last().toInt();
     buildPath = lst.first();
     tempPath = lst.at(4);
@@ -63,10 +62,11 @@ void OneProcess::slotUpdateText()
     QByteArray data = proc->readAllStandardOutput();
     cmdL->addDebugLine(QString(data));
 }
+
 void OneProcess::startExecution()
 {
 
-    proc->setWorkingDirectory(list.first());
+    proc->setWorkingDirectory(args->first());
 
     connect(proc, SIGNAL(readyReadStandardError()),
             this, SLOT(slotUpdateError()));
@@ -88,17 +88,18 @@ void OneProcess::startExecution()
     QString program;
 
     if(OS == 1)
-        program = list.first() + "//" + executableName;
+        program = args->first() + "//" + executableName;
     if(OS == 2)
         program = "./" + executableName;
 
-    list.removeFirst();
+    args->removeFirst();
 
-    cmdL->addLine(QString( "Executing " + taskNode->Name
-                           + list.join(" ") + "\n"), Qt::darkGreen);
+    cmdL->addLine(QString( "Executing " + taskNode->Name + " "
+                           + args->join(" ") + "\n"), Qt::darkGreen);
     proc->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    proc->start(program, list);
+    proc->start(program, *args);
 }
+
 QString OneProcess::getExecutableName(QString path)
 {
     QFile file(path);
@@ -134,7 +135,7 @@ void OneProcess::copytoData()
     int inputs = taskNode->link.size() - 1;
     if(taskNode->link[inputs].isEmpty())
     {
-        emit signalEnd(device);
+        emit signalEnd(device, taskNode->diagId, args);
         return;
     }
 
@@ -178,5 +179,5 @@ void OneProcess::copytoData()
             if(!QFile::copy(source, dest))
                 qDebug() << "copyToData: Error! file was not copied";
         }
-    emit signalEnd(device);
+    emit signalEnd(device, taskNode->diagId, args);
 }

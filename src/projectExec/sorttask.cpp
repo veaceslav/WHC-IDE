@@ -4,7 +4,7 @@
  * http://http://whcomputing.wikispaces.com/
  *
  * Date        :
- * Description :
+ * Description : Topological sort implementation, provides the execution order
  *
  * Copyright (C) 2012 by Veaceslav Munteanu <slavuttici at gmail dot com>
  *
@@ -29,6 +29,9 @@
 SortTasks::SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data)
 {
     Q_UNUSED(parent);
+
+    hasCycle = false;
+
     for(int i = 0; i < data.count(); i++)
     {
         QPair<ExecNode,ExecNode> tmp = data.at(i);
@@ -58,16 +61,23 @@ SortTasks::SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data)
 
         nod1->link[tmp.first.conId].append(nod2);
         nod2->link[tmp.second.conId].append(nod1);
-
     }
-    int time = 0;
+
+    int time = 0, foundCycle;
+
     for(QMap<int, Node*>::Iterator it = graph.begin(); it != graph.end(); ++it)
     {
         if(it.value()->nodeColor == Node::White)
-            dfs(it.value(), time);
+            foundCycle = dfs(it.value(), time);
+        if(foundCycle)
+        {
+            hasCycle = true;
+            break;
+        }
     }
 
-    std::reverse(execOrder.begin(),execOrder.end());
+    if(!hasCycle)
+        std::reverse(execOrder.begin(), execOrder.end());
 }
 
 SortTasks::~SortTasks()
@@ -76,13 +86,11 @@ SortTasks::~SortTasks()
         delete execOrder.at(i);
 }
 
-void SortTasks::dfs(Node *nod, int &time)
+int SortTasks::dfs(Node *nod, int &time)
 {
-    if(nod->nodeColor != Node::White)
-    {
-        return;
-    }
-    nod->nodeColor = Node::Black;
+    int foundCycle = 0;
+
+    nod->nodeColor = Node::Grey;
     time++;
 
     int outIndex = nod->link.size() - 1;
@@ -90,9 +98,20 @@ void SortTasks::dfs(Node *nod, int &time)
     QVector<Node*> lst = nod->link[outIndex];
 
     for(int i = 0; i < lst.size(); i++)
-        dfs(lst.at(i), time);
+    {
+        if(lst.at(i)->nodeColor == Node::White)
+            foundCycle = dfs(lst.at(i), time);
+        else if(lst.at(i)->nodeColor == Node::Grey)
+            foundCycle = 1;
+        if(foundCycle)
+            break;
+    }
+
+    nod->nodeColor = Node::Black;
     time++;
 
     nod->time = time;
     execOrder.append(nod);
+
+    return foundCycle;
 }

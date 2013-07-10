@@ -29,6 +29,7 @@
 #include "ui_ide.h"
 #include "ui_credits.h"
 #include "mditexteditor.h"
+#include "projectExec/execute.h"
 #include "settings/editorSettingsVar.h"
 
 class Highlighter;
@@ -98,6 +99,8 @@ public:
     void addDeviceList(QWidget *widget);
 
     void deleteDevWindow(QWidget *widget);
+
+    bool mustSaveFlow() const;
 
     inline QMdiArea *getArea() const {return ui->mdiArea;}
 
@@ -250,6 +253,8 @@ private slots:
 
     void on_actionForce_Stop_triggered();
 
+    void on_actionRestore_triggered();
+
 private:
 
     void keyPressEvent(QKeyEvent *event);
@@ -267,10 +272,20 @@ private:
     void disableMenuOptions(bool val);
 
     /**
-     * @brife disableStopExec - disable/enable stop and force stop menu options.
+     * @brief disableStopExec - disable/enable stop and force stop menu options.
      * @param val             - true == disable, false == enable
      */
     void disableStopExec(bool val);
+
+    /**
+     * @brief startProjectExec - Starts the project execution after the user
+     *                           hits run or restore.
+     * @param fileMode         - The mode used to open the flow file
+     * @param exclusionList    - The tasks that have been finished and will be
+     *                           skipped (empty list in case of a fresh run)
+     */
+    void startProjectExec(QIODevice::OpenMode fileMode,
+                          QLinkedList<Exclusion> exclusionList);
 
     bool isProjectModified();
 
