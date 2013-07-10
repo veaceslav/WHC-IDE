@@ -256,6 +256,25 @@ void Execute::start(int devId)
     if(exec2[devId])
         delete exec2[devId];
 
+
+    for(int i = 0; i < list.size(); i++)
+        qDebug()<<list[i];
+
+    for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
+        i != exclusions.end(); i++)
+    {
+        if(i->taskId != pair.first->diagId)
+            continue;
+        /**
+         * list.size() - 6 is the number of input files. The 6 strings that
+         * were substracter are: executable name, "-in", "-out", output file,
+         * "-dev", device id.
+         */
+        if(i->inFiles.size() != list.size() - 6)
+            continue;
+        for(int j = 0; j < i->inFiles.size(); j++);
+    }
+
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
     connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *)),

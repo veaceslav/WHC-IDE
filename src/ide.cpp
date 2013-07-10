@@ -1120,7 +1120,7 @@ void Ide::on_actionRestore_triggered()
         /**
          * Creates a new and empty list that will be filled with the input files
          */
-        excl.inFiles = QSet<QString>();
+        excl.inFiles = QStringList();
 
         word = "";
 
@@ -1128,7 +1128,7 @@ void Ide::on_actionRestore_triggered()
         {
             readStream>>word;
             if(word != "-out")
-                excl.inFiles.insert(word);
+                excl.inFiles.push_back(word);
         }
 
         readStream>>excl.outFile;

@@ -30,7 +30,6 @@
 #include <QObject>
 #include <QPair>
 #include <QMap>
-#include <QSet>
 #include <QDir>
 #include <QLinkedList>
 #include <QTextStream>
@@ -46,7 +45,7 @@ class CommandLine;
 struct Exclusion
 {
     int taskId;
-    QSet<QString> inFiles;
+    QStringList inFiles;
     QString outFile;
 };
 
