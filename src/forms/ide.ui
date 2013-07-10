@@ -39,7 +39,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -93,6 +93,8 @@
     <addaction name="actionRun"/>
     <addaction name="actionStop"/>
     <addaction name="actionForce_Stop"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestore"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -345,6 +347,11 @@
   <action name="actionForce_Stop">
    <property name="text">
     <string>Force Stop</string>
+   </property>
+  </action>
+  <action name="actionRestore">
+   <property name="text">
+    <string>Restore</string>
    </property>
   </action>
  </widget>

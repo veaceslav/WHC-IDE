@@ -29,6 +29,7 @@
 #include <QStandardItemModel>
 #include <QSettings>
 #include <QString>
+#include <QLinkedList>
 
 #include "mdidiagram.h"
 #include "diagram/diagramwindow.h"
@@ -877,6 +878,7 @@ void Ide::disableMenuOptions(bool val)
     ui->actionClean_All->setDisabled(val);
     ui->actionRun->setDisabled(val);
     ui->actionShow_Diagram->setDisabled(val);
+    ui->actionRestore->setDisabled(val);
 }
 
 void Ide::disableStopExec(bool val)
@@ -903,6 +905,11 @@ void Ide::addDeviceList(QWidget *widget)
 void Ide::deleteDevWindow(QWidget *widget)
 {
     ui->verticalLayout_2->removeWidget(widget);
+}
+
+bool Ide::mustSaveFlow() const
+{
+    return settings->saveFlow;
 }
 
 bool Ide::isProjectModified()
@@ -966,8 +973,16 @@ void Ide::readSettingsfromFile()
     settings->saveFlow      = sets.value("saveFlow").toBool();
 }
 
-void Ide::on_actionRun_triggered()
+void Ide::startProjectExec(QIODevice::OpenMode fileMode,
+                           QLinkedList<Exclusion> exclusionList)
 {
+
+    for(QLinkedList<Exclusion>::Iterator i = exclusionList.begin(); i != exclusionList.end(); i++)
+    {
+        qDebug()<<i->taskId<<" "<<i->outFile;
+        for(int j = 0; j < i->inFiles.size(); j++)
+            qDebug()<<i->inFiles[j];
+    }
 
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
@@ -982,9 +997,26 @@ void Ide::on_actionRun_triggered()
 
     SortTasks *srt = new SortTasks(this, tmp);
 
-    disableStopExec(false);
-    disableMenuOptions(true);
-    exec = new Execute(whcFile,srt->getExecutionOrder(), devs, this, outWindow);
+    if(srt->containsCycle())
+    {
+        outWindow->addLine("The Workflow Diagram contains a cyclic graph.",
+                           Qt::red);
+    }
+    else
+    {
+        disableStopExec(false);
+        disableMenuOptions(true);
+
+        StaticMethods::destroyObj(&exec);
+        exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
+                           outWindow, fileMode, exclusionList);
+    }
+}
+
+void Ide::on_actionRun_triggered()
+{
+    QLinkedList<Exclusion> ex;
+    startProjectExec(QIODevice::WriteOnly, ex);
 }
 
 void Ide::contextMenu(const QPoint &poz)
@@ -1071,4 +1103,56 @@ void Ide::on_actionForce_Stop_triggered()
 {
     if(exec != NULL)
         exec->forceStop();
+}
+
+void Ide::on_actionRestore_triggered()
+{
+    //TODO Put "flow" in #define so it will not be hardcoded
+    QFile flow(whcFile.remove(whcFile.split("/").last()) + "log/flow");
+    QTextStream readStream(&flow);
+
+    QLinkedList<Exclusion> exclusionList;
+    Exclusion excl;
+
+    /**
+     * @brief word - Used to read a single word from the flow file
+     */
+    QString word;
+
+    flow.open(QIODevice::ReadOnly);
+
+    while(!readStream.atEnd())
+    {
+        readStream>>excl.taskId;
+
+        /**
+         * Creates a new and empty list that will be filled with the input files
+         */
+        excl.inFiles = QStringList();
+
+        word = "";
+
+        while(word != "-out" && !readStream.atEnd())
+        {
+            readStream>>word;
+            if(word != "-out")
+                excl.inFiles.push_back(word);
+        }
+
+        readStream>>excl.outFile;
+
+        exclusionList.push_back(excl);
+    }
+
+    /**
+     * Removing the last entry because it's empty (the wile loop executes
+     * one more time after the last line, because there is still a \n left
+     * before the end-of-file.
+     */
+    if(!exclusionList.isEmpty())
+        exclusionList.removeLast();
+
+    flow.close();
+
+    startProjectExec(QIODevice::Append, exclusionList);
 }

@@ -32,6 +32,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QDir>
+#include <QTextStream>
 #include "oneprocess.h"
 
 class Node;
@@ -41,12 +42,20 @@ class QToolButton;
 class Ide;
 class CommandLine;
 
+struct Exclusion
+{
+    int taskId;
+    QStringList inFiles;
+    QString outFile;
+};
+
 class Execute : public QObject
 {
     Q_OBJECT
 public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent, CommandLine *cmd);
+            Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+            QLinkedList<Exclusion> exclusionList);
 
     ~Execute();
 
@@ -59,7 +68,7 @@ private slots:
      * @brief slotNextProcess - after finishing, calls one again start()
      *                          to execute next element
      */
-    void slotNextProcess(int dev);
+    void slotNextProcess(int dev, int finishedTask, QStringList *args);
 
 signals:
 
@@ -98,6 +107,12 @@ private:
 
     Ide *parent;
     CommandLine *cmd;
+
+    /**
+     * @brief execProgress    file used to save the execution workflow.
+     */
+    QFile *saveExecProgress;
+    QTextStream *saveStream;
 
     QMap<int, OneProcess*> exec2;
 
