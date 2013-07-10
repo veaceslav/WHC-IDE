@@ -41,7 +41,10 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     if(parent->mustSaveFlow())
     {
-        saveExecProgress = new QFile(path + "/flow");
+        QDir logDir(path);
+        logDir.mkdir("log");
+
+        saveExecProgress = new QFile(path + "/log/flow");
         saveExecProgress->open(fileMode);
 
         saveStream = new QTextStream(saveExecProgress);
@@ -99,7 +102,7 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
     if(saveExecProgress)
     {
         (*saveStream)<<finishedTask<<" ";
-        for(int i = 0; i < args->size() - 2; i++)
+        for(int i = 1; i < args->size() - 2; i++)
             (*saveStream)<<args->at(i)<<" ";
         (*saveStream)<<"\n";
         saveStream->flush();

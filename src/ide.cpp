@@ -976,6 +976,14 @@ void Ide::readSettingsfromFile()
 void Ide::startProjectExec(QIODevice::OpenMode fileMode,
                            QLinkedList<Exclusion> exclusionList)
 {
+
+    for(QLinkedList<Exclusion>::Iterator i = exclusionList.begin(); i != exclusionList.end(); i++)
+    {
+        qDebug()<<i->taskId<<" "<<i->outFile;
+        for(int j = 0; j < i->inFiles.size(); j++)
+            qDebug()<<i->inFiles[j];
+    }
+
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
     {
@@ -1099,25 +1107,41 @@ void Ide::on_actionForce_Stop_triggered()
 
 void Ide::on_actionRestore_triggered()
 {
-    //TODO Put "flow" in define so it will not be hardcoded
-    QString path = whcFile.remove(whcFile.split("/").last()) + "flow";
-    QFile flow(path);
+    //TODO Put "flow" in #define so it will not be hardcoded
+    QFile flow(whcFile.remove(whcFile.split("/").last()) + "log/flow");
     QTextStream readStream(&flow);
+
     QLinkedList<Exclusion> exclusionList;
     Exclusion excl;
-    QString skip;
+
+    /**
+     * @brief word - Used to read a single word from the flow file
+     */
+    QString word;
 
     flow.open(QIODevice::ReadOnly);
 
     while(!readStream.atEnd())
     {
         readStream>>excl.taskId;
-        readStream>>skip;
-        readStream>>excl.inFile;
-        readStream>>skip;
+
+        /**
+         * Creates a new and empty list that will be filled with the input files
+         */
+        excl.inFiles = QStringList();
+
+        word = "";
+
+        while(word != "-out" && !readStream.atEnd())
+        {
+            readStream>>word;
+            if(word != "-out")
+                excl.inFiles.push_back(word);
+        }
+
         readStream>>excl.outFile;
 
-        exclusionList.append(excl);
+        exclusionList.push_back(excl);
     }
 
     /**
@@ -1125,7 +1149,8 @@ void Ide::on_actionRestore_triggered()
      * one more time after the last line, because there is still a \n left
      * before the end-of-file.
      */
-    exclusionList.removeLast();
+    if(!exclusionList.isEmpty())
+        exclusionList.removeLast();
 
     flow.close();
 
