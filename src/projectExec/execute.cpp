@@ -28,6 +28,7 @@
 #include <QTextEdit>
 #include <QLinkedList>
 
+#include "staticmethods.h"
 #include "projBuild/commandline.h"
 #include "execute.h"
 #include "sorttask.h"
@@ -254,7 +255,7 @@ void Execute::start(int devId)
     list << QString::number(devId);
 
     if(exec2[devId])
-        delete exec2[devId];
+        StaticMethods::destroyObj(&(exec2[devId]));
 
     for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
         i != exclusions.end(); i++)
