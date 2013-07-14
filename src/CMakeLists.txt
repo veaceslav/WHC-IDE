@@ -1,6 +1,8 @@
-include(${QT_USE_FILE})
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-add_definitions(${QT_DEFINITIONS})
+#include(${QT_USE_FILE})
+#include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5Xml_INCLUDE_DIRS})
+add_definitions(${Qt5Widgets_DEFINITIONS} ${Qt5Xml_DEFINITIONS})
 
 set(CMAKE_CXX_FLAGS "-Wall -O2")
 
@@ -19,6 +21,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/x64 ${CMAKE_SOURCE_DIR}/lib/x86)
         SET (EXTRA_LIBS ${EXTRA_LIBS} OpenCL.lib)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+    ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+set(CMAKE_CXX_FLAGS "-fPIC")
 
 set(model_SOURCES
     model/projecttreemodel.cpp
@@ -200,9 +208,9 @@ set(whc_RESOURCES
     resources/mainCppTemplate.qrc
 )
 
-qt4_wrap_cpp(whc_HEADERS_MOC ${whc_HEADERS})
-qt4_wrap_ui(whc_FORMS_UIC ${whc_FORMS})
-qt4_add_resources(whc_RESOURCES_RCC ${whc_RESOURCES})
+qt5_wrap_cpp(whc_HEADERS_MOC ${whc_HEADERS})
+qt5_wrap_ui(whc_FORMS_UIC ${whc_FORMS})
+qt5_add_resources(whc_RESOURCES_RCC ${whc_RESOURCES})
 
 add_executable(whc
         ${whc_SOURCES}
@@ -211,8 +219,12 @@ add_executable(whc
         ${whc_RESOURCES_RCC}
 )
 
+qt5_use_modules(whc Widgets)
+qt5_use_modules(whc Core)
+qt5_use_modules(whc Test)
+
 target_link_libraries(whc
-    ${QT_LIBRARIES}
+    ${Qt5Widgets_LIBRARIES}
     ${QT_QTTEST_LIBRARY}
     ${LIBSSH_LIBRARIES}
     ${EXTRA_LIBS}
