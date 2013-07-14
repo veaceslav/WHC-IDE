@@ -29,9 +29,9 @@
 #include <QQueue>
 #include <QObject>
 #include <QPair>
-#include <QStringList>
 #include <QMap>
 #include <QDir>
+#include <QLinkedList>
 #include <QTextStream>
 #include "oneprocess.h"
 
@@ -104,6 +104,7 @@ private:
 
     QQueue<QPair<Node*, QStringList> > q;
     QVector<Node*> execOrder;
+    QLinkedList<Exclusion> exclusions;
 
     Ide *parent;
     CommandLine *cmd;
