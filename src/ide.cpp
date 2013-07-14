@@ -976,14 +976,6 @@ void Ide::readSettingsfromFile()
 void Ide::startProjectExec(QIODevice::OpenMode fileMode,
                            QLinkedList<Exclusion> exclusionList)
 {
-
-    for(QLinkedList<Exclusion>::Iterator i = exclusionList.begin(); i != exclusionList.end(); i++)
-    {
-        qDebug()<<i->taskId<<" "<<i->outFile;
-        for(int j = 0; j < i->inFiles.size(); j++)
-            qDebug()<<i->inFiles[j];
-    }
-
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
     {

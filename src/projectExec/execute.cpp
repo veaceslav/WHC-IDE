@@ -28,6 +28,7 @@
 #include <QTextEdit>
 #include <QLinkedList>
 
+#include "staticmethods.h"
 #include "projBuild/commandline.h"
 #include "execute.h"
 #include "sorttask.h"
@@ -35,7 +36,7 @@
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
                  Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
                  QLinkedList<Exclusion> exclusionList):execOrder(sorted),
-                 cmd(cmd)
+                 exclusions(exclusionList), cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
 
@@ -254,7 +255,51 @@ void Execute::start(int devId)
     list << QString::number(devId);
 
     if(exec2[devId])
-        delete exec2[devId];
+        StaticMethods::destroyObj(&(exec2[devId]));
+
+    for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
+        i != exclusions.end(); i++)
+    {
+        if(i->taskId != pair.first->diagId)
+            continue;
+
+        /**
+         * list.size() - 6 is the number of input files. The 6 strings that
+         * were substracter are: executable name, "-in", "-out", output file,
+         * "-dev", device id.
+         */
+        if(i->inFiles.size() != list.size() - 6)
+            continue;
+
+        bool foundDiff = false;
+        for(int j = 0; j < i->inFiles.size(); j++)
+            /**
+             * list has an offset of 2, the first two strings being
+             * executable name and "-in".
+             */
+            if(i->inFiles[j] != list[j + 2])
+            {
+                foundDiff = true;
+                break;
+            }
+        if(foundDiff)
+            continue;
+
+        /**
+         * The full executable name is not relevant to the user, so it will not
+         * be printed on cmd.
+         */
+        list.removeFirst();
+        cmd->addLine("Recovered " + pair.first->Name + " " + list.join(" "),
+                     Qt::darkGreen);
+        /**
+         * The task has been recovered so we will remove it from the list of
+         * tasks that can be recovered (skipped).
+         */
+        exclusions.erase(i);
+        start(devId);
+        return;
+    }
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
