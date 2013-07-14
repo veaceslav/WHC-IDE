@@ -1,6 +1,3 @@
-#include(${QT_USE_FILE})
-#include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-
 include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5Xml_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS} ${Qt5Xml_DEFINITIONS})
 
@@ -27,6 +24,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
     ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 set(CMAKE_CXX_FLAGS "-fPIC")
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(model_SOURCES
     model/projecttreemodel.cpp
@@ -219,13 +218,10 @@ add_executable(whc
         ${whc_RESOURCES_RCC}
 )
 
-qt5_use_modules(whc Widgets)
-qt5_use_modules(whc Core)
-qt5_use_modules(whc Test)
+qt5_use_modules(whc Widgets Core Test Xml)
 
 target_link_libraries(whc
     ${Qt5Widgets_LIBRARIES}
-    ${QT_QTTEST_LIBRARY}
     ${LIBSSH_LIBRARIES}
     ${EXTRA_LIBS}
     iwf
