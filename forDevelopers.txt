@@ -23,7 +23,7 @@ This is a basic list of recomendations before sending a patch/adding a commit
 
 7. Intend with 4 spaces(no tabs)
 
-8. Use Linux coding style:
+8. Use GNU coding style:
 
     int function()
     {
