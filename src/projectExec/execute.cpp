@@ -28,7 +28,6 @@
 #include <QTextEdit>
 #include <QLinkedList>
 
-#include "staticmethods.h"
 #include "projBuild/commandline.h"
 #include "execute.h"
 #include "sorttask.h"
@@ -36,7 +35,7 @@
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
                  Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
                  QLinkedList<Exclusion> exclusionList):execOrder(sorted),
-                 exclusions(exclusionList), cmd(cmd)
+                 devices(devices), exclusions(exclusionList), cmd(cmd)
 {
     path = whcFile.remove(whcFile.split("/").last());
 
@@ -110,6 +109,8 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
     }
     delete args;
 
+    exec2[dev]->deleteLater();
+
     if(!stop)
         start(dev);
 }
@@ -139,10 +140,9 @@ void Execute::execute()
      *  and start execution on all selected devices
      */
     devFinished = 0;
-    QMap<int, OneProcess*>::iterator it;
 
-    for(it = exec2.begin(); it != exec2.end(); ++it)
-        start(it.key());
+    for(int i = 0; i < devices.size(); i++)
+        start(i);
 }
 
 void Execute::fillQueue(Node *nod)
@@ -253,9 +253,6 @@ void Execute::start(int devId)
     QStringList list = pair.second;
 
     list << QString::number(devId);
-
-    if(exec2[devId])
-        StaticMethods::destroyObj(&(exec2[devId]));
 
     for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
         i != exclusions.end(); i++)

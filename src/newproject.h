@@ -58,7 +58,6 @@ class NewProject : public QDialog
 public:
 
     NewProject(Ide *parent);
-    ~NewProject();
 
     Ui_ProjectDialog ui;
     /**
@@ -90,5 +89,10 @@ private Q_SLOTS:
      * on specified location
      */
     void slotCreateProject();
+
+    /**
+     * @brief slotCancelProject - Cancels the creation of a new project
+     */
+    void slotCancelProject();
 };
 #endif // NEWPROJECT_H

@@ -29,15 +29,17 @@ NewProject::NewProject(Ide *parent)
 
 {
     ui.setupUi(this);
-    this->parent=parent;
+    this->parent = parent;
     ui.projectLocation->setText(QDir::homePath());
+
     connect(ui.setprojectLocation, SIGNAL(clicked()),
             this, SLOT(slotSelectLocation()));
     connect(ui.templateProj, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotUpdateImage()));
-
     connect(ui.projectFinish, SIGNAL(clicked()),
             this, SLOT(slotCreateProject()));
+    connect(ui.projectCancel, SIGNAL(clicked()),
+            this, SLOT(slotCancelProject()));
 }
 
 void NewProject::slotUpdateImage()
@@ -122,7 +124,8 @@ void NewProject::slotCreateProject()
     parent->startNewProject(path);
     this->close();
 }
-NewProject::~NewProject()
-{
 
+void NewProject::slotCancelProject()
+{
+    this->close();
 }

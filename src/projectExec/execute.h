@@ -104,6 +104,7 @@ private:
 
     QQueue<QPair<Node*, QStringList> > q;
     QVector<Node*> execOrder;
+    QVector<int> devices;
     QLinkedList<Exclusion> exclusions;
 
     Ide *parent;
