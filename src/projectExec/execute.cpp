@@ -99,9 +99,6 @@ void Execute::forceStop()
 void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
                               int taskStatus, int moreInfo)
 {
-    if(taskStatus == OneProcess::Success)
-        cmd->addLine(QString("[Device %1] Done!").arg(dev), Qt::darkGreen);
-
     if(saveExecProgress)
     {
         (*saveStream)<<finishedTask<<" ";

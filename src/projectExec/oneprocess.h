@@ -111,6 +111,15 @@ private:
      */
     QString getExecutableName(QString path);
 
+    /**
+     * @brief writeErrorToCmd - Writes a line about an error that the process
+     *                          encountered. Do not confuse it with standard
+     *                          error. This is used only for errors that
+     *                          cause a crash.
+     * @param message         - The error description
+     */
+    void writeErrorToCmd(QString message);
+
     QProcess *proc;
     Node *taskNode;
     CommandLine *cmdL;

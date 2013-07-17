@@ -59,6 +59,30 @@ void OneProcess::slotUpdateError()
 
 void OneProcess::slotProcessFailed(QProcess::ProcessError error)
 {
+    QString errType;
+    switch(error)
+    {
+    case QProcess::FailedToStart :
+        errType = "failed to start";
+        break;
+    case QProcess::Crashed :
+        errType = "crashed";
+        break;
+    case QProcess::Timedout :
+        errType = "timedout";
+        break;
+    case QProcess::WriteError :
+        errType = "write error";
+        break;
+    case QProcess::ReadError :
+        errType = "read error";
+        break;
+    case QProcess::UnknownError :
+        errType = "unknown error";
+        break;
+    }
+    writeErrorToCmd("process error - " + errType);
+
     emit signalEnd(device, taskNode->diagId, args, ProcessError, error);
 }
 
@@ -137,6 +161,12 @@ QString OneProcess::getExecutableName(QString path)
     return QString("");
 }
 
+void OneProcess::writeErrorToCmd(QString message)
+{
+    QString msg = QString("[Device %1] Error: ").arg(device) + message;
+    cmdL->addLine(msg, Qt::red);
+}
+
 void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 {
     QString message = "[Device %1] Process ended with exit code %2";
@@ -144,6 +174,8 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 
     if(exitStatus == QProcess::CrashExit)
     {
+        writeErrorToCmd("crash exit");
+
         emit signalEnd(device, taskNode->diagId, args, CrashExitError);
         return;
     }
@@ -186,6 +218,8 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
                 if(QFile::exists(dest) && !QFile::remove(dest))
                 {
                     qDebug() << "copyToData: impossible to overwrite old file";
+                    writeErrorToCmd("overwrite failed");
+
                     emit signalEnd(device, taskNode->diagId, args,
                                    IOError, Replace);
                     return;
@@ -196,6 +230,8 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
                 if(!dir.exists(destDir) && !dir.mkdir(destDir))
                 {
                     qDebug() << "copyToData: cannot create output directory";
+                    writeErrorToCmd("output folder creation failed");
+
                     emit signalEnd(device, taskNode->diagId, args,
                                    IOError, Mkdir);
                     return;
@@ -204,6 +240,8 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
                 if(!QFile::copy(source, dest))
                 {
                     qDebug() << "copyToData: Error! file was not copied";
+                    writeErrorToCmd("output copy failed");
+
                     emit signalEnd(device, taskNode->diagId, args,
                                    IOError, Copy);
                     return;
@@ -211,5 +249,6 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
             }
     }
 
+    cmdL->addLine(QString("[Device %1] Done!").arg(device), Qt::darkGreen);
     emit signalEnd(device, taskNode->diagId, args, Success);
 }
