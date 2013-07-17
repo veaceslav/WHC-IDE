@@ -210,6 +210,6 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
                 }
             }
     }
-    qDebug()<<"emiting";
+
     emit signalEnd(device, taskNode->diagId, args, Success);
 }

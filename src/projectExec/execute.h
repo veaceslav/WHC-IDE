@@ -44,9 +44,8 @@ class CommandLine;
 
 struct Exclusion
 {
-    int taskId;
+    int taskId, taskStatus, moreInfo;
     QStringList inFiles;
-    QString outFile;
 };
 
 class Execute : public QObject

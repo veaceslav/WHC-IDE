@@ -105,9 +105,12 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
     if(saveExecProgress)
     {
         (*saveStream)<<finishedTask<<" ";
-        for(int i = 1; i < args->size() - 2; i++)
+        /**
+         * size() - 4 excludes the -out outputFile -dev Id arguments
+         */
+        for(int i = 1; i < args->size() - 4; i++)
             (*saveStream)<<args->at(i)<<" ";
-        (*saveStream)<<"\n";
+        (*saveStream)<<QString("-status %1 %2\n").arg(taskStatus).arg(moreInfo);
         saveStream->flush();
     }
     delete args;
@@ -261,6 +264,10 @@ void Execute::start(int devId)
         i != exclusions.end(); i++)
     {
         if(i->taskId != pair.first->diagId)
+            continue;
+
+        if(i->taskStatus != OneProcess::Success &&
+           i->taskStatus != OneProcess::IOError)
             continue;
 
         /**
