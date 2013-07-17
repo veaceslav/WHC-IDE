@@ -147,61 +147,56 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
     cmdL->addLine("Process ended with exit code " + QString::number(exitCode),
                   Qt::darkGreen);
 
-    if(exitStatus == QProcess::ExitStatus)
+    if(exitStatus == QProcess::CrashExit)
     {
         encounteredError();
-        return
-    }
-
-
-    int inputs = taskNode->link.size() - 1;
-
-    if(taskNode->link[inputs].isEmpty())
-    {
-        emit signalEnd(device, taskNode->diagId, args);
         return;
     }
 
-    QDir dir(buildPath);
-    QString source = dir.cleanPath(buildPath + "/" + tempPath);
-    QString filename = tempPath.split("/").last();
+    int inputs = taskNode->link.size() - 1;
 
-    for(int i = 0; i < taskNode->link[inputs].size(); i++)
-        if(taskNode->link[inputs].at(i)->type == 1) // Data type
-        {
-            Node *data = taskNode->link[inputs].at(i);
+    if(!(taskNode->link[inputs].isEmpty()))
+    {
+        QDir dir(buildPath);
+        QString source = dir.cleanPath(buildPath + "/" + tempPath);
+        QString filename = tempPath.split("/").last();
 
-            QString destDir = dir.cleanPath(buildPath
+        for(int i = 0; i < taskNode->link[inputs].size(); i++)
+            if(taskNode->link[inputs].at(i)->type == 1) // Data type
+            {
+                Node *data = taskNode->link[inputs].at(i);
+
+                QString destDir = dir.cleanPath(buildPath
                                             + "../../../../data/" + data->Name);
-            QString dest = dir.cleanPath(destDir + "/" + filename);
+                QString dest = dir.cleanPath(destDir + "/" + filename);
 
-            /** Add files to project tree **/
-            ProjectTreeItem *groupItem = model->getGroupByName(data->Name);
-            if(!groupItem->searchChildByName(filename))
-            {
-                QDomElement elem = projXml->createElement("file");
-                elem.setAttribute("name", filename);
+                /** Add files to project tree **/
+                ProjectTreeItem *groupItem = model->getGroupByName(data->Name);
+                if(!groupItem->searchChildByName(filename))
+                {
+                    QDomElement elem = projXml->createElement("file");
+                    elem.setAttribute("name", filename);
 
-                QDomNode groupNode = groupItem->getNode();
-                groupNode.appendChild(elem);
+                    QDomNode groupNode = groupItem->getNode();
+                    groupNode.appendChild(elem);
 
-                model->addItem(new ProjectTreeItem(elem, groupItem), groupItem);
+                    model->addItem(new ProjectTreeItem(elem, groupItem),
+                                   groupItem);
+                }
+
+                /** Copy file to data folder, overwrite**/
+                if(QFile::exists(dest) && !QFile::remove(dest))
+                    qDebug() << "copyToData: impossible to overwrite old file";
+
+
+                /** Create output folder if not present **/
+                if(!dir.exists(destDir))
+                    dir.mkdir(destDir);
+
+                if(!QFile::copy(source, dest))
+                    qDebug() << "copyToData: Error! file was not copied";
             }
+    }
 
-            /** Copy file to data folder, overwrite**/
-            if(QFile::exists(dest))
-            {
-                if(!QFile::remove(dest))
-                    qDebug() << "copyToData: impossible to remove file";
-
-            }
-
-            /** Create output folder if not present **/
-            if (!dir.exists(destDir))
-                dir.mkdir(destDir);
-
-            if(!QFile::copy(source, dest))
-                qDebug() << "copyToData: Error! file was not copied";
-        }
     emit signalEnd(device, taskNode->diagId, args);
 }
