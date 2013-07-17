@@ -99,7 +99,8 @@ void Execute::forceStop()
 void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
                               int taskStatus, int moreInfo)
 {
-    if(saveExecProgress)
+    if(saveExecProgress &&
+       (taskStatus == OneProcess::Success || taskStatus == OneProcess::IOError))
     {
         (*saveStream)<<finishedTask<<" ";
         /**
