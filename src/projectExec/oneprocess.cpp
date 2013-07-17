@@ -57,6 +57,11 @@ void OneProcess::slotUpdateError()
     cmdL->addDebugLine(QString(data));
 }
 
+void OneProcess::slotProcessFailed(QProcess::ProcessError error)
+{
+    encounteredError();
+}
+
 void OneProcess::slotUpdateText()
 {
     QByteArray data = proc->readAllStandardOutput();
@@ -72,8 +77,10 @@ void OneProcess::startExecution()
             this, SLOT(slotUpdateError()));
     connect(proc, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotUpdateText()));
-    connect(proc, SIGNAL(finished(int)),
-            this, SLOT(copytoData()));
+    connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(slotCopyToData(int, QProcess::ExitStatus)));
+    connect(proc, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(slotProcessFailed(QProcess::ProcessError)));
 
 
     QString executableName = buildPath;
@@ -130,9 +137,25 @@ QString OneProcess::getExecutableName(QString path)
     return QString("");
 }
 
-void OneProcess::copytoData()
+void OneProcess::encounteredError()
 {
+    delete args;
+}
+
+void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    cmdL->addLine("Process ended with exit code " + QString::number(exitCode),
+                  Qt::darkGreen);
+
+    if(exitStatus == QProcess::ExitStatus)
+    {
+        encounteredError();
+        return
+    }
+
+
     int inputs = taskNode->link.size() - 1;
+
     if(taskNode->link[inputs].isEmpty())
     {
         emit signalEnd(device, taskNode->diagId, args);
@@ -142,6 +165,7 @@ void OneProcess::copytoData()
     QDir dir(buildPath);
     QString source = dir.cleanPath(buildPath + "/" + tempPath);
     QString filename = tempPath.split("/").last();
+
     for(int i = 0; i < taskNode->link[inputs].size(); i++)
         if(taskNode->link[inputs].at(i)->type == 1) // Data type
         {
