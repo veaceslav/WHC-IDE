@@ -82,7 +82,7 @@ signals:
      * @param moreInfo   - more info, in case the status indicates an error
      */
     void signalEnd(int device, int diagId, QStringList *args,
-                   TaskStatus taskStatus, int moreInfo = 0);
+                   int taskStatus, int moreInfo = 0);
 
 private slots:
 

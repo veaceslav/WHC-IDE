@@ -69,7 +69,7 @@ private slots:
      *                          to execute next element
      */
     void slotNextProcess(int dev, int finishedTask, QStringList *args,
-                         OneProcess::TaskStatus taskStatus, int moreInfo = 0);
+                         int taskStatus, int moreInfo);
 
 signals:
 

@@ -139,8 +139,8 @@ QString OneProcess::getExecutableName(QString path)
 
 void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    cmdL->addLine("Process ended with exit code " + QString::number(exitCode),
-                  Qt::darkGreen);
+    QString message = "[Device %1] Process ended with exit code %2";
+    cmdL->addLine(message.arg(device).arg(exitCode), Qt::darkGreen);
 
     if(exitStatus == QProcess::CrashExit)
     {
@@ -150,11 +150,14 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 
     int inputs = taskNode->link.size() - 1;
 
-    if(!(taskNode->link[inputs].isEmpty()))
+    if(!taskNode->link[inputs].isEmpty())
     {
         QDir dir(buildPath);
         QString source = dir.cleanPath(buildPath + "/" + tempPath);
         QString filename = tempPath.split("/").last();
+
+        QString message = "[Device %1] Copying output...";
+        cmdL->addLine(message.arg(device), Qt::darkGreen);
 
         for(int i = 0; i < taskNode->link[inputs].size(); i++)
             if(taskNode->link[inputs].at(i)->type == 1) // Data type
