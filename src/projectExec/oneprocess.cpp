@@ -59,7 +59,7 @@ void OneProcess::slotUpdateError()
 
 void OneProcess::slotProcessFailed(QProcess::ProcessError error)
 {
-    encounteredError();
+    emit signalEnd(device, taskNode->diagId, args, ProcessError, error);
 }
 
 void OneProcess::slotUpdateText()
@@ -137,11 +137,6 @@ QString OneProcess::getExecutableName(QString path)
     return QString("");
 }
 
-void OneProcess::encounteredError()
-{
-    delete args;
-}
-
 void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 {
     cmdL->addLine("Process ended with exit code " + QString::number(exitCode),
@@ -149,7 +144,7 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 
     if(exitStatus == QProcess::CrashExit)
     {
-        encounteredError();
+        emit signalEnd(device, taskNode->diagId, args, CrashExitError);
         return;
     }
 
@@ -186,17 +181,32 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 
                 /** Copy file to data folder, overwrite**/
                 if(QFile::exists(dest) && !QFile::remove(dest))
+                {
                     qDebug() << "copyToData: impossible to overwrite old file";
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Replace);
+                    return;
+                }
 
 
                 /** Create output folder if not present **/
-                if(!dir.exists(destDir))
-                    dir.mkdir(destDir);
+                if(!dir.exists(destDir) && !dir.mkdir(destDir))
+                {
+                    qDebug() << "copyToData: cannot create output directory";
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Mkdir);
+                    return;
+                }
 
                 if(!QFile::copy(source, dest))
+                {
                     qDebug() << "copyToData: Error! file was not copied";
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Copy);
+                    return;
+                }
             }
     }
-
-    emit signalEnd(device, taskNode->diagId, args);
+    qDebug()<<"emiting";
+    emit signalEnd(device, taskNode->diagId, args, Success);
 }

@@ -68,7 +68,8 @@ private slots:
      * @brief slotNextProcess - after finishing, calls one again start()
      *                          to execute next element
      */
-    void slotNextProcess(int dev, int finishedTask, QStringList *args);
+    void slotNextProcess(int dev, int finishedTask, QStringList *args,
+                         OneProcess::TaskStatus taskStatus, int moreInfo = 0);
 
 signals:
 

@@ -96,7 +96,8 @@ void Execute::forceStop()
     emit signalFinishedExec();
 }
 
-void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
+void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
+                              OneProcess::TaskStatus taskStatus, int moreInfo)
 {
     cmd->addLine("Done!", Qt::darkGreen);
     if(saveExecProgress)
@@ -300,8 +301,10 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *)),
-            this, SLOT(slotNextProcess(int, int, QStringList *)));
+    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *,
+                                           OneProcess::TaskStatus, int)),
+            this, SLOT(slotNextProcess(int, int, QStringList *,
+                                       OneProcess::TaskStatus, int)));
 
     exec2[devId]->startExecution();
 

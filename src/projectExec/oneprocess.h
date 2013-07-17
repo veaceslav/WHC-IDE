@@ -51,6 +51,10 @@ class OneProcess : public QObject
 {
     Q_OBJECT
 public:
+
+    enum TaskStatus {Success, IOError, CrashExitError, ProcessError};
+    enum IOErrorType {Copy, Replace, Mkdir};
+
     /**
      * @brief OneProcess
      * @param cmd - Shared Command line that show execution progress
@@ -68,11 +72,17 @@ public:
 signals:
 
     /**
-     * @brief signalEnd - emit this signal when both execution and data copy are
-     *                    done, so the Execute class can go to next element in
-     *                    queue
+     * @brief signalEnd -  emits this signal when execution and data copy are
+     *                     done, so the Execute class can go to next element in
+     *                     queue
+     * @param device     - the device that ran the process
+     * @param diagId     - the diagram id of the task
+     * @param args       - list with the process arguments
+     * @param taskStatus - the status of the task that ran
+     * @param moreInfo   - more info, in case the status indicates an error
      */
-    void signalEnd(int device, int diagId, QStringList *args);
+    void signalEnd(int device, int diagId, QStringList *args,
+                   TaskStatus taskStatus, int moreInfo = 0);
 
 private slots:
 
@@ -100,12 +110,6 @@ private:
      *                            then return ""
      */
     QString getExecutableName(QString path);
-
-    /**
-     * @brief encounteredError - this method treats the case of an error
-     *                           encountered by the process
-     */
-    void encounteredError();
 
     QProcess *proc;
     Node *taskNode;
