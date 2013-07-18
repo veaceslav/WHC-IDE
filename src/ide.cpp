@@ -971,6 +971,7 @@ void Ide::readSettingsfromFile()
     settings->MsSDKPath     = sets.value("MsSDKPath").toString();
     settings->VStudioPath   = sets.value("VStudioPath").toString();
     settings->saveFlow      = sets.value("saveFlow").toBool();
+    settings->enableLogging = sets.value("enableLogging").toBool();
 }
 
 void Ide::startProjectExec(QIODevice::OpenMode fileMode,

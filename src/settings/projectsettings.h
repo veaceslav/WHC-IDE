@@ -51,6 +51,9 @@ public :
     /** Save execution workflow **/
     bool saveFlow;
 
+    /** Log the projects' performance **/
+    bool enableLogging;
+
 public:
     ProjectSettings(){ };
 };

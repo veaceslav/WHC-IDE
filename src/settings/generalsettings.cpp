@@ -27,14 +27,14 @@
 #include "generalsettings.h"
 
 
-GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
+GeneralSettings::GeneralSettings(Ide *parent, ProjectSettings *settings)
     : QDialog(parent), ui(new Ui::settingsDialog())
 {
 
     ui->setupUi(this);
     this->settings = settings;
 
-    QListWidgetItem* compiler = new QListWidgetItem("Compiler");
+    QListWidgetItem *compiler = new QListWidgetItem("Compiler");
     compiler->setTextAlignment(Qt::AlignCenter);
     compiler->setIcon(QIcon(":/images/logoWHC.png"));
     ui->listWidget->addItem(compiler);
@@ -43,7 +43,7 @@ GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
             this, SLOT(slotUpdateWidget()));
 
 
-    QListWidgetItem* editor = new QListWidgetItem("Editor");
+    QListWidgetItem *editor = new QListWidgetItem("Editor");
     editor->setTextAlignment(Qt::AlignCenter);
     editor->setIcon(QIcon(":/images/logoWHC.png"));
     ui->listWidget->addItem(editor);
@@ -58,7 +58,7 @@ GeneralSettings::GeneralSettings(Ide* parent, ProjectSettings *settings)
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(slotSaveSettings()));
 
-    QPushButton* applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
+    QPushButton *applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
     connect(applyButton, SIGNAL(clicked()), this, SLOT(slotSaveSettings()));
 
 
@@ -126,12 +126,12 @@ void GeneralSettings::loadSettings()
 
     ui->saveFlow->setChecked(settings->saveFlow);
 
+    ui->logging->setChecked(settings->enableLogging);
+
 }
 
 void GeneralSettings::slotSaveSettings()
 {
-    qDebug() << "Save Settings";
-
     editor_settings->applyButtonPressed();
 
     settings->clPath = ui->clLine->text();
@@ -143,6 +143,8 @@ void GeneralSettings::slotSaveSettings()
     settings->VStudioPath = ui->vsLine->text();
 
     settings->saveFlow = ui->saveFlow->isChecked();
+
+    settings->enableLogging = ui->logging->isChecked();
 
     setSettingsToFile();
 }
@@ -156,6 +158,7 @@ void GeneralSettings::setSettingsToFile()
     sets.setValue("MsSDKPath", settings->MsSDKPath);
     sets.setValue("VStudioPath", settings->VStudioPath);
     sets.setValue("saveFlow", settings->saveFlow);
+    sets.setValue("enableLogging", settings->enableLogging);
 
     sets.sync();
 }
