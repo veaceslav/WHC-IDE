@@ -25,6 +25,7 @@
 #define ONEPROCESS_H
 
 #include <QObject>
+#include <QProcess>
 
 #ifdef _WIN32
 #define OS 1
@@ -50,6 +51,10 @@ class OneProcess : public QObject
 {
     Q_OBJECT
 public:
+
+    enum TaskStatus {Success, IOError, CrashExitError, ProcessError};
+    enum IOErrorType {Copy, Replace, Mkdir};
+
     /**
      * @brief OneProcess
      * @param cmd - Shared Command line that show execution progress
@@ -67,33 +72,53 @@ public:
 signals:
 
     /**
-     * @brief signalEnd - emit this signal when both execution and data copy are
-     *                    done, so the Execute class can go to next element in
-     *                    queue
+     * @brief signalEnd -  emits this signal when execution and data copy are
+     *                     done, so the Execute class can go to next element in
+     *                     queue
+     * @param device     - the device that ran the process
+     * @param diagId     - the diagram id of the task
+     * @param args       - list with the process arguments
+     * @param taskStatus - the status of the task that ran
+     * @param moreInfo   - more info, in case the status indicates an error
      */
-    void signalEnd(int, int, QStringList *);
+    void signalEnd(int device, int diagId, QStringList *args,
+                   int taskStatus, int moreInfo = 0);
 
 private slots:
 
     /**
-     * @brief copytoData - after execution, check if data folders are connected
-     *                     to output and copy data to them
+     * @brief slotCopyToData - after execution, check if data folders are
+     *                         connected to output and copy data to them
      */
-    void copytoData();
+    void slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus);
 
     void slotUpdateText();
 
     void slotUpdateError();
 
+    void slotProcessFailed(QProcess::ProcessError error);
+
 private:
 
     /**
-     * @brief getExecutableName -  parse CMakeLists.txt for a task and return name of the executable
-     * @param path - file that is parsed to get the name of the executable
-     * @return - name of the executable
-     *         - if the name of the executable si not found in CMakeLists.txt, then return ""
+     * @brief getExecutableName - parse CMakeLists.txt for a task and return
+     *                            name of the executable
+     * @param path              - file that is parsed to get the name of the
+     *                            executable
+     * @return                  - name of the executable. If the name of the
+     *                            executable si not found in CMakeLists.txt,
+     *                            then return ""
      */
     QString getExecutableName(QString path);
+
+    /**
+     * @brief writeErrorToCmd - Writes a line about an error that the process
+     *                          encountered. Do not confuse it with standard
+     *                          error. This is used only for errors that
+     *                          cause a crash.
+     * @param message         - The error description
+     */
+    void writeErrorToCmd(QString message);
 
     QProcess *proc;
     Node *taskNode;

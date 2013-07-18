@@ -76,7 +76,7 @@ private:
      *                 and set path to given lineEdit
      * @param line   - lineEdit with directory path
      */
-    void setDir(QLineEdit* line);
+    void setDir(QLineEdit *line);
     /**
      * @brief loadSettings - if settings exists, load them from given
      *                       projectsettings object
@@ -87,9 +87,9 @@ private:
      */
     void setSettingsToFile();
 
-    Ui::settingsDialog* ui;
-    ProjectSettings* settings;
-    EditorSettings* editor_settings;
+    Ui::settingsDialog *ui;
+    ProjectSettings *settings;
+    EditorSettings *editor_settings;
 
 };
 

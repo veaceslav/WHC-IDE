@@ -96,15 +96,19 @@ void Execute::forceStop()
     emit signalFinishedExec();
 }
 
-void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args)
+void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
+                              int taskStatus, int moreInfo)
 {
-    cmd->addLine("Done!", Qt::darkGreen);
-    if(saveExecProgress)
+    if(saveExecProgress &&
+       (taskStatus == OneProcess::Success || taskStatus == OneProcess::IOError))
     {
         (*saveStream)<<finishedTask<<" ";
-        for(int i = 1; i < args->size() - 2; i++)
+        /**
+         * size() - 4 excludes the -out outputFile -dev Id arguments
+         */
+        for(int i = 1; i < args->size() - 4; i++)
             (*saveStream)<<args->at(i)<<" ";
-        (*saveStream)<<"\n";
+        (*saveStream)<<QString("-status %1 %2\n").arg(taskStatus).arg(moreInfo);
         saveStream->flush();
     }
     delete args;
@@ -260,6 +264,10 @@ void Execute::start(int devId)
         if(i->taskId != pair.first->diagId)
             continue;
 
+        if(i->taskStatus != OneProcess::Success &&
+           i->taskStatus != OneProcess::IOError)
+            continue;
+
         /**
          * list.size() - 6 is the number of input files. The 6 strings that
          * were substracter are: executable name, "-in", "-out", output file,
@@ -300,8 +308,8 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *)),
-            this, SLOT(slotNextProcess(int, int, QStringList *)));
+    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *, int, int)),
+            this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
 
     exec2[devId]->startExecution();
 

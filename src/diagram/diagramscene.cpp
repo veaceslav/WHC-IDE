@@ -29,14 +29,14 @@
 #include "arrow.h"
 #include "connector.h"
 
-DiagramScene::DiagramScene(QMenu *itemMenu, QDomDocument* projectXml, DiagramWindow *parent)
-    : QGraphicsScene(parent),
-      projXml(projectXml)
+DiagramScene::DiagramScene(QMenu *itemMenu, QDomDocument *projectXml,
+                           DiagramWindow *parent)
+    : QGraphicsScene(parent), projXml(projectXml)
 {
     myItemMenu = itemMenu;
     myMode = MoveItem;
     myItemType = DiagramItem::Task;
-    line = 0;
+    line = NULL;
     myLineColor = Qt::black;
     itemCount = 0;
     diagramXml = projXml->elementsByTagName("diagram").at(0);
@@ -72,10 +72,9 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             if(((DiagramWindow*)parent())->itemListEmpty(myItemType))
                 return;
             nod  = ((DiagramWindow*)parent())->returnCurrentItem(myItemType);
-            xmlNode = createItemXml(nod,mouseEvent->scenePos());
-            item = new DiagramItem(myItemType, myItemMenu,nod.name,
-                                   xmlNode,itemCount,
-                                   nod.inputs);
+            xmlNode = createItemXml(nod, mouseEvent->scenePos());
+            item = new DiagramItem(myItemType, myItemMenu, nod.name,
+                                   xmlNode, itemCount, nod.inputs);
             itemCount++;
             addItem(item);
             item->setPos(mouseEvent->scenePos());
@@ -96,7 +95,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (myMode == InsertLine && line != 0)
+    if (myMode == InsertLine && line != NULL)
     {
         QLineF newLine(line->line().p1(), mouseEvent->scenePos());
         line->setLine(newLine);
@@ -109,7 +108,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (line != 0 && myMode == InsertLine)
+    if (line != NULL && myMode == InsertLine)
     {
         QList<QGraphicsItem *> startItems = items(line->line().p1());
         if (startItems.count() && startItems.first() == line)
@@ -130,8 +129,8 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     qgraphicsitem_cast<Connector *>(startItems.first());
             Connector *endItem =
                     qgraphicsitem_cast<Connector *>(endItems.first());
-            QDomNode arrowXml =  createArrowXml(startItem,endItem);
-            Arrow *arrow = new Arrow(startItem, endItem,arrowXml);
+            QDomNode arrowXml =  createArrowXml(startItem, endItem);
+            Arrow *arrow = new Arrow(startItem, endItem, arrowXml);
 
             arrowList.append(arrow);
             arrow->setColor(myLineColor);
@@ -144,14 +143,15 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
     }
 
-    line = 0;
+    line = NULL;
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
     if(myMode == MoveItem)
     {
         // TODO, documentat mai bine despre qtransform
         QTransform idemtrsf;
-        DiagramItem* item = (DiagramItem*)itemAt(mouseEvent->scenePos(), idemtrsf);
-        if(item == 0)
+        DiagramItem *item = (DiagramItem*)itemAt(mouseEvent->scenePos(),
+                                                 idemtrsf);
+        if(item == NULL)
             return;
         if(item->type() == DiagramItem::Type)
         {
@@ -165,11 +165,11 @@ QDomNode DiagramScene::createItemXml(DiagramNode nod, QPointF pos)
 {
     QDomElement item = projXml->createElement("item");
 
-    item.setAttribute("type",myItemType);
-    item.setAttribute("id",nod.id);
-    item.setAttribute("diagId",itemCount);
-    item.setAttribute("x",pos.x());
-    item.setAttribute("y",pos.y());
+    item.setAttribute("type", myItemType);
+    item.setAttribute("id", nod.id);
+    item.setAttribute("diagId", itemCount);
+    item.setAttribute("x", pos.x());
+    item.setAttribute("y", pos.y());
 
     diagramXml.appendChild(item);
 
@@ -178,20 +178,20 @@ QDomNode DiagramScene::createItemXml(DiagramNode nod, QPointF pos)
     return item;
 }
 
-QDomNode DiagramScene::createArrowXml(Connector* start, Connector* end)
+QDomNode DiagramScene::createArrowXml(Connector *start, Connector *end)
 {
     QDomElement item = projXml->createElement("arrow");
-    DiagramItem* startParent = (DiagramItem*)start->parentItem();
-    DiagramItem* endParent   = (DiagramItem*)end->parentItem();
+    DiagramItem *startParent = (DiagramItem*)start->parentItem();
+    DiagramItem *endParent   = (DiagramItem*)end->parentItem();
 
     /**
      * parentInId is arrow source
      */
-    item.setAttribute("parentInId",startParent->id());
-    item.setAttribute("connectorInId",start->id());
+    item.setAttribute("parentInId", startParent->id());
+    item.setAttribute("connectorInId", start->id());
 
-    item.setAttribute("parentOutId",endParent->id());
-    item.setAttribute("connectorOutId",end->id());
+    item.setAttribute("parentOutId", endParent->id());
+    item.setAttribute("connectorOutId", end->id());
 
     diagramXml.appendChild(item);
     ((DiagramWindow*)parent())->updateXml();
@@ -199,23 +199,23 @@ QDomNode DiagramScene::createArrowXml(Connector* start, Connector* end)
     return item;
 }
 
-DiagramItem* DiagramScene::getItemById(int id)
+DiagramItem *DiagramScene::getItemById(int id)
 {
 
-    for(int i=0;i<diagItems.count();i++)
+    for(int i = 0; i < diagItems.count(); i++)
     {
-        DiagramItem* tmp = diagItems.at(i);
+        DiagramItem *tmp = diagItems.at(i);
         if(tmp->id() == id)
             return tmp;
     }
-    return 0; // Null
+    return NULL;
 }
 
 void DiagramScene::loadDiagram()
 {
     QDomNodeList list = projXml->elementsByTagName("item");
 
-    for(int i=0;i<list.count();i++)
+    for(int i = 0; i < list.count(); i++)
     {
         QDomNode xmlNode = list.at(i);
         QDomNamedNodeMap attr = xmlNode.attributes();
@@ -226,16 +226,16 @@ void DiagramScene::loadDiagram()
         qreal x = attr.namedItem("x").nodeValue().toDouble();
         qreal y = attr.namedItem("y").nodeValue().toDouble();
 
-        DiagramNode nod = ((DiagramWindow*)parent())->searchById(type,id);
+        DiagramNode nod = ((DiagramWindow*)parent())->searchById(type, id);
 
-        DiagramItem* item = new DiagramItem(((DiagramItem::DiagramType)type),
+        DiagramItem *item = new DiagramItem(((DiagramItem::DiagramType)type),
                                             myItemMenu,
                                             nod.name,
                                             xmlNode,
                                             diagId,
                                             nod.inputs);
 
-        item->setPos(x,y);
+        item->setPos(x, y);
 
         diagItems.append(item);
         addItem(item);
@@ -243,23 +243,23 @@ void DiagramScene::loadDiagram()
 
     QDomNodeList list2 = projXml->elementsByTagName("arrow");
 
-    for(int i=0;i<list2.count();i++)
+    for(int i = 0; i < list2.count(); i++)
     {
         QDomNamedNodeMap attr = list2.at(i).attributes();
 
-        DiagramItem* startParent =
+        DiagramItem *startParent =
                 getItemById(attr.namedItem("parentInId").nodeValue().toInt());
 
-        DiagramItem* endParent =
+        DiagramItem *endParent =
                 getItemById(attr.namedItem("parentOutId").nodeValue().toInt());
 
-        Connector* start =
+        Connector *start =
                 startParent->childAt(attr.namedItem("connectorInId").nodeValue().toInt());
 
-        Connector* end =
+        Connector *end =
                 endParent->childAt(attr.namedItem("connectorOutId").nodeValue().toInt());
 
-        Arrow *arrow = new Arrow(start, end,list2.at(i));
+        Arrow *arrow = new Arrow(start, end, list2.at(i));
         arrowList.append(arrow);
 
         arrow->setColor(myLineColor);
@@ -270,12 +270,11 @@ void DiagramScene::loadDiagram()
         arrow->updatePosition();
     }
 
-    for(int i=0;i<diagItems.count();i++)
+    for(int i = 0; i < diagItems.count(); i++)
     {
         diagItems.at(i)->updateId(itemCount);
         itemCount++;
     }
-
 }
 
 void DiagramScene::deleteArrow(Arrow *arr)
@@ -286,9 +285,9 @@ void DiagramScene::deleteArrow(Arrow *arr)
 void DiagramScene::deleteItemsById(int id, int type)
 {
 
-    Q_FOREACH(DiagramItem* item, diagItems)
+    Q_FOREACH(DiagramItem *item, diagItems)
     {
-        if(item->matchIdAndType(id,type))
+        if(item->matchIdAndType(id, type))
         {
             item->removeArrows();
             item->removeDomElement();
