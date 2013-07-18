@@ -324,14 +324,66 @@
        <widget class="QLabel" name="label_17">
         <property name="geometry">
          <rect>
-          <x>250</x>
+          <x>240</x>
           <y>60</y>
-          <width>291</width>
+          <width>341</width>
           <height>21</height>
          </rect>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning: This will decrease performance!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning: Enabling this decreases performance!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>150</y>
+         <width>591</width>
+         <height>151</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Logging</string>
+       </property>
+       <widget class="QLabel" name="label_18">
+        <property name="geometry">
+         <rect>
+          <x>4</x>
+          <y>30</y>
+          <width>521</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>This option enables performance logging for your projects.</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="logging">
+        <property name="geometry">
+         <rect>
+          <x>4</x>
+          <y>60</y>
+          <width>151</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Enable logging</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_19">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>60</y>
+          <width>341</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning: Enabling this decreases performance!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </widget>
