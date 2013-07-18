@@ -49,7 +49,7 @@ class DiagramScene : public QGraphicsScene
 public:
     enum Mode { InsertItem, InsertLine, InsertText, MoveItem};
 
-    DiagramScene(QMenu* itemMenu, QDomDocument *projectXml,
+    DiagramScene(QMenu *itemMenu, QDomDocument *projectXml,
                  DiagramWindow *parent = 0);
     QFont font() const
             { return myFont; }
@@ -62,7 +62,7 @@ public:
              { return arrowList; }
     void loadDiagram();
 
-    void deleteArrow(Arrow* arr);
+    void deleteArrow(Arrow *arr);
 
     void deleteItemsById(int id, int type);
 
@@ -70,7 +70,7 @@ public:
      * @brief removeFromList - remove DiagramItems from class internal list
      * @param item           - item to remove
      */
-    void removeFromList(DiagramItem* item);
+    void removeFromList(DiagramItem *item);
 
     /**
      * @brief renameItem - renames all the items in the scene that have the
@@ -134,7 +134,7 @@ private:
      * @param id          - DiagramItem's id
      * @return            - DiagramItem with a specific id
      */
-    DiagramItem* getItemById(int id);
+    DiagramItem *getItemById(int id);
 
 
     DiagramItem::DiagramType myItemType;
@@ -142,12 +142,12 @@ private:
     QList<Arrow*> arrowList;
     int itemCount;
 
-    QMenu * myItemMenu;
+    QMenu *myItemMenu;
     Mode myMode;
     bool leftButtonDown;
     QPointF startPoint;
-    QGraphicsLineItem * line;
-    QDomDocument* projXml;
+    QGraphicsLineItem *line;
+    QDomDocument *projXml;
     QDomNode diagramXml;
 
     QFont myFont;

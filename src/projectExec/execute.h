@@ -44,9 +44,8 @@ class CommandLine;
 
 struct Exclusion
 {
-    int taskId;
+    int taskId, taskStatus, moreInfo;
     QStringList inFiles;
-    QString outFile;
 };
 
 class Execute : public QObject
@@ -68,7 +67,8 @@ private slots:
      * @brief slotNextProcess - after finishing, calls one again start()
      *                          to execute next element
      */
-    void slotNextProcess(int dev, int finishedTask, QStringList *args);
+    void slotNextProcess(int dev, int finishedTask, QStringList *args,
+                         int taskStatus, int moreInfo);
 
 signals:
 
