@@ -971,6 +971,7 @@ void Ide::readSettingsfromFile()
     settings->MsSDKPath     = sets.value("MsSDKPath").toString();
     settings->VStudioPath   = sets.value("VStudioPath").toString();
     settings->saveFlow      = sets.value("saveFlow").toBool();
+    settings->enableLogging = sets.value("enableLogging").toBool();
 }
 
 void Ide::startProjectExec(QIODevice::OpenMode fileMode,
@@ -1124,14 +1125,14 @@ void Ide::on_actionRestore_triggered()
 
         word = "";
 
-        while(word != "-out" && !readStream.atEnd())
+        while(word != "-status" && !readStream.atEnd())
         {
             readStream>>word;
-            if(word != "-out")
+            if(word != "-status")
                 excl.inFiles.push_back(word);
         }
 
-        readStream>>excl.outFile;
+        readStream>>excl.taskStatus>>excl.moreInfo;
 
         exclusionList.push_back(excl);
     }

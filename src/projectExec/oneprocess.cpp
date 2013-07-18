@@ -57,6 +57,35 @@ void OneProcess::slotUpdateError()
     cmdL->addDebugLine(QString(data));
 }
 
+void OneProcess::slotProcessFailed(QProcess::ProcessError error)
+{
+    QString errType;
+    switch(error)
+    {
+    case QProcess::FailedToStart :
+        errType = "failed to start";
+        break;
+    case QProcess::Crashed :
+        errType = "crashed";
+        break;
+    case QProcess::Timedout :
+        errType = "timedout";
+        break;
+    case QProcess::WriteError :
+        errType = "write error";
+        break;
+    case QProcess::ReadError :
+        errType = "read error";
+        break;
+    case QProcess::UnknownError :
+        errType = "unknown error";
+        break;
+    }
+    writeErrorToCmd("process error - " + errType);
+
+    emit signalEnd(device, taskNode->diagId, args, ProcessError, error);
+}
+
 void OneProcess::slotUpdateText()
 {
     QByteArray data = proc->readAllStandardOutput();
@@ -72,8 +101,10 @@ void OneProcess::startExecution()
             this, SLOT(slotUpdateError()));
     connect(proc, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotUpdateText()));
-    connect(proc, SIGNAL(finished(int)),
-            this, SLOT(copytoData()));
+    connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(slotCopyToData(int, QProcess::ExitStatus)));
+    connect(proc, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(slotProcessFailed(QProcess::ProcessError)));
 
 
     QString executableName = buildPath;
@@ -130,54 +161,94 @@ QString OneProcess::getExecutableName(QString path)
     return QString("");
 }
 
-void OneProcess::copytoData()
+void OneProcess::writeErrorToCmd(QString message)
 {
-    int inputs = taskNode->link.size() - 1;
-    if(taskNode->link[inputs].isEmpty())
+    QString msg = QString("[Device %1] Error: ").arg(device) + message;
+    cmdL->addLine(msg, Qt::red);
+}
+
+void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    QString message = "[Device %1] Process ended with exit code %2";
+    cmdL->addLine(message.arg(device).arg(exitCode), Qt::darkGreen);
+
+    if(exitStatus == QProcess::CrashExit)
     {
-        emit signalEnd(device, taskNode->diagId, args);
+        writeErrorToCmd("crash exit");
+
+        emit signalEnd(device, taskNode->diagId, args, CrashExitError);
         return;
     }
 
-    QDir dir(buildPath);
-    QString source = dir.cleanPath(buildPath + "/" + tempPath);
-    QString filename = tempPath.split("/").last();
-    for(int i = 0; i < taskNode->link[inputs].size(); i++)
-        if(taskNode->link[inputs].at(i)->type == 1) // Data type
-        {
-            Node *data = taskNode->link[inputs].at(i);
+    int inputs = taskNode->link.size() - 1;
 
-            QString destDir = dir.cleanPath(buildPath
+    if(!taskNode->link[inputs].isEmpty())
+    {
+        QDir dir(buildPath);
+        QString source = dir.cleanPath(buildPath + "/" + tempPath);
+        QString filename = tempPath.split("/").last();
+
+        QString message = "[Device %1] Copying output...";
+        cmdL->addLine(message.arg(device), Qt::darkGreen);
+
+        for(int i = 0; i < taskNode->link[inputs].size(); i++)
+            if(taskNode->link[inputs].at(i)->type == 1) // Data type
+            {
+                Node *data = taskNode->link[inputs].at(i);
+
+                QString destDir = dir.cleanPath(buildPath
                                             + "../../../../data/" + data->Name);
-            QString dest = dir.cleanPath(destDir + "/" + filename);
+                QString dest = dir.cleanPath(destDir + "/" + filename);
 
-            /** Add files to project tree **/
-            ProjectTreeItem *groupItem = model->getGroupByName(data->Name);
-            if(!groupItem->searchChildByName(filename))
-            {
-                QDomElement elem = projXml->createElement("file");
-                elem.setAttribute("name", filename);
+                /** Add files to project tree **/
+                ProjectTreeItem *groupItem = model->getGroupByName(data->Name);
+                if(!groupItem->searchChildByName(filename))
+                {
+                    QDomElement elem = projXml->createElement("file");
+                    elem.setAttribute("name", filename);
 
-                QDomNode groupNode = groupItem->getNode();
-                groupNode.appendChild(elem);
+                    QDomNode groupNode = groupItem->getNode();
+                    groupNode.appendChild(elem);
 
-                model->addItem(new ProjectTreeItem(elem, groupItem), groupItem);
+                    model->addItem(new ProjectTreeItem(elem, groupItem),
+                                   groupItem);
+                }
+
+                /** Copy file to data folder, overwrite**/
+                if(QFile::exists(dest) && !QFile::remove(dest))
+                {
+                    qDebug() << "copyToData: impossible to overwrite old file";
+                    writeErrorToCmd("overwrite failed");
+
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Replace);
+                    return;
+                }
+
+
+                /** Create output folder if not present **/
+                if(!dir.exists(destDir) && !dir.mkdir(destDir))
+                {
+                    qDebug() << "copyToData: cannot create output directory";
+                    writeErrorToCmd("output folder creation failed");
+
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Mkdir);
+                    return;
+                }
+
+                if(!QFile::copy(source, dest))
+                {
+                    qDebug() << "copyToData: Error! file was not copied";
+                    writeErrorToCmd("output copy failed");
+
+                    emit signalEnd(device, taskNode->diagId, args,
+                                   IOError, Copy);
+                    return;
+                }
             }
+    }
 
-            /** Copy file to data folder, overwrite**/
-            if(QFile::exists(dest))
-            {
-                if(!QFile::remove(dest))
-                    qDebug() << "copyToData: impossible to remove file";
-
-            }
-
-            /** Create output folder if not present **/
-            if (!dir.exists(destDir))
-                dir.mkdir(destDir);
-
-            if(!QFile::copy(source, dest))
-                qDebug() << "copyToData: Error! file was not copied";
-        }
-    emit signalEnd(device, taskNode->diagId, args);
+    cmdL->addLine(QString("[Device %1] Done!").arg(device), Qt::darkGreen);
+    emit signalEnd(device, taskNode->diagId, args, Success);
 }
