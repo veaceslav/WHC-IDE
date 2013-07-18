@@ -213,11 +213,11 @@ DiagramItem *DiagramScene::getItemById(int id)
 
 void DiagramScene::loadDiagram()
 {
-    QDomNodeList lst = projXml->elementsByTagName("item");
+    QDomNodeList list = projXml->elementsByTagName("item");
 
-    for(int i = 0; i < lst.count(); i++)
+    for(int i = 0; i < list.count(); i++)
     {
-        QDomNode xmlNode = lst.at(i);
+        QDomNode xmlNode = list.at(i);
         QDomNamedNodeMap attr = xmlNode.attributes();
         int type = attr.namedItem("type").nodeValue().toInt();
         int id = attr.namedItem("id").nodeValue().toInt();
@@ -241,11 +241,11 @@ void DiagramScene::loadDiagram()
         addItem(item);
     }
 
-    QDomNodeList lst2 = projXml->elementsByTagName("arrow");
+    QDomNodeList list2 = projXml->elementsByTagName("arrow");
 
-    for(int i = 0; i < lst2.count(); i++)
+    for(int i = 0; i < list2.count(); i++)
     {
-        QDomNamedNodeMap attr = lst2.at(i).attributes();
+        QDomNamedNodeMap attr = list2.at(i).attributes();
 
         DiagramItem *startParent =
                 getItemById(attr.namedItem("parentInId").nodeValue().toInt());
@@ -259,7 +259,7 @@ void DiagramScene::loadDiagram()
         Connector *end =
                 endParent->childAt(attr.namedItem("connectorOutId").nodeValue().toInt());
 
-        Arrow *arrow = new Arrow(start, end, lst2.at(i));
+        Arrow *arrow = new Arrow(start, end, list2.at(i));
         arrowList.append(arrow);
 
         arrow->setColor(myLineColor);
