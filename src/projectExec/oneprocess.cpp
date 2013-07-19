@@ -33,16 +33,15 @@
 #include "model/projecttreemodel.h"
 
 
-OneProcess::OneProcess(CommandLine *cmd, QStringList &lst,
+OneProcess::OneProcess(CommandLine *cmd, QStringList *lst,
                        Node *nod, ProjectTreeModel *model)
-    :taskNode(nod), cmdL(cmd), model(model), projXml(model->getProjectXml())
+    :taskNode(nod), cmdL(cmd), args(lst), model(model),
+      projXml(model->getProjectXml())
 {
     proc = new QProcess();
-    args = new QStringList(lst);
-    device = lst.last().toInt();
-    buildPath = lst.first();
-    tempPath = lst.at(4);
-
+    device = lst->last().toInt();
+    buildPath = lst->first();
+    tempPath = lst->at(lst->size() - 3);
 }
 
 OneProcess::~OneProcess()

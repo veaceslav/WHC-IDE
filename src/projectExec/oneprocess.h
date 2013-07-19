@@ -61,7 +61,7 @@ public:
      * @param lst - command line arguments + buildpath at beginning
      * @param nod - Task Node that keeps info about outputs
      */
-    explicit OneProcess(CommandLine *cmd, QStringList &lst, Node *nod,
+    explicit OneProcess(CommandLine *cmd, QStringList *lst, Node *nod,
                         ProjectTreeModel *model);
     ~OneProcess();
     /**
