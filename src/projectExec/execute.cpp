@@ -277,8 +277,18 @@ bool Execute::tryRecover(int devId, QStringList *list,
          * be printed on cmd.
          */
         list->removeFirst();
-        cmd->addLine("Recovered " + pair.first->Name + " " + list->join(" "),
-                     Qt::darkGreen);
+
+        if(i->taskStatus == OneProcess::Success)
+        {
+            cmd->addLine("Recovered " + pair.first->Name + " " +
+                         list->join(" "), Qt::darkGreen);
+        }
+        else // i->taskStatus == OneProcess::IOError
+        {
+            cmd->addLine("Recovering " + pair.first->Name + " " +
+                         list->join(" "), Qt::darkGreen);
+            exec2[devId]->copyToData();
+        }
         /**
          * The task has been recovered so we will remove it from the list of
          * tasks that can be recovered (skipped).
