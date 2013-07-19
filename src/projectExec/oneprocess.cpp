@@ -131,58 +131,10 @@ void OneProcess::startExecution()
     proc->start(program, *args);
 }
 
-QString OneProcess::getExecutableName(QString path)
+void OneProcess::copyToData()
 {
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-        return QString("");
-
-    QString line;
-    QStringList listOfWords;
-    QTextStream in(&file);
-
-    do
-    {
-        line = in.readLine();
-        // search for the line that contains "add_executable("
-        if (line.contains("add_executable("))
-        {
-            listOfWords = line.split("(");
-            line = listOfWords[1];
-            listOfWords = line.split(" ");
-            file.close();
-            // return name of the executable
-            return listOfWords[0];
-        }
-    }while(!in.atEnd());
-
-    file.close();
-    // return "" if the name of the executable was not found in the parsed file
-    return QString("");
-}
-
-void OneProcess::writeErrorToCmd(QString message)
-{
-    QString msg = QString("[Device %1] Error: ").arg(device) + message;
-    cmdL->addLine(msg, Qt::red);
-}
-
-void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
-{
-    QString message = "[Device %1] Process ended with exit code %2";
-    cmdL->addLine(message.arg(device).arg(exitCode), Qt::darkGreen);
-
-    if(exitStatus == QProcess::CrashExit)
-    {
-        writeErrorToCmd("crash exit");
-
-        emit signalEnd(device, taskNode->diagId, args, CrashExitError);
-        return;
-    }
-
-    int inputs = taskNode->link.size() - 1;
-
-    if(!taskNode->link[inputs].isEmpty())
+    int outputs = taskNode->link.size() - 1;
+    if(!taskNode->link[outputs].isEmpty())
     {
         QDir dir(buildPath);
         QString source = dir.cleanPath(buildPath + "/" + tempPath);
@@ -191,10 +143,10 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
         QString message = "[Device %1] Copying output...";
         cmdL->addLine(message.arg(device), Qt::darkGreen);
 
-        for(int i = 0; i < taskNode->link[inputs].size(); i++)
-            if(taskNode->link[inputs].at(i)->type == 1) // Data type
+        for(int i = 0; i < taskNode->link[outputs].size(); i++)
+            if(taskNode->link[outputs].at(i)->type == 1) // Data type
             {
-                Node *data = taskNode->link[inputs].at(i);
+                Node *data = taskNode->link[outputs].at(i);
 
                 QString destDir = dir.cleanPath(buildPath
                                             + "../../../../data/" + data->Name);
@@ -251,4 +203,56 @@ void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
 
     cmdL->addLine(QString("[Device %1] Done!").arg(device), Qt::darkGreen);
     emit signalEnd(device, taskNode->diagId, args, Success);
+}
+
+QString OneProcess::getExecutableName(QString path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+        return QString("");
+
+    QString line;
+    QStringList listOfWords;
+    QTextStream in(&file);
+
+    do
+    {
+        line = in.readLine();
+        // search for the line that contains "add_executable("
+        if (line.contains("add_executable("))
+        {
+            listOfWords = line.split("(");
+            line = listOfWords[1];
+            listOfWords = line.split(" ");
+            file.close();
+            // return name of the executable
+            return listOfWords[0];
+        }
+    }while(!in.atEnd());
+
+    file.close();
+    // return "" if the name of the executable was not found in the parsed file
+    return QString("");
+}
+
+void OneProcess::writeErrorToCmd(QString message)
+{
+    QString msg = QString("[Device %1] Error: ").arg(device) + message;
+    cmdL->addLine(msg, Qt::red);
+}
+
+void OneProcess::slotCopyToData(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    QString message = "[Device %1] Process ended with exit code %2";
+    cmdL->addLine(message.arg(device).arg(exitCode), Qt::darkGreen);
+
+    if(exitStatus == QProcess::CrashExit)
+    {
+        writeErrorToCmd("crash exit");
+
+        emit signalEnd(device, taskNode->diagId, args, CrashExitError);
+        return;
+    }
+
+    copyToData();
 }

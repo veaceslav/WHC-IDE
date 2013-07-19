@@ -33,7 +33,7 @@
 #include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+                 Ide *parent, CommandLine *cmd,
                  QLinkedList<Exclusion> exclusionList):execOrder(sorted),
                  devices(devices), exclusions(exclusionList), cmd(cmd)
 {
@@ -45,7 +45,7 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
         logDir.mkdir("log");
 
         saveExecProgress = new QFile(path + "/log/flow");
-        saveExecProgress->open(fileMode);
+        saveExecProgress->open(QIODevice::WriteOnly);
 
         saveStream = new QTextStream(saveExecProgress);
     }
@@ -302,7 +302,11 @@ void Execute::start(int devId)
          * tasks that can be recovered (skipped).
          */
         exclusions.erase(i);
-        start(devId);
+
+        QStringList *copyList = new QStringList(list);
+        copyList->removeFirst();
+        slotNextProcess(devId, pair.first->diagId, copyList,
+                        (int) OneProcess::Success, 0);
         return;
     }
 

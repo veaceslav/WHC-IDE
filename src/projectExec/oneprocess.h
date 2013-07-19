@@ -69,6 +69,11 @@ public:
      */
     void startExecution();
 
+    /**
+     * @brief copyToData - copies data from temp folder to destination folder/s
+     */
+    void copyToData();
+
 signals:
 
     /**
