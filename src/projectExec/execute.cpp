@@ -33,7 +33,7 @@
 #include "sorttask.h"
 
 Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+                 Ide *parent, CommandLine *cmd,
                  QLinkedList<Exclusion> exclusionList):execOrder(sorted),
                  devices(devices), exclusions(exclusionList), cmd(cmd)
 {
@@ -45,7 +45,7 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
         logDir.mkdir("log");
 
         saveExecProgress = new QFile(path + "/log/flow");
-        saveExecProgress->open(fileMode);
+        saveExecProgress->open(QIODevice::WriteOnly);
 
         saveStream = new QTextStream(saveExecProgress);
     }
@@ -66,6 +66,9 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
+
+    connect(this, SIGNAL(signalRecovered(int,int,QStringList*,int,int)),
+              this, SLOT(slotNextProcess(int,int,QStringList*,int,int)));
 
     cmd->showM();
     execute();
@@ -234,6 +237,71 @@ void Execute::fillQueue(Node *nod)
     }
 }
 
+bool Execute::tryRecover(int devId, QStringList *list,
+                         QPair<Node*, QStringList> pair)
+{
+    for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
+        i != exclusions.end(); i++)
+    {
+        if(i->taskId != pair.first->diagId)
+            continue;
+
+        if(i->taskStatus != OneProcess::Success &&
+           i->taskStatus != OneProcess::IOError)
+            continue;
+
+        /**
+         * list.size() - 6 is the number of input files. The 6 strings that
+         * were substracter are: executable name, "-in", "-out", output file,
+         * "-dev", device id.
+         */
+        if(i->inFiles.size() != list->size() - 6)
+            continue;
+
+        bool foundDiff = false;
+        for(int j = 0; j < i->inFiles.size(); j++)
+            /**
+             * list has an offset of 2, the first two strings being
+             * executable name and "-in".
+             */
+            if(i->inFiles[j] != (*list)[j + 2])
+            {
+                foundDiff = true;
+                break;
+            }
+        if(foundDiff)
+            continue;
+
+        /**
+         * The full executable name is not relevant to the user, so it will not
+         * be printed on cmd.
+         */
+        list->removeFirst();
+
+        if(i->taskStatus == OneProcess::Success)
+        {
+            cmd->addLine("Recovered " + pair.first->Name + " " +
+                         list->join(" "), Qt::darkGreen);
+        }
+        else // i->taskStatus == OneProcess::IOError
+        {
+            cmd->addLine("Recovering " + pair.first->Name + " " +
+                         list->join(" "), Qt::darkGreen);
+            exec2[devId]->copyToData();
+        }
+        /**
+         * The task has been recovered so we will remove it from the list of
+         * tasks that can be recovered (skipped).
+         */
+        exclusions.erase(i);
+
+        emit signalRecovered(devId, pair.first->diagId, list,
+                             (int) OneProcess::Success, 0);
+        return true;
+    }
+    return false;
+}
+
 void Execute::start(int devId)
 {
     if(stop)
@@ -258,55 +326,12 @@ void Execute::start(int devId)
 
     list << QString::number(devId);
 
-    for(QLinkedList<Exclusion>::Iterator i = exclusions.begin();
-        i != exclusions.end(); i++)
-    {
-        if(i->taskId != pair.first->diagId)
-            continue;
+    QStringList *listCopy = new QStringList(list);
 
-        if(i->taskStatus != OneProcess::Success &&
-           i->taskStatus != OneProcess::IOError)
-            continue;
+    exec2[devId] = new OneProcess(cmd, listCopy, pair.first, parent->model);
 
-        /**
-         * list.size() - 6 is the number of input files. The 6 strings that
-         * were substracter are: executable name, "-in", "-out", output file,
-         * "-dev", device id.
-         */
-        if(i->inFiles.size() != list.size() - 6)
-            continue;
-
-        bool foundDiff = false;
-        for(int j = 0; j < i->inFiles.size(); j++)
-            /**
-             * list has an offset of 2, the first two strings being
-             * executable name and "-in".
-             */
-            if(i->inFiles[j] != list[j + 2])
-            {
-                foundDiff = true;
-                break;
-            }
-        if(foundDiff)
-            continue;
-
-        /**
-         * The full executable name is not relevant to the user, so it will not
-         * be printed on cmd.
-         */
-        list.removeFirst();
-        cmd->addLine("Recovered " + pair.first->Name + " " + list.join(" "),
-                     Qt::darkGreen);
-        /**
-         * The task has been recovered so we will remove it from the list of
-         * tasks that can be recovered (skipped).
-         */
-        exclusions.erase(i);
-        start(devId);
+    if(tryRecover(devId, listCopy, pair))
         return;
-    }
-
-    exec2[devId] = new OneProcess(cmd, list, pair.first, parent->model);
 
     connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *, int, int)),
             this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));

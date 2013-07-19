@@ -974,8 +974,7 @@ void Ide::readSettingsfromFile()
     settings->enableLogging = sets.value("enableLogging").toBool();
 }
 
-void Ide::startProjectExec(QIODevice::OpenMode fileMode,
-                           QLinkedList<Exclusion> exclusionList)
+void Ide::startProjectExec(QLinkedList<Exclusion> exclusionList)
 {
     QVector<int> devs = devices->getSelection();
     if(devs.isEmpty())
@@ -1002,14 +1001,14 @@ void Ide::startProjectExec(QIODevice::OpenMode fileMode,
 
         StaticMethods::destroyObj(&exec);
         exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
-                           outWindow, fileMode, exclusionList);
+                           outWindow, exclusionList);
     }
 }
 
 void Ide::on_actionRun_triggered()
 {
     QLinkedList<Exclusion> ex;
-    startProjectExec(QIODevice::WriteOnly, ex);
+    startProjectExec(ex);
 }
 
 void Ide::contextMenu(const QPoint &poz)
@@ -1147,5 +1146,5 @@ void Ide::on_actionRestore_triggered()
 
     flow.close();
 
-    startProjectExec(QIODevice::Append, exclusionList);
+    startProjectExec(exclusionList);
 }

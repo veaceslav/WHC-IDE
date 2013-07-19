@@ -61,13 +61,18 @@ public:
      * @param lst - command line arguments + buildpath at beginning
      * @param nod - Task Node that keeps info about outputs
      */
-    explicit OneProcess(CommandLine *cmd, QStringList &lst, Node *nod,
+    explicit OneProcess(CommandLine *cmd, QStringList *lst, Node *nod,
                         ProjectTreeModel *model);
     ~OneProcess();
     /**
      * @brief startExecution - execute task with given arguments
      */
     void startExecution();
+
+    /**
+     * @brief copyToData - copies data from temp folder to destination folder/s
+     */
+    void copyToData();
 
 signals:
 
