@@ -53,7 +53,7 @@ class Execute : public QObject
     Q_OBJECT
 public:
     Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent, CommandLine *cmd, QIODevice::OpenMode fileMode,
+            Ide *parent, CommandLine *cmd,
             QLinkedList<Exclusion> exclusionList);
 
     ~Execute();
@@ -72,6 +72,8 @@ private slots:
 
 signals:
 
+    void signalRecovered(int dev, int finishedTask, QStringList *args,
+                         int taskStatus, int moreInfo = 0);
     void signalFinishedExec();
     //maybe dead...
     void signaldataGained();
@@ -92,6 +94,9 @@ private:
      *                    about data folders
      */
     void fillQueue(Node *nod);
+
+    bool tryRecover(int devId, QStringList *list,
+                    QPair<Node*, QStringList> pair);
 
     /**
      * @brief start    pop one element from queue and execute it. It's called
