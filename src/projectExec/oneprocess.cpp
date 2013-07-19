@@ -217,20 +217,22 @@ QString OneProcess::getExecutableName(QString path)
     do
     {
         line = in.readLine();
-        // search for the line that contains "add_executable("
+        /** search for the line that contains "add_executable(" **/
         if (line.contains("add_executable("))
         {
             listOfWords = line.split("(");
             line = listOfWords[1];
             listOfWords = line.split(" ");
             file.close();
-            // return name of the executable
+            /** return name of the executable **/
             return listOfWords[0];
         }
     }while(!in.atEnd());
 
     file.close();
-    // return "" if the name of the executable was not found in the parsed file
+    /**
+     * return "" if the name of the executable was not found in the parsed file
+     */
     return QString("");
 }
 
