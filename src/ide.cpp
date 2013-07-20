@@ -836,8 +836,10 @@ void Ide::slotDeleteItem()
 void Ide::slotBuild()
 {
     if(!build)
+    {
         build = new ProjectBuild(model->getProjectXml(), this, settings,
                                                                     outWindow);
+    }
     else
     {
         delete build;
