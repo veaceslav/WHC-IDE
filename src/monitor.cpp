@@ -1,5 +1,8 @@
 #include "monitor.h"
 
+#include <QStringList>
+#include <QDir>
+
 Monitor::Monitor()
 {
     aggregateStats = new QSettings("WHC", "WHC IDE Monitor");
@@ -11,13 +14,17 @@ Monitor::~Monitor()
 }
 
 
-void Monitor::slotStartExecute(QString projParh)
+void Monitor::slotStartExecute(QString whcFile)
 {
-    projectStats = new QSettings(projParh, QSettings::IniFormat);
+    QString logPath = whcFile.remove(whcFile.split("/").last()) + "/log";
+    QDir::mkdir(logPath);
+    projStatsFile = logPath + "/stats";
+    projectStats = new QSettings(projStatsFile , QSettings::IniFormat);
 }
 
 
 void Monitor::slotFinishedExecute()
 {
+    projectStats->sync();
     delete projectStats;
 }

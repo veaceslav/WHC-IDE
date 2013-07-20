@@ -13,7 +13,7 @@ public:
 
 public slots:
     void slotStartProcess();
-    void slotStartExecute(QString projPath);
+    void slotStartExecute(QString whcFile);
 
     void slotFinishedProcess();
     void slotFinishedExecute();
@@ -21,6 +21,7 @@ public slots:
 private:
     QSettings *aggregateStats;
     QSettings *projectStats;
+    QString projStatsFile;
 
     QTime execTimer;
     QMap<int, QTime> procTimer;
