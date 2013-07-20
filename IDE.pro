@@ -53,7 +53,8 @@ SOURCES += \
     src/tests/testide.cpp \
     src/tests/testdiagram.cpp \
     src/tests/testdiagramscene.cpp \
-    src/projManagement/overwritefile.cpp
+    src/projManagement/overwritefile.cpp \
+    src/monitor.cpp
 
 HEADERS += \
     src/ide.h \
@@ -98,7 +99,8 @@ HEADERS += \
     src/tests/testIde.h \
     src/tests/testdiagram.h \
     src/tests/testdiagramscene.h \
-    src/projManagement/overwritefile.h
+    src/projManagement/overwritefile.h \
+    src/monitor.h
 
 FORMS += \
     src/forms/tabproject.ui \

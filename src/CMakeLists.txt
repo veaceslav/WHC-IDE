@@ -168,6 +168,7 @@ set(whc_SOURCES
     highlighter.cpp
     syntaxhighlighter.cpp
     staticmethods.cpp
+    monitor.cpp
 )
 
 
@@ -190,6 +191,7 @@ set(whc_HEADERS
     highlighter.h
     syntaxhighlighter.h
     staticmethods.h
+    monitor.cpp
 )
 
 set(whc_FORMS
