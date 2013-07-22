@@ -5,8 +5,9 @@
 #include <QTime>
 #include <QMap>
 
-class Monitor
+class Monitor : public QObject
 {
+    Q_OBJECT
 public:
     Monitor();
     ~Monitor();

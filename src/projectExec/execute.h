@@ -34,6 +34,7 @@
 #include <QLinkedList>
 #include <QTextStream>
 #include "oneprocess.h"
+#include "monitor.h"
 
 class Node;
 class QProcess;
@@ -75,6 +76,7 @@ signals:
     void signalRecovered(int dev, int finishedTask, QStringList *args,
                          int taskStatus, int moreInfo = 0);
     void signalFinishedExec();
+    void signalStartedExec(QString whcFile);
     //maybe dead...
     void signaldataGained();
 
@@ -122,6 +124,8 @@ private:
     QTextStream *saveStream;
 
     QMap<int, OneProcess*> exec2;
+
+    Monitor *monitor;
 
     bool stop;
     int devCount;

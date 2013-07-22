@@ -2,6 +2,7 @@
 
 #include <QStringList>
 #include <QDir>
+#include <QDebug>
 
 Monitor::Monitor()
 {
@@ -16,15 +17,21 @@ Monitor::~Monitor()
 
 void Monitor::slotStartExecute(QString whcFile)
 {
-    QString logPath = whcFile.remove(whcFile.split("/").last()) + "/log";
-    QDir::mkdir(logPath);
-    projStatsFile = logPath + "/stats";
+    QString logPath = whcFile.remove(whcFile.split("/").last());
+    QDir projectDir(logPath);
+    projectDir.mkdir("log");
+    projStatsFile = logPath + "/log/stats";
     projectStats = new QSettings(projStatsFile , QSettings::IniFormat);
+
+    qDebug()<<projStatsFile;
+    execTimer.start();
 }
 
 
 void Monitor::slotFinishedExecute()
 {
+    qDebug()<<execTimer.elapsed();
+
     projectStats->sync();
     delete projectStats;
 }

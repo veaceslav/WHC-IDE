@@ -59,7 +59,8 @@
 #include "projectExec/devicequery.h"
 
 Ide::Ide(QWidget *parent) :
-    QMainWindow(parent), ui(new Ui::Ide){
+    QMainWindow(parent), ui(new Ui::Ide)
+{
     findtool = NULL;
     gotoTool = NULL;
     modified = false;
@@ -912,6 +913,11 @@ void Ide::deleteDevWindow(QWidget *widget)
 bool Ide::mustSaveFlow() const
 {
     return settings->saveFlow;
+}
+
+bool Ide::mustLog() const
+{
+    return settings->enableLogging;
 }
 
 bool Ide::isProjectModified()

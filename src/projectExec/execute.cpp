@@ -54,6 +54,20 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
         saveExecProgress = NULL;
     }
 
+    if(parent->mustLog())
+    {
+        monitor = new Monitor();
+        connect(this, SIGNAL(signalFinishedExec()),
+                monitor, SLOT(slotFinishedExecute()));
+        connect(this, SIGNAL(signalStartedExec(QString)),
+                monitor, SLOT(slotStartExecute(QString)));
+        emit signalStartedExec(whcFile);
+    }
+    else
+    {
+        monitor = NULL;
+    }
+
     this->parent = parent;
     taskIndex    = 0;
     stop         = false;
