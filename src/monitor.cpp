@@ -14,24 +14,26 @@ Monitor::~Monitor()
     delete aggregateStats;
 }
 
+void Monitor::slotStartProcess()
+{
+}
 
 void Monitor::slotStartExecute(QString whcFile)
 {
     QString logPath = whcFile.remove(whcFile.split("/").last());
     QDir projectDir(logPath);
     projectDir.mkdir("log");
-    projStatsFile = logPath + "/log/stats";
+    projStatsFile = logPath + "log/stats";
     projectStats = new QSettings(projStatsFile , QSettings::IniFormat);
-
-    qDebug()<<projStatsFile;
     execTimer.start();
 }
 
+void Monitor::slotFinishedProcess()
+{
+}
 
 void Monitor::slotFinishedExecute()
 {
-    qDebug()<<execTimer.elapsed();
-
     projectStats->sync();
     delete projectStats;
 }
