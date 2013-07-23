@@ -75,9 +75,14 @@ signals:
 
     void signalRecovered(int dev, int finishedTask, QStringList *args,
                          int taskStatus, int moreInfo = 0);
-    void signalFinishedExec();
+
     void signalStartedExec(QString whcFile);
-    void signalStartedProc(int devId, int taskId);
+    void signalStartedProc(int devId);
+
+    void signalFinishedExec();
+    void signalFinishedProc(int dev, int finishedTask, QString *inFiles,
+                            int taskStatus, int moreInfo);
+
 
 private:
 

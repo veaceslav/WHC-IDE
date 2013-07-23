@@ -60,11 +60,14 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
 
         connect(this, SIGNAL(signalStartedExec(QString)),
                 monitor, SLOT(slotStartExecute(QString)));
-        connect(this, SIGNAL(signalStartedProc(int, int)),
-                monitor, SLOT(slotStartProcess(int, int)));
+        connect(this, SIGNAL(signalStartedProc(int)),
+                monitor, SLOT(slotStartProcess(int)));
 
         connect(this, SIGNAL(signalFinishedExec()),
                 monitor, SLOT(slotFinishedExecute()));
+        connect(this, SIGNAL(signalFinishedProc(int, int, QString*, int, int)),
+                monitor,
+                SLOT(slotFinishedProcess(int, int, QString*, int, int)));
 
         emit signalStartedExec(whcFile);
     }
@@ -133,8 +136,17 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
         (*saveStream)<<QString("-status %1 %2\n").arg(taskStatus).arg(moreInfo);
         saveStream->flush();
     }
-    delete args;
 
+    if(monitor)
+    {
+        QString *inFiles = new QString();
+        for(int i = 1; i < args->size() - 4; i++)
+            (*inFiles) += args->at(i) + "//";
+        emit signalFinishedProc(dev, finishedTask, inFiles, taskStatus,
+                                moreInfo);
+    }
+
+    delete args;
     exec2[dev]->deleteLater();
 
     if(!stop)
@@ -356,7 +368,7 @@ void Execute::start(int devId)
             this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
 
     if(monitor)
-        emit signalStartedProc(devId, pair.first->diagId);
+        emit signalStartedProc(devId);
 
     exec2[devId]->startExecution();
 
