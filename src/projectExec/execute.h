@@ -77,8 +77,7 @@ signals:
                          int taskStatus, int moreInfo = 0);
     void signalFinishedExec();
     void signalStartedExec(QString whcFile);
-    //maybe dead...
-    void signaldataGained();
+    void signalStartedProc(int devId, int taskId);
 
 private:
 

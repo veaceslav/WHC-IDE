@@ -14,8 +14,9 @@ Monitor::~Monitor()
     delete aggregateStats;
 }
 
-void Monitor::slotStartProcess()
+void Monitor::slotStartProcess(int devId, int taskId)
 {
+
 }
 
 void Monitor::slotStartExecute(QString whcFile)

@@ -57,10 +57,15 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
     if(parent->mustLog())
     {
         monitor = new Monitor();
-        connect(this, SIGNAL(signalFinishedExec()),
-                monitor, SLOT(slotFinishedExecute()));
+
         connect(this, SIGNAL(signalStartedExec(QString)),
                 monitor, SLOT(slotStartExecute(QString)));
+        connect(this, SIGNAL(signalStartedProc(int, int)),
+                monitor, SLOT(slotStartProcess(int, int)));
+
+        connect(this, SIGNAL(signalFinishedExec()),
+                monitor, SLOT(slotFinishedExecute()));
+
         emit signalStartedExec(whcFile);
     }
     else
@@ -349,6 +354,9 @@ void Execute::start(int devId)
 
     connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *, int, int)),
             this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
+
+    if(monitor)
+        emit signalStartedProc(devId, pair.first->diagId);
 
     exec2[devId]->startExecution();
 

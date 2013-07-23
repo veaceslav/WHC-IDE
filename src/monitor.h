@@ -13,7 +13,7 @@ public:
     ~Monitor();
 
 public slots:
-    void slotStartProcess();
+    void slotStartProcess(int devId, int taskId);
     void slotStartExecute(QString whcFile);
 
     void slotFinishedProcess();
