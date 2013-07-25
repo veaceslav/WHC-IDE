@@ -89,8 +89,8 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
 
-    connect(this, SIGNAL(signalRecovered(int,int,QStringList*,int,int)),
-              this, SLOT(slotNextProcess(int,int,QStringList*,int,int)));
+    connect(this, SIGNAL(signalRecovered(int, int, QStringList*, int, int)),
+              this, SLOT(slotNextProcess(int, int, QStringList*, int, int)));
 
     cmd->showM();
     execute();
