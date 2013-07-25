@@ -6,6 +6,11 @@
 #include <QDebug>
 
 /**
+ * The total number of runs
+ */
+#define PROJ_RUNS "projRuns"
+
+/**
  * The total number of processes that ran;
  */
 #define PROCS_RAN "procsRan"
@@ -96,6 +101,12 @@ void Monitor::slotFinishedExecute()
 {
     runStats->setValue(EXEC_TIME, execTimer.elapsed());
     runStats->setValue(PROCS_RAN, procsRan);
+
+    if(!projectStats->contains(PROJ_RUNS))
+        projectStats->setValue(PROJ_RUNS, 1);
+    else
+        projectStats->setValue(PROJ_RUNS,
+                               projectStats->value(PROJ_RUNS).toInt() + 1);
 
     projectStats->sync();
     runStats->sync();
