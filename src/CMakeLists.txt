@@ -191,7 +191,7 @@ set(whc_HEADERS
     highlighter.h
     syntaxhighlighter.h
     staticmethods.h
-    monitor.cpp
+    monitor.h
 )
 
 set(whc_FORMS
