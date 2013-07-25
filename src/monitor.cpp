@@ -11,6 +11,11 @@
 #define PROCS_RAN "procsRan"
 
 /**
+ * The device on which the process ran
+ */
+#define PROC_DEVID "procDevId_Id%1"
+
+/**
  * The time it took to finish the process
  */
 #define PROC_TIME "procTime_Id%1"
@@ -74,6 +79,7 @@ void Monitor::slotStartExecute(QString whcFile)
 void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
                                   int taskStatus, int moreInfo)
 {
+    runStats->setValue(QString(PROC_DEVID).arg(procsRan), devId);
     runStats->setValue(QString(PROC_DIAG_ID).arg(procsRan), taskId);
     runStats->setValue(QString(PROC_TIME).arg(procsRan),
                        procTimer[devId]->elapsed());
