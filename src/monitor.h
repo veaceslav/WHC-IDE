@@ -49,9 +49,15 @@ private:
      */
     QSettings *aggregateStats;
     /**
-     * @brief projectStats - the stats of the current project
+     * @brief projectStats - the stats of the current project, contains number
+     *                       of runs
      */
     QSettings *projectStats;
+    /**
+     * @brief projectStatsPart - a part of the project stats that contains info
+     *                           about a single run
+     */
+    QSettings *projectStatsPart;
     /**
      * @brief runStats - the stats of the last run
      */

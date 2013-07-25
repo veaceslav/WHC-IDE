@@ -34,11 +34,6 @@
 #define PROJ_RUNS "projRuns"
 
 /**
- * Information stored about one exectuion of the project
- */
-#define PROJ_RUN_INFO "projRun%1_"
-
-/**
  * The total number of processes that ran;
  */
 #define PROCS_RAN "procsRan"
@@ -103,13 +98,17 @@ void Monitor::slotStartExecute(QString whcFile)
     projectStats = new QSettings(logPath + "log/stats" , QSettings::IniFormat);
     runStats = new QSettings(logPath + "log/run", QSettings::IniFormat);
 
-    runStats->clear();
-    procsRan = 0;
-
     if(!projectStats->contains(PROJ_RUNS))
         runId = 1;
     else
         runId = projectStats->value(PROJ_RUNS).toInt() + 1;
+
+    projectStatsPart = new QSettings(logPath +
+                                     QString("log/stats%1").arg(runId),
+                                     QSettings::IniFormat);
+
+    runStats->clear();
+    procsRan = 0;
 
     execTimer.start();
 }
@@ -117,13 +116,23 @@ void Monitor::slotStartExecute(QString whcFile)
 void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
                                   int taskStatus, int moreInfo)
 {
+    int timeElapsed = procTimer[devId]->elapsed();
+
     runStats->setValue(QString(PROC_DEVID).arg(procsRan), devId);
     runStats->setValue(QString(PROC_DIAG_ID).arg(procsRan), taskId);
-    runStats->setValue(QString(PROC_TIME).arg(procsRan),
-                       procTimer[devId]->elapsed());
+    runStats->setValue(QString(PROC_TIME).arg(procsRan), timeElapsed);
     runStats->setValue(QString(PROC_INPUT).arg(procsRan), *inFiles);
     runStats->setValue(QString(PROC_EXIT_STATUS).arg(procsRan), taskStatus);
     runStats->setValue(QString(PROC_EXIT_INFO).arg(procsRan), moreInfo);
+
+    projectStatsPart->setValue(QString(PROC_DEVID).arg(procsRan), devId);
+    projectStatsPart->setValue(QString(PROC_DIAG_ID).arg(procsRan), taskId);
+    projectStatsPart->setValue(QString(PROC_TIME).arg(procsRan), timeElapsed);
+    projectStatsPart->setValue(QString(PROC_INPUT).arg(procsRan), *inFiles);
+    projectStatsPart->setValue(QString(PROC_EXIT_STATUS).arg(procsRan),
+                               taskStatus);
+    projectStatsPart->setValue(QString(PROC_EXIT_INFO).arg(procsRan), moreInfo);
+
     procsRan++;
 
     delete inFiles;
@@ -132,14 +141,20 @@ void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
 
 void Monitor::slotFinishedExecute()
 {
-    runStats->setValue(EXEC_TIME, execTimer.elapsed());
+    int timeElapsed = execTimer.elapsed();
+
+    runStats->setValue(EXEC_TIME, timeElapsed);
     runStats->setValue(PROCS_RAN, procsRan);
 
+    projectStatsPart->setValue(EXEC_TIME, timeElapsed);
+    projectStatsPart->setValue(PROCS_RAN, procsRan);
     projectStats->setValue(PROJ_RUNS, runId);
 
     projectStats->sync();
+    projectStatsPart->sync();
     runStats->sync();
 
     delete projectStats;
+    delete projectStatsPart;
     delete runStats;
 }
