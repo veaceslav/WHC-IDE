@@ -34,6 +34,11 @@
 #define PROJ_RUNS "projRuns"
 
 /**
+ * Information stored about one exectuion of the project
+ */
+#define PROJ_RUN_INFO "projRun%1_"
+
+/**
  * The total number of processes that ran;
  */
 #define PROCS_RAN "procsRan"
@@ -101,6 +106,11 @@ void Monitor::slotStartExecute(QString whcFile)
     runStats->clear();
     procsRan = 0;
 
+    if(!projectStats->contains(PROJ_RUNS))
+        runId = 1;
+    else
+        runId = projectStats->value(PROJ_RUNS).toInt() + 1;
+
     execTimer.start();
 }
 
@@ -125,11 +135,7 @@ void Monitor::slotFinishedExecute()
     runStats->setValue(EXEC_TIME, execTimer.elapsed());
     runStats->setValue(PROCS_RAN, procsRan);
 
-    if(!projectStats->contains(PROJ_RUNS))
-        projectStats->setValue(PROJ_RUNS, 1);
-    else
-        projectStats->setValue(PROJ_RUNS,
-                               projectStats->value(PROJ_RUNS).toInt() + 1);
+    projectStats->setValue(PROJ_RUNS, runId);
 
     projectStats->sync();
     runStats->sync();

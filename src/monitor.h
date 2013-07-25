@@ -57,7 +57,7 @@ private:
      */
     QSettings *runStats;
 
-    int procsRan;
+    int procsRan, runId;
 
     QTime execTimer;
     QMap<int, QTime *> procTimer;
