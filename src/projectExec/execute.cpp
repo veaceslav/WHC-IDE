@@ -326,6 +326,8 @@ bool Execute::tryRecover(int devId, QStringList *list,
          */
         exclusions.erase(i);
 
+        if(monitor)
+            emit signalStartedProc(devId);
         emit signalRecovered(devId, pair.first->diagId, list,
                              (int) OneProcess::Success, 0);
         return true;
@@ -361,15 +363,14 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, listCopy, pair.first, parent->model);
 
-    if(tryRecover(devId, listCopy, pair))
-        return;
+    if(!tryRecover(devId, listCopy, pair))
+    {
+        if(monitor)
+            emit signalStartedProc(devId);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *, int, int)),
-            this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
-
-    if(monitor)
-        emit signalStartedProc(devId);
-
-    exec2[devId]->startExecution();
-
+        connect(exec2[devId],
+                SIGNAL(signalEnd(int, int, QStringList *, int, int)),
+                this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
+        exec2[devId]->startExecution();
+    }
 }
