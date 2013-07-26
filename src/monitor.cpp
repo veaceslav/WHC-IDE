@@ -29,6 +29,11 @@
 #include <QDebug>
 
 /**
+ * The total number of processes that ran on the device
+ */
+#define DEV_RUNS "devId%1_status%2_info%3"
+
+/**
  * The total number of runs
  */
 #define PROJ_RUNS "projRuns"
@@ -133,6 +138,19 @@ void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
                                taskStatus);
     projectStatsPart->setValue(QString(PROC_EXIT_INFO).arg(procsRan), moreInfo);
 
+    /**
+     * @brief devProcRuns - the key of the setting that counts the number of
+     *                      processes that ran on this device with the given
+     *                      status and the given additional info
+     */
+    QString devProcRuns =
+            QString(DEV_RUNS).arg(devId).arg(taskStatus).arg(moreInfo);
+    int ranOnDev;
+    if(!aggregateStats->contains(devProcRuns))
+        ranOnDev = 0;
+    else
+        ranOnDev = aggregateStats->value(devProcRuns).toInt() + 1;
+
     procsRan++;
 
     delete inFiles;
@@ -150,6 +168,7 @@ void Monitor::slotFinishedExecute()
     projectStatsPart->setValue(PROCS_RAN, procsRan);
     projectStats->setValue(PROJ_RUNS, runId);
 
+    aggregateStats->sync();
     projectStats->sync();
     projectStatsPart->sync();
     runStats->sync();
