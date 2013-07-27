@@ -54,6 +54,28 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
         saveExecProgress = NULL;
     }
 
+    if(parent->mustLog())
+    {
+        monitor = new Monitor();
+
+        connect(this, SIGNAL(signalStartedExec(QString)),
+                monitor, SLOT(slotStartExecute(QString)));
+        connect(this, SIGNAL(signalStartedProc(int)),
+                monitor, SLOT(slotStartProcess(int)));
+
+        connect(this, SIGNAL(signalFinishedExec()),
+                monitor, SLOT(slotFinishedExecute()));
+        connect(this, SIGNAL(signalFinishedProc(int, int, QString*, int, int)),
+                monitor,
+                SLOT(slotFinishedProcess(int, int, QString*, int, int)));
+
+        emit signalStartedExec(whcFile);
+    }
+    else
+    {
+        monitor = NULL;
+    }
+
     this->parent = parent;
     taskIndex    = 0;
     stop         = false;
@@ -67,8 +89,8 @@ Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
     connect(this, SIGNAL(signalFinishedExec()),
               parent, SLOT(slotFinishedExec()));
 
-    connect(this, SIGNAL(signalRecovered(int,int,QStringList*,int,int)),
-              this, SLOT(slotNextProcess(int,int,QStringList*,int,int)));
+    connect(this, SIGNAL(signalRecovered(int, int, QStringList*, int, int)),
+              this, SLOT(slotNextProcess(int, int, QStringList*, int, int)));
 
     cmd->showM();
     execute();
@@ -114,8 +136,17 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
         (*saveStream)<<QString("-status %1 %2\n").arg(taskStatus).arg(moreInfo);
         saveStream->flush();
     }
-    delete args;
 
+    if(monitor)
+    {
+        QString *inFiles = new QString();
+        for(int i = 1; i < args->size() - 4; i++)
+            (*inFiles) += args->at(i) + "//";
+        emit signalFinishedProc(dev, finishedTask, inFiles, taskStatus,
+                                moreInfo);
+    }
+
+    delete args;
     exec2[dev]->deleteLater();
 
     if(!stop)
@@ -295,6 +326,8 @@ bool Execute::tryRecover(int devId, QStringList *list,
          */
         exclusions.erase(i);
 
+        if(monitor)
+            emit signalStartedProc(devId);
         emit signalRecovered(devId, pair.first->diagId, list,
                              (int) OneProcess::Success, 0);
         return true;
@@ -330,12 +363,14 @@ void Execute::start(int devId)
 
     exec2[devId] = new OneProcess(cmd, listCopy, pair.first, parent->model);
 
-    if(tryRecover(devId, listCopy, pair))
-        return;
+    if(!tryRecover(devId, listCopy, pair))
+    {
+        if(monitor)
+            emit signalStartedProc(devId);
 
-    connect(exec2[devId], SIGNAL(signalEnd(int, int, QStringList *, int, int)),
-            this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
-
-    exec2[devId]->startExecution();
-
+        connect(exec2[devId],
+                SIGNAL(signalEnd(int, int, QStringList *, int, int)),
+                this, SLOT(slotNextProcess(int, int, QStringList *, int, int)));
+        exec2[devId]->startExecution();
+    }
 }
