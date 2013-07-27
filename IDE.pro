@@ -117,7 +117,8 @@ FORMS += \
     src/forms/addcluster.ui \
     src/forms/newTask.ui \
     src/forms/addFile.ui \
-    src/forms/settingsDialog.ui
+    src/forms/settingsDialog.ui \
+    src/forms/stats.ui
 RESOURCES += \
     src/resources/icons.qrc \
     src/resources/mainCppTemplate.qrc
