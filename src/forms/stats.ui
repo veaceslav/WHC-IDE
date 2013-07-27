@@ -23,29 +23,59 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="run">
     <attribute name="title">
      <string>Current run</string>
     </attribute>
+    <widget class="QCustomPlot" name="runPlot" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>696</width>
+       <height>458</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="project">
     <attribute name="title">
      <string>Project Stats</string>
     </attribute>
+    <widget class="QCustomPlot" name="projPlot" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>696</width>
+       <height>458</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="aggregates">
     <attribute name="title">
      <string>General</string>
     </attribute>
+    <widget class="QCustomPlot" name="aggrPlot" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>696</width>
+       <height>458</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QLabel" name="title">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>5</x>
+     <y>3</y>
      <width>291</width>
      <height>41</height>
     </rect>
@@ -58,6 +88,14 @@
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
