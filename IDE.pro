@@ -1,11 +1,13 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-07-27T12:42:27
 # -------------------------------------------------
-QT += network
 QT += xml \
     xmlpatterns \
     widgets \
-    testlib
+    testlib \
+    printsupport \
+    network
+
 
 TARGET = IDE
 TEMPLATE = app
@@ -54,7 +56,8 @@ SOURCES += \
     src/tests/testdiagram.cpp \
     src/tests/testdiagramscene.cpp \
     src/projManagement/overwritefile.cpp \
-    src/monitor.cpp
+    src/monitor.cpp \
+    src/customPlot/qcustomplot.cpp
 
 HEADERS += \
     src/ide.h \
@@ -100,7 +103,8 @@ HEADERS += \
     src/tests/testdiagram.h \
     src/tests/testdiagramscene.h \
     src/projManagement/overwritefile.h \
-    src/monitor.h
+    src/monitor.h \
+    src/customPlot/qcustomplot.h
 
 FORMS += \
     src/forms/tabproject.ui \
