@@ -102,6 +102,8 @@ public:
 
     bool mustSaveFlow() const;
 
+    bool mustLog() const;
+
     inline QMdiArea *getArea() const {return ui->mdiArea;}
 
     inline DiagramWindow *getDiagram() const {return diagram; }
