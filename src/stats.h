@@ -14,7 +14,9 @@ public:
 public slots:
     void slotShowStats();
 private:
-    void setupGeneral();
+    void setupGeneral(QVector<QString> devices,
+                      QVector<double> success, QVector<double> ioError,
+                      QVector<double> crashExit, QVector<double> procError);
     Ui::Stats *ui;
 };
 
