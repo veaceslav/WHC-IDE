@@ -57,7 +57,8 @@ SOURCES += \
     src/tests/testdiagramscene.cpp \
     src/projManagement/overwritefile.cpp \
     src/monitor.cpp \
-    src/customPlot/qcustomplot.cpp
+    src/customPlot/qcustomplot.cpp \
+    src/stats.cpp
 
 HEADERS += \
     src/ide.h \
@@ -104,7 +105,8 @@ HEADERS += \
     src/tests/testdiagramscene.h \
     src/projManagement/overwritefile.h \
     src/monitor.h \
-    src/customPlot/qcustomplot.h
+    src/customPlot/qcustomplot.h \
+    src/stats.h
 
 FORMS += \
     src/forms/tabproject.ui \
