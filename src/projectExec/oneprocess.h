@@ -74,6 +74,12 @@ public:
      */
     void copyToData();
 
+    /**
+     * @brief running - provides the running status of the process
+     * @return        - true if the process is running, false if it's not
+     */
+    inline bool running() const {return (proc->state() == QProcess::Running);}
+
 signals:
 
     /**

@@ -27,6 +27,7 @@
 #include <QString>
 #include <QDir>
 #include <QDebug>
+#include "projectExec/oneprocess.h"
 
 /**
  * The total number of processes that ran on the device
@@ -154,7 +155,8 @@ void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
     procsRan++;
 
     delete inFiles;
-    delete procTimer[devId];
+    if(taskStatus != OneProcess::ProcessError)
+        delete procTimer[devId];
 }
 
 void Monitor::slotFinishedExecute()
