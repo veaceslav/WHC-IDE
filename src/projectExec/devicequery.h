@@ -51,6 +51,12 @@ public:
     QVector<int> getSelection();
 
     /**
+     * @brief devices - gets the number of devices
+     * @return        - returns the number of devices
+     */
+    int devices();
+
+    /**
      * @brief getName - get the name of the requested device
      * @param devId   - the id of the device from the widget
      * @return        - returns the name of the id as it appears in the devList

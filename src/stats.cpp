@@ -1,5 +1,7 @@
 #include <QFont>
+
 #include "stats.h"
+#include "projectExec/devicequery.h"
 
 Stats::Stats()
 {
@@ -10,6 +12,10 @@ Stats::Stats(QString whcFile)
 }
 
 void Stats::slotShowStats()
+{
+}
+
+void Stats::getGeneralData()
 {
 }
 

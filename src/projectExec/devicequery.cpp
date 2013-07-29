@@ -132,6 +132,12 @@ QVector<int> DeviceQuery::getSelection()
     return selection;
 }
 
+int DeviceQuery::devices()
+{
+    getDeviceInfo();
+    return devList->count();
+}
+
 QString DeviceQuery::getName(int devId)
 {
     QListWidgetItem *dev = devList->item(devId);
