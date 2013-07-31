@@ -19,8 +19,8 @@ private:
     void initGraphs();
     void getGeneralData();
     void setupGeneral(QVector<QString> devices,
-                      QVector<double> success, QVector<double> ioError,
-                      QVector<double> crashExit, QVector<double> procError);
+                      QVector<double> success, QVector<double> ioError[],
+                      QVector<double> crashExit, QVector<double> procError[]);
 
     DeviceQuery *deviceQuery;
     Ui::Stats *ui;

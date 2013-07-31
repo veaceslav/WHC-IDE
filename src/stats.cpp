@@ -21,6 +21,7 @@ Stats::Stats(DeviceQuery *devQuery, QString whcFile) :
 
 Stats::~Stats()
 {
+    this->close();
     delete ui;
 }
 
@@ -41,26 +42,26 @@ void Stats::getGeneralData()
     QSettings general("WHC", "WHC IDE Monitor");
     int devices = deviceQuery->devicesCount();
     QVector<QString> devNames;
-    QVector<double> successVect, ioErrorVect, crashExitVect, procErrorVect;
+    QVector<double> successVect, ioErrorVect[3], crashExitVect,
+            procErrorVect[4];
 
     for(int i = 0; i <= devices; i++)
     {
-        int successes  = 0,
-            ioErrs     = 0,
-            crashExits = 0,
-            procErrs   = 0;
+        int successes  = 0, crashExits = 0;
 
         QString success =
                        QString(DEV_RUNS).arg(i).arg(OneProcess::Success).arg(0);
         if(general.contains(success))
             successes = general.value(success).toInt();
 
-        for(int j = OneProcess::Copy; j < OneProcess::Mkdir; j++)
+        for(int j = OneProcess::Copy; j <= OneProcess::Mkdir; j++)
         {
+            int ioErrs = 0;
             QString ioerr =
                        QString(DEV_RUNS).arg(i).arg(OneProcess::IOError).arg(j);
             if(general.contains(ioerr))
-                ioErrs += general.value(ioerr).toInt();
+                ioErrs = general.value(ioerr).toInt();
+            ioErrorVect[j] << ioErrs;
         }
 
         QString crashExit =
@@ -70,65 +71,97 @@ void Stats::getGeneralData()
 
         for(int j = QProcess::FailedToStart; j <= QProcess::UnknownError; j++)
         {
+            int procErrs = 0;
             QString procErr =
                   QString(DEV_RUNS).arg(i).arg(OneProcess::ProcessError).arg(j);
             if(general.contains(procErr))
-                procErrs += general.value(procErr).toInt();
+                procErrs = general.value(procErr).toInt();
+            procErrorVect[j] << procErrs;
         }
 
         devNames      << deviceQuery->getName(i);
         successVect   << successes;
-        ioErrorVect   << ioErrs;
         crashExitVect << crashExits;
-        procErrorVect << procErrs;
     }
     setupGeneral(devNames, successVect, ioErrorVect, crashExitVect,
                  procErrorVect);
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
-                         QVector<double> success, QVector<double> ioError,
-                         QVector<double> crashExit, QVector<double> procError)
+                         QVector<double> success, QVector<double> ioError[],
+                         QVector<double> crashExit, QVector<double> procError[])
 {
     /**
      * Preparing bars and colours
      */
 
     QCPBars *succ = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
-    QCPBars *ioErr = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
+
+    QCPBars *ioErr[OneProcess::Mkdir + 1];
+    for(int i = OneProcess::Copy; i <= OneProcess::Mkdir; i++)
+    {
+        ioErr[i] = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
+        ui->aggrPlot->addPlottable(ioErr[i]);
+    }
+
     QCPBars *crash = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
-    QCPBars *procErr = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
+
+    QCPBars *procErr[QProcess::UnknownError];
+    for(int i = QProcess::FailedToStart; i <= QProcess::UnknownError; i++)
+    {
+        procErr[i] = new QCPBars(ui->aggrPlot->xAxis, ui->aggrPlot->yAxis);
+        ui->aggrPlot->addPlottable(procErr[i]);
+    }
+
     ui->aggrPlot->addPlottable(succ);
-    ui->aggrPlot->addPlottable(ioErr);
     ui->aggrPlot->addPlottable(crash);
-    ui->aggrPlot->addPlottable(procErr);
+
 
     QPen pen;
     pen.setWidthF(1.2);
 
     succ->setName("Success");
-    pen.setColor(QColor(255, 131, 0));
+    pen.setColor(QColor(24, 255, 0));
     succ->setPen(pen);
-    succ->setBrush(QColor(255, 131, 0, 50));
+    succ->setBrush(QColor(24, 255, 0, 100));
 
-    ioErr->setName("IO Error");
-    pen.setColor(QColor(1, 92, 191));
-    ioErr->setPen(pen);
-    ioErr->setBrush(QColor(1, 92, 191, 50));
+    {
+        QVector<QString> ioErrs;
+        ioErrs << "Copy" << "Replace" << "Mkdir";
+        for(int i = OneProcess::Copy; i <= OneProcess::Mkdir; i++)
+        {
+            ioErr[i]->setName("IO Error: " + ioErrs.at(i));
+            pen.setColor(QColor(i * 100, 0, 255));
+            ioErr[i]->setPen(pen);
+            ioErr[i]->setBrush(QColor(i * 100, 0, 255, 100));
+        }
+    }
 
     crash->setName("Crash Exit");
-    pen.setColor(QColor(150, 222, 0));
+    pen.setColor(QColor(0, 0, 0));
     crash->setPen(pen);
-    crash->setBrush(QColor(150, 222, 0, 70));
+    crash->setBrush(QColor(0, 0, 0, 100));
 
-    procErr->setName("Crash Exit");
-    pen.setColor(QColor(1, 22, 100));
-    procErr->setPen(pen);
-    procErr->setBrush(QColor(1, 22, 100, 70));
 
-    ioErr->moveAbove(succ);
-    crash->moveAbove(ioErr);
-    procErr->moveAbove(crash);
+        QVector<QString> procErrs;
+        procErrs << "FailedToStart" << "Crashed" << "Timedout" <<
+                    "WriteError" << "ReadError" << "UnknownError";
+        for(int i = QProcess::FailedToStart; i <= QProcess::UnknownError; i++)
+        {
+            procErr[i]->setName("Crash Exit: " + procErrs.at(i));
+            pen.setColor(QColor(255, i * 50, 0));
+            procErr[i]->setPen(pen);
+            procErr[i]->setBrush(QColor(255, i * 50, 0, 100));
+        }
+
+
+    ioErr[OneProcess::Copy]->moveAbove(succ);
+    for(int i = OneProcess::Copy + 1; i <= OneProcess::Mkdir; i++)
+        ioErr[i]->moveAbove(ioErr[i - 1]);
+    crash->moveAbove(ioErr[OneProcess::Mkdir]);
+    procErr[QProcess::FailedToStart]->moveAbove(crash);
+    for(int i = QProcess::FailedToStart + 1; i <= QProcess::UnknownError; i++)
+        procErr[i]->moveAbove(procErr[i - 1]);
 
     /**
      * Preparing x axis
@@ -154,7 +187,11 @@ void Stats::setupGeneral(QVector<QString> devices,
     double max = 0;
     for(int i = 0; i < devices.size(); i++)
     {
-        double current = success[i] + ioError[i] + crashExit[i] + procError[i];
+        double current = success[i] + crashExit[i];
+        for(int j = OneProcess::Copy; j <= OneProcess::Mkdir; j++)
+            current += ioError[j][i];
+        for(int j = QProcess::FailedToStart; j <= QProcess::UnknownError; j++)
+            current += procError[j][i];
         if(max < current)
             max = current;
     }
@@ -175,9 +212,12 @@ void Stats::setupGeneral(QVector<QString> devices,
      */
 
     succ->setData(ticks, success);
-    ioErr->setData(ticks, ioError);
+    for(int i = OneProcess::Copy; i <= OneProcess::Mkdir; i++)
+        ioErr[i]->setData(ticks, ioError[i]);
     crash->setData(ticks,crashExit);
-    procErr->setData(ticks, procError);
+
+    for(int i = OneProcess::Copy; i <= OneProcess::Mkdir; i++)
+        procErr[i]->setData(ticks, procError[i]);
 
     /**
      * Legend setup
