@@ -17,77 +17,65 @@
    <iconset resource="../resources/icons.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>3</x>
-     <y>59</y>
-     <width>1008</width>
-     <height>656</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="QWidget" name="run">
-    <attribute name="title">
-     <string>Current run</string>
-    </attribute>
-    <widget class="QCustomPlot" name="runPlot" native="true">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>696</width>
-       <height>458</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="project">
-    <attribute name="title">
-     <string>Project Stats</string>
-    </attribute>
-    <widget class="QCustomPlot" name="projPlot" native="true">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>696</width>
-       <height>458</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="aggregates">
-    <attribute name="title">
-     <string>General</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-        <widget class="QCustomPlot" name="aggrPlot" native="true">
-          <property name="geometry" />
-        </widget>
-      </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="title">
-   <property name="geometry">
-    <rect>
-     <x>5</x>
-     <y>3</y>
-     <width>291</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Statistics and monitoring&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="indent">
-    <number>-2</number>
-   </property>
-  </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+       <widget class="QLabel" name="title">
+         <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Statistics and monitoring&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="indent">
+           <number>-2</number>
+         </property>
+       </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="run">
+       <attribute name="title">
+        <string>Current run</string>
+       </attribute>
+       <widget class="QCustomPlot" name="runPlot" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>696</width>
+          <height>458</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="project">
+       <attribute name="title">
+        <string>Project Stats</string>
+       </attribute>
+       <widget class="QCustomPlot" name="projPlot" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>696</width>
+          <height>458</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="aggregates">
+       <attribute name="title">
+        <string>General</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCustomPlot" name="aggrPlot" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
  </widget>
  <customwidgets>
   <customwidget>
