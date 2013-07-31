@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>550</height>
+    <width>1012</width>
+    <height>716</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,10 +20,10 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>3</x>
      <y>59</y>
-     <width>700</width>
-     <height>491</height>
+     <width>1008</width>
+     <height>656</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -63,16 +63,13 @@
     <attribute name="title">
      <string>General</string>
     </attribute>
-    <widget class="QCustomPlot" name="aggrPlot" native="true">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>696</width>
-       <height>458</height>
-      </rect>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+        <widget class="QCustomPlot" name="aggrPlot" native="true">
+          <property name="geometry" />
+        </widget>
+      </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QLabel" name="title">
