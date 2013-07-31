@@ -33,7 +33,6 @@ void Stats::slotShowStats()
 
 void Stats::initGraphs()
 {
-    qDebug()<<logsPath;
     ui->setupUi(this);
     getGeneralData();
 
