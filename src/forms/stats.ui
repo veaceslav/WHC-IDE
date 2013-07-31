@@ -17,7 +17,7 @@
    <iconset resource="../resources/icons.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_1">
      <item>
        <widget class="QLabel" name="title">
          <property name="text">
@@ -37,37 +37,27 @@
        <attribute name="title">
         <string>Current run</string>
        </attribute>
-       <widget class="QCustomPlot" name="runPlot" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>696</width>
-          <height>458</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+           <widget class="QCustomPlot" name="runPlot" native="true" />
+         </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="project">
        <attribute name="title">
         <string>Project Stats</string>
        </attribute>
-       <widget class="QCustomPlot" name="projPlot" native="true">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>696</width>
-          <height>458</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+           <widget class="QCustomPlot" name="projPlot" native="true" />
+         </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="aggregates">
        <attribute name="title">
         <string>General</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QCustomPlot" name="aggrPlot" native="true"/>
         </item>
