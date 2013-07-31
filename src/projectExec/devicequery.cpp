@@ -132,7 +132,7 @@ QVector<int> DeviceQuery::getSelection()
     return selection;
 }
 
-int DeviceQuery::devices()
+int DeviceQuery::devicesCount()
 {
     getDeviceInfo();
     return devList->count();

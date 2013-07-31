@@ -51,10 +51,10 @@ public:
     QVector<int> getSelection();
 
     /**
-     * @brief devices - gets the number of devices
+     * @brief devicesCount - gets the number of devices
      * @return        - returns the number of devices
      */
-    int devices();
+    int devicesCount();
 
     /**
      * @brief getName - get the name of the requested device

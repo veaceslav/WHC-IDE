@@ -1,22 +1,81 @@
 #include <QFont>
+#include <QSettings>
+#include <QProcess>
 
 #include "stats.h"
+#include "monitor.h"
+#include "projectExec/oneprocess.h"
 #include "projectExec/devicequery.h"
 
-Stats::Stats()
+Stats::Stats(DeviceQuery *devQuery) :
+    deviceQuery(devQuery)
 {
+    initGraphs();
 }
 
-Stats::Stats(QString whcFile)
+Stats::Stats(DeviceQuery *devQuery, QString whcFile) :
+    deviceQuery(devQuery)
 {
+    initGraphs();
 }
 
 void Stats::slotShowStats()
 {
 }
 
+void Stats::initGraphs()
+{
+    getGeneralData();
+}
+
 void Stats::getGeneralData()
 {
+    QSettings general("WHC", "WHC IDE Monitor");
+    int devices = deviceQuery->devicesCount();
+    QVector<QString> devNames;
+    QVector<double> successVect, ioErrorVect, crashExitVect, procErrorVect;
+
+    for(int i = 0; i <= devices; i++)
+    {
+        int successes  = 0,
+            ioErrs     = 0,
+            crashExits = 0,
+            procErrs   = 0;
+
+        QString success =
+                       QString(DEV_RUNS).arg(i).arg(OneProcess::Success).arg(0);
+        if(general.contains(success))
+            successes = general.value(success).toInt();
+
+        for(int j = OneProcess::Copy; j < OneProcess::Mkdir; j++)
+        {
+            QString ioerr =
+                       QString(DEV_RUNS).arg(i).arg(OneProcess::IOError).arg(j);
+            if(general.contains(ioerr))
+                ioErrs += general.value(ioerr).toInt();
+        }
+
+        QString crashExit =
+                QString(DEV_RUNS).arg(i).arg(OneProcess::CrashExitError).arg(0);
+        if(general.contains(crashExit))
+            crashExits = general.value(crashExit).toInt();
+
+        for(int j = QProcess::FailedToStart; j <= QProcess::UnknownError; j++)
+        {
+            QString procErr =
+                  QString(DEV_RUNS).arg(i).arg(OneProcess::ProcessError).arg(j);
+            if(general.contains(procErr))
+                procErrs += general.value(procErr).toInt();
+        }
+
+        devNames      << deviceQuery->getName(i);
+        successVect   << successes;
+        ioErrorVect   << ioErrs;
+        crashExitVect << crashExits;
+        procErrorVect << procErrs;
+    }
+    setupGeneral(devNames, successVect, ioErrorVect, crashExitVect,
+                 procErrorVect);
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
