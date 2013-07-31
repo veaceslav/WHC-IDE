@@ -822,6 +822,7 @@ void Ide::slotCloseProject()
 
     disableMenuOptions(true);
     disableStopExec(true);
+    whcFile = QString();
 }
 
 void Ide::slotDeleteItem()
@@ -1162,5 +1163,8 @@ void Ide::on_actionRestore_triggered()
 void Ide::on_actionView_stats_triggered()
 {
     StaticMethods::destroyObj(&stats);
-    stats = new Stats(devices);
+    if(whcFile.isNull())
+        stats = new Stats(devices);
+    else
+        stats = new Stats(devices, whcFile);
 }

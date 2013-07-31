@@ -22,6 +22,7 @@ private:
                       QVector<double> success, QVector<double> ioError[],
                       QVector<double> crashExit, QVector<double> procError[]);
 
+    QString logsPath;
     DeviceQuery *deviceQuery;
     Ui::Stats *ui;
 };

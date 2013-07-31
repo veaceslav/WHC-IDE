@@ -10,12 +10,14 @@
 Stats::Stats(DeviceQuery *devQuery) :
     deviceQuery(devQuery), ui(new Ui::Stats)
 {
+    logsPath = "";
     initGraphs();
 }
 
 Stats::Stats(DeviceQuery *devQuery, QString whcFile) :
     deviceQuery(devQuery), ui(new Ui::Stats)
 {
+    logsPath = whcFile.remove(whcFile.split("/").last()) + "log/";
     initGraphs();
 }
 
@@ -31,6 +33,7 @@ void Stats::slotShowStats()
 
 void Stats::initGraphs()
 {
+    qDebug()<<logsPath;
     ui->setupUi(this);
     getGeneralData();
 
