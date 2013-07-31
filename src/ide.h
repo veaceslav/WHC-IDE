@@ -257,6 +257,8 @@ private slots:
 
     void on_actionRestore_triggered();
 
+    void on_actionView_stats_triggered();
+
 private:
 
     void keyPressEvent(QKeyEvent *event);

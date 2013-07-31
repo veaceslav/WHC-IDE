@@ -102,6 +102,7 @@
     </property>
     <addaction name="actionRemove_end_line_spaces"/>
     <addaction name="actionOptions"/>
+    <addaction name="actionView_stats"/>
    </widget>
    <widget class="QMenu" name="menu_About">
     <property name="title">
@@ -352,6 +353,11 @@
   <action name="actionRestore">
    <property name="text">
     <string>Restore</string>
+   </property>
+  </action>
+  <action name="actionView_stats">
+   <property name="text">
+    <string>View stats</string>
    </property>
   </action>
  </widget>

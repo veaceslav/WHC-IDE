@@ -31,6 +31,7 @@
 #include <QString>
 #include <QLinkedList>
 
+#include "stats.h"
 #include "mdidiagram.h"
 #include "diagram/diagramwindow.h"
 #include "findtool.h"
@@ -1155,4 +1156,9 @@ void Ide::on_actionRestore_triggered()
     flow.close();
 
     startProjectExec(exclusionList);
+}
+
+void Ide::on_actionView_stats_triggered()
+{
+    Stats *stats = new Stats(devices);
 }

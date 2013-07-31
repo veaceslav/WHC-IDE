@@ -8,15 +8,20 @@
 #include "projectExec/devicequery.h"
 
 Stats::Stats(DeviceQuery *devQuery) :
-    deviceQuery(devQuery)
+    deviceQuery(devQuery), ui(new Ui::Stats)
 {
     initGraphs();
 }
 
 Stats::Stats(DeviceQuery *devQuery, QString whcFile) :
-    deviceQuery(devQuery)
+    deviceQuery(devQuery), ui(new Ui::Stats)
 {
     initGraphs();
+}
+
+Stats::~Stats()
+{
+    delete ui;
 }
 
 void Stats::slotShowStats()
@@ -25,7 +30,10 @@ void Stats::slotShowStats()
 
 void Stats::initGraphs()
 {
+    ui->setupUi(this);
     getGeneralData();
+
+    this->show();
 }
 
 void Stats::getGeneralData()
