@@ -135,13 +135,13 @@ void Stats::setupGeneral(QVector<QString> devices,
      */
 
     QVector<double> ticks;
-    for(int i = 0; i < devices.size(); i++)
+    for(int i = 1; i <= devices.size(); i++)
         ticks << i;
     ui->aggrPlot->xAxis->setAutoTicks(false);
     ui->aggrPlot->xAxis->setAutoTickLabels(false);
     ui->aggrPlot->xAxis->setTickVector(ticks);
     ui->aggrPlot->xAxis->setTickVectorLabels(devices);
-    ui->aggrPlot->xAxis->setTickLabelRotation(60);
+    ui->aggrPlot->xAxis->setTickLabelRotation(20);
     ui->aggrPlot->xAxis->setSubTickCount(0);
     ui->aggrPlot->xAxis->setTickLength(0, 4);
     ui->aggrPlot->xAxis->grid()->setVisible(true);
@@ -152,19 +152,14 @@ void Stats::setupGeneral(QVector<QString> devices,
      */
 
     double max = 0;
-    for(int i = 0; i < success.size(); i++)
-        if(max < success[i])
-            max = success[i];
-    for(int i = 0; i < ioError.size(); i++)
-        if(max < ioError[i])
-            max = ioError[i];
-    for(int i = 0; i < crashExit.size(); i++)
-        if(max < crashExit[i])
-            max = crashExit[i];
-    for(int i = 0; i < procError.size(); i++)
-        if(max < procError[i])
-            max = procError[i];
-    ui->aggrPlot->yAxis->setRange(0, max + 1);
+    for(int i = 0; i < devices.size(); i++)
+    {
+        double current = success[i] + ioError[i] + crashExit[i] + procError[i];
+        if(max < current)
+            max = current;
+    }
+
+    ui->aggrPlot->yAxis->setRange(0, max * 1.2);
     ui->aggrPlot->yAxis->setPadding(5);
     ui->aggrPlot->yAxis->setLabel("Number of runs");
     ui->aggrPlot->yAxis->grid()->setSubGridVisible(true);

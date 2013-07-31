@@ -31,7 +31,6 @@
 #include <QString>
 #include <QLinkedList>
 
-#include "stats.h"
 #include "mdidiagram.h"
 #include "diagram/diagramwindow.h"
 #include "findtool.h"
@@ -79,6 +78,7 @@ Ide::Ide(QWidget *parent) :
     model           = NULL;
     outWindow       = NULL;
     editorSettings  = NULL;
+    stats           = NULL;
 
     settings = new ProjectSettings();
     readSettingsfromFile();
@@ -168,6 +168,7 @@ Ide::~Ide()
     }
 
     StaticMethods::destroyObj(&settings);
+    StaticMethods::destroyObj(&stats);
     StaticMethods::destroyObj(&contextTask);
     StaticMethods::destroyObj(&contextFile);
     StaticMethods::destroyObj(&contextData);
@@ -1160,5 +1161,6 @@ void Ide::on_actionRestore_triggered()
 
 void Ide::on_actionView_stats_triggered()
 {
-    Stats *stats = new Stats(devices);
+    StaticMethods::destroyObj(&stats);
+    stats = new Stats(devices);
 }

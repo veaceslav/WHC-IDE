@@ -31,6 +31,7 @@
 #include "mditexteditor.h"
 #include "projectExec/execute.h"
 #include "settings/editorSettingsVar.h"
+#include "stats.h"
 
 class Highlighter;
 class MdiTextEditor;
@@ -314,6 +315,7 @@ private:
     DeviceQuery *devices;
 
     Execute *exec;
+    Stats *stats;
 
     /**
      * Friend class is used for testing Ide functionality and it need to have

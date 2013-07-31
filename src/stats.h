@@ -3,7 +3,6 @@
 
 #include <QString>
 
-#include "staticmethods.h"
 #include "projectExec/devicequery.h"
 #include "ui_stats.h"
 

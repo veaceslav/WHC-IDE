@@ -22,12 +22,12 @@
  *
  * ============================================================ */
 
+#include <QtTest/QtTest>
+
 #include "testdiagram.h"
 #include "ide.h"
 #include "diagram/diagramwindow.h"
 #include "../diagram/containers.h"
-#include <QtTest/QtTest>
-
 
 void TestDiagram::slotTestAddTask()
 {
