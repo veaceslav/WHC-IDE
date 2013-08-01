@@ -70,6 +70,7 @@ void Stats::getRunData()
         return;
 
     QMap<int, int> devTime;
+    QMap<int, int> taskTime;
     int elapsed  = runStats.value(EXEC_TIME).toInt();
     int procsRan = runStats.value(PROCS_RAN).toInt();
     int procTime = 0;
@@ -78,18 +79,24 @@ void Stats::getRunData()
     for(int i = 0; i < procsRan; i++)
     {
         int time   = runStats.value(QString(PROC_TIME).arg(i)).toInt();
-        int key    = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
+        int devId  = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
         int status = runStats.value(QString(PROC_EXIT_STATUS).arg(i)).toInt();
+        int taskId = runStats.value(QString(PROC_DIAG_ID).arg(i)).toInt();
 
         if(status != OneProcess::Success)
             failed++;
 
         procTime += time;
 
-        if(devTime.contains(key))
-            devTime[key] += time;
+        if(devTime.contains(devId))
+            devTime[devId] += time;
         else
-            devTime[key] = time;
+            devTime[devId] = time;
+
+        if(taskTime.contains(taskId))
+            taskTime[taskId] += time;
+        else
+            taskTime[taskId] = time;
     }
 
     int overhead = elapsed - procTime;

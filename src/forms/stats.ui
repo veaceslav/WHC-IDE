@@ -116,7 +116,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QCustomPlot" name="runPlot" native="true"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCustomPlot" name="taskTimePlot" native="true"/>
+         </item>
+         <item>
+          <widget class="QCustomPlot" name="devTimePlot" native="true"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
