@@ -33,7 +33,7 @@
 Stats::Stats(DeviceQuery *devQuery) :
     deviceQuery(devQuery), ui(new Ui::Stats)
 {
-    logsPath = "";
+    logsPath = QString();
     initGraphs();
 }
 
@@ -50,16 +50,39 @@ Stats::~Stats()
     delete ui;
 }
 
-void Stats::slotShowStats()
-{
-}
-
 void Stats::initGraphs()
 {
     ui->setupUi(this);
+    if(!logsPath.isNull())
+    {
+        getRunData();
+    }
     getGeneralData();
 
     this->show();
+}
+
+void Stats::getRunData()
+{
+    QSettings runStats(logsPath + "run", QSettings::IniFormat);
+
+    if(!runStats.contains(EXEC_TIME))
+        return;
+
+    QMap<int, int> devTime;
+    int elapsed  = runStats.value(EXEC_TIME).toInt();
+    int procsRan = runStats.value(PROCS_RAN).toInt();
+    int procTime = 0;
+
+    for(int i = 0; i < procsRan; i++)
+    {
+        procTime += runStats.value(QString(PROC_TIME).arg(i)).toInt();
+    }
+
+
+
+    ui->totalTime->setText(ui->totalTime->text() +
+                           QString::number((double)elapsed / 1000) + "s");
 }
 
 void Stats::getGeneralData()

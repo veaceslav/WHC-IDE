@@ -36,10 +36,9 @@ public:
     Stats(DeviceQuery *devQuery);
     Stats(DeviceQuery *devQuery, QString whcFile);
     ~Stats();
-public slots:
-    void slotShowStats();
 private:
     void initGraphs();
+    void getRunData();
     void getGeneralData();
     void setupGeneral(QVector<QString> devices,
                       QVector<double> success, QVector<double> ioError[],
