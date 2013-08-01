@@ -73,11 +73,16 @@ void Stats::getRunData()
     int elapsed  = runStats.value(EXEC_TIME).toInt();
     int procsRan = runStats.value(PROCS_RAN).toInt();
     int procTime = 0;
+    int failed   = 0;
 
     for(int i = 0; i < procsRan; i++)
     {
-        int time = runStats.value(QString(PROC_TIME).arg(i)).toInt();
-        int key  = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
+        int time   = runStats.value(QString(PROC_TIME).arg(i)).toInt();
+        int key    = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
+        int status = runStats.value(QString(PROC_EXIT_STATUS).arg(i)).toInt();
+
+        if(status != OneProcess::Success)
+            failed++;
 
         procTime += time;
 
@@ -96,6 +101,9 @@ void Stats::getRunData()
                           QString::number((double)procTime / elapsed * 100) +
                           "%)");
     ui->procsRan->setText(ui->procsRan->text() + QString::number(procsRan));
+    ui->successRate->setText(ui->successRate->text() +
+                             QString::number((double)failed / procsRan + 100) +
+                             "% (" + QString::number(failed) + " failed)");
     ui->ideOverhead->setText(ui->ideOverhead->text() +
                              QString::number((double)overhead / 1000) +
                              "s (" +
