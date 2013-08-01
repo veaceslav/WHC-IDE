@@ -76,13 +76,33 @@ void Stats::getRunData()
 
     for(int i = 0; i < procsRan; i++)
     {
-        procTime += runStats.value(QString(PROC_TIME).arg(i)).toInt();
+        int time = runStats.value(QString(PROC_TIME).arg(i)).toInt();
+        int key  = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
+
+        procTime += time;
+
+        if(devTime.contains(key))
+            devTime[key] += time;
+        else
+            devTime[key] = time;
     }
 
-
+    int overhead = elapsed - procTime;
 
     ui->totalTime->setText(ui->totalTime->text() +
                            QString::number((double)elapsed / 1000) + "s");
+    ui->procTime->setText(ui->procTime->text() +
+                          QString::number((double)procTime / 1000) + "s (" +
+                          QString::number((double)procTime / elapsed * 100) +
+                          "%)");
+    ui->procsRan->setText(ui->procsRan->text() + QString::number(procsRan));
+    ui->ideOverhead->setText(ui->ideOverhead->text() +
+                             QString::number((double)overhead / 1000) +
+                             "s (" +
+                             QString::number((double)overhead / elapsed * 100) +
+                             "%)");
+    ui->devicesNo->setText(ui->devicesNo->text() +
+                           QString::number(devTime.size()));
 }
 
 void Stats::getGeneralData()
