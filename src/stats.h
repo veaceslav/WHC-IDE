@@ -40,6 +40,10 @@ private:
     void initGraphs();
     void getRunData();
     void getGeneralData();
+
+    void setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
+                       QVector<int> devs, QVector<int> tasks);
+    void setupDevTime();
     void setupGeneral(QVector<QString> devices,
                       QVector<double> success, QVector<double> ioError[],
                       QVector<double> crashExit, QVector<double> procError[]);

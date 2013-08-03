@@ -69,8 +69,10 @@ void Stats::getRunData()
     if(!runStats.contains(EXEC_TIME))
         return;
 
-    QMap<int, int> devTime;
-    QMap<int, int> taskTime;
+    QVector<int> devs;
+    QVector<int> tasks;
+
+    QMap<QPair<int, int>, int> devTaskTime;
     int elapsed  = runStats.value(EXEC_TIME).toInt();
     int procsRan = runStats.value(PROCS_RAN).toInt();
     int procTime = 0;
@@ -83,20 +85,19 @@ void Stats::getRunData()
         int status = runStats.value(QString(PROC_EXIT_STATUS).arg(i)).toInt();
         int taskId = runStats.value(QString(PROC_DIAG_ID).arg(i)).toInt();
 
+        if(!devs.contains(devId))
+            devs.append(devId);
+        if(!tasks.contains(taskId))
+            tasks.append(taskId);
+        if(devTaskTime.contains(QPair<int, int>(devId, taskId)))
+            devTaskTime[QPair<int, int>(devId, taskId)] += time;
+        else
+            devTaskTime[QPair<int, int>(devId, taskId)] = time;
+
         if(status != OneProcess::Success)
             failed++;
 
         procTime += time;
-
-        if(devTime.contains(devId))
-            devTime[devId] += time;
-        else
-            devTime[devId] = time;
-
-        if(taskTime.contains(taskId))
-            taskTime[taskId] += time;
-        else
-            taskTime[taskId] = time;
     }
 
     int overhead = elapsed - procTime;
@@ -117,7 +118,9 @@ void Stats::getRunData()
                              QString::number((double)overhead / elapsed * 100) +
                              "%)");
     ui->devicesNo->setText(ui->devicesNo->text() +
-                           QString::number(devTime.size()));
+                           QString::number(devs.size()));
+
+    setupTaskTime(devTaskTime, devs, tasks);
 }
 
 void Stats::getGeneralData()
@@ -168,6 +171,115 @@ void Stats::getGeneralData()
     }
     setupGeneral(devNames, successVect, ioErrorVect, crashExitVect,
                  procErrorVect);
+}
+
+void Stats::setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
+                          QVector<int> devs, QVector<int> tasks)
+{
+    QCPBars **time = new QCPBars*[devs.size()];
+    int colourDiff = 255 / devs.size();
+
+    QPen pen;
+    pen.setWidthF(1.2);
+
+    for(int i = 0; i < devs.size(); i++)
+    {
+        time[i] = new QCPBars(ui->taskTimePlot->xAxis, ui->taskTimePlot->yAxis);
+        ui->taskTimePlot->addPlottable(time[i]);
+
+        time[i]->setName(deviceQuery->getName(devs[i]));
+        if(time[i]->name().isNull())
+            time[i]->setName(QString("Device %1").arg(devs[i]));
+
+        pen.setColor(QColor(0, 255 - colourDiff * i, colourDiff * i));
+        time[i]->setPen(pen);
+        time[i]->setBrush(QColor(0, 255 - colourDiff * i, colourDiff * i, 100));
+
+        if(i > 0)
+            time[i]->moveAbove(time[i - 1]);
+    }
+
+    QVector<QString> diagId;
+    QVector<double> *times = new QVector<double>[devs.size()];
+
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        QString idString = QString("Task ID %1").arg(tasks[i]);
+        diagId.append(idString);
+        for(int j = 0; j < devs.size(); j++)
+            if(devTaskTime.contains(QPair<int, int>(devs[j], tasks[i])))
+                times[j] << devTaskTime[QPair<int, int>(devs[j], tasks[i])];
+            else
+                times[j] << 0;
+    }
+
+    /**
+     * Preparing x axis
+     */
+
+    QVector<double> ticks;
+    for(int i = 1; i <= tasks.size(); i++)
+        ticks << i;
+    ui->taskTimePlot->xAxis->setAutoTicks(false);
+    ui->taskTimePlot->xAxis->setAutoTickLabels(false);
+    ui->taskTimePlot->xAxis->setTickVector(ticks);
+    ui->taskTimePlot->xAxis->setTickVectorLabels(diagId);
+    ui->taskTimePlot->xAxis->setTickLabelRotation(20);
+    ui->taskTimePlot->xAxis->setSubTickCount(0);
+    ui->taskTimePlot->xAxis->setTickLength(0, 4);
+    ui->taskTimePlot->xAxis->grid()->setVisible(true);
+    ui->taskTimePlot->xAxis->setRange(0, tasks.size() + 1);
+
+    /**
+     * Preparing y axis
+     */
+
+    double max = 0;
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        double current = 0;
+        for(int j = 0; j < devs.size(); j++)
+            current += times[j][i];
+        if(max < current)
+            max = current;
+    }
+
+    ui->taskTimePlot->yAxis->setRange(0, max * 1.2);
+    ui->taskTimePlot->yAxis->setPadding(5);
+    ui->taskTimePlot->yAxis->setLabel("Time (ms)");
+    ui->taskTimePlot->yAxis->grid()->setSubGridVisible(true);
+    QPen gridPen;
+    gridPen.setStyle(Qt::SolidLine);
+    gridPen.setColor(QColor(0, 0, 0, 25));
+    ui->taskTimePlot->yAxis->grid()->setPen(gridPen);
+    gridPen.setStyle(Qt::DotLine);
+    ui->taskTimePlot->yAxis->grid()->setSubGridPen(gridPen);
+
+    /**
+     * Setting data
+     */
+
+    for(int i = 0; i < devs.size(); i++)
+        time[i]->setData(ticks, times[i]);
+
+    /**
+     * Legend setup
+     */
+
+    ui->taskTimePlot->legend->setVisible(true);
+    ui->taskTimePlot->axisRect()->insetLayout()->setInsetAlignment(0,
+                                                 Qt::AlignTop|Qt::AlignHCenter);
+    ui->taskTimePlot->legend->setBrush(QColor(255, 255, 255, 200));
+    QPen legendPen;
+    legendPen.setColor(QColor(130, 130, 130, 200));
+    ui->taskTimePlot->legend->setBorderPen(legendPen);
+    QFont legendFont = ui->title->font();
+    legendFont.setPointSize(10);
+    ui->taskTimePlot->legend->setFont(legendFont);
+    ui->taskTimePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
+    delete time;
+    delete[] times;
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
@@ -225,7 +337,7 @@ void Stats::setupGeneral(QVector<QString> devices,
     crash->setPen(pen);
     crash->setBrush(QColor(0, 0, 0, 100));
 
-
+    {
         QVector<QString> procErrs;
         procErrs << "FailedToStart" << "Crashed" << "Timedout" <<
                     "WriteError" << "ReadError" << "UnknownError";
@@ -236,7 +348,7 @@ void Stats::setupGeneral(QVector<QString> devices,
             procErr[i]->setPen(pen);
             procErr[i]->setBrush(QColor(255, i * 50, 0, 100));
         }
-
+    }
 
     ioErr[OneProcess::Copy]->moveAbove(succ);
     for(int i = OneProcess::Copy + 1; i <= OneProcess::Mkdir; i++)
