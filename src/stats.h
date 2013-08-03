@@ -46,7 +46,8 @@ private:
     void setupRun1(int elapsed, int procTime, int procsRan, int failed,
                    QVector<int> devs);
     void setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
-                   QMap<int, int> taskProcs);
+                   QMap<int, int> taskProcs,
+                   QMap<QPair<int, QString>, int> taskFileTime);
     void setupRun3(QVector<int> devs, QMap<int, int> devTime,
                    QMap<int, int> devProcs);
     void setupDevTime();

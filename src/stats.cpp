@@ -75,6 +75,7 @@ void Stats::getRunData()
     QMap<int, int> devTime, devProcs;
     QMap<int, int> taskTime, taskProcs;
     QMap<QPair<int, int>, int> devTaskTime;
+    QMap<QPair<int, QString>, int> taskFileTime;
 
     int elapsed  = runStats.value(EXEC_TIME).toInt();
     int procsRan = runStats.value(PROCS_RAN).toInt();
@@ -87,6 +88,10 @@ void Stats::getRunData()
         int devId  = runStats.value(QString(PROC_DEVID).arg(i)).toInt();
         int status = runStats.value(QString(PROC_EXIT_STATUS).arg(i)).toInt();
         int taskId = runStats.value(QString(PROC_DIAG_ID).arg(i)).toInt();
+
+        QString input = runStats.value(QString(PROC_INPUT).arg(i)).toString();
+
+        taskFileTime[QPair<int, QString>(taskId, input)] = time;
 
         if(!devs.contains(devId))
             devs.append(devId);
@@ -125,7 +130,7 @@ void Stats::getRunData()
     }
 
     setupRun1(elapsed, procTime, procsRan, failed, devs);
-    setupRun2(tasks, taskTime, taskProcs);
+    setupRun2(tasks, taskTime, taskProcs, taskFileTime);
     setupRun3(devs, devTime, devProcs);
     setupTaskTime(devTaskTime, devs, tasks);
 }
@@ -317,18 +322,28 @@ void Stats::setupRun1(int elapsed, int procTime, int procsRan, int failed,
 }
 
 void Stats::setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
-                      QMap<int, int> taskProcs)
+                      QMap<int, int> taskProcs,
+                      QMap<QPair<int, QString>, int> taskFileTime)
 {
     QStringList lines;
     for(int i = 0; i < tasks.size(); i++)
     {
-        QString name = QString("Task %1").arg(tasks[i]);
+        QString name = QString("Task ID %1").arg(tasks[i]);
         QString ran = QString("Processes ran: %1").arg(taskProcs[tasks[i]]);
         QString time = QString("Run time: %1(s)").
                 arg((double)taskTime[tasks[i]] / 1000);
-        QString avg = QString("Average time/process: %1(ms/proc)\n").
+        QString avg = QString("Average time/process: %1(ms/proc)").
                       arg((double)taskTime[tasks[i]] / taskProcs[tasks[i]]);
         lines << name << ran << time << avg;
+        for(QMap<QPair<int, QString>, int>::Iterator j = taskFileTime.begin();
+            j != taskFileTime.end(); j++)
+            if(j.key().first == tasks[i])
+            {
+                QString fileTime = QString("Run time for \"%1\": %2(ms)").
+                                   arg(j.key().second).arg(j.value());
+                lines << fileTime;
+            }
+        lines << "\n";
     }
     ui->runStats_2->textCursor().insertText(lines.join("\n"));
 }
