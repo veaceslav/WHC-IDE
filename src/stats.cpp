@@ -72,7 +72,10 @@ void Stats::getRunData()
     QVector<int> devs;
     QVector<int> tasks;
 
+    QMap<int, int> devTime, devProcs;
+    QMap<int, int> taskTime, taskProcs;
     QMap<QPair<int, int>, int> devTaskTime;
+
     int elapsed  = runStats.value(EXEC_TIME).toInt();
     int procsRan = runStats.value(PROCS_RAN).toInt();
     int procTime = 0;
@@ -89,6 +92,27 @@ void Stats::getRunData()
             devs.append(devId);
         if(!tasks.contains(taskId))
             tasks.append(taskId);
+
+        if(devTime.contains(devId))
+            devTime[devId] += time;
+        else
+            devTime[devId] = time;
+
+        if(devProcs.contains(devId))
+            devProcs[devId]++;
+        else
+            devProcs[devId] = 1;
+
+        if(taskTime.contains(taskId))
+            taskTime[taskId] += time;
+        else
+            taskTime[taskId] = time;
+
+        if(taskProcs.contains(taskId))
+            taskProcs[taskId]++;
+        else
+            taskProcs[taskId] = 1;
+
         if(devTaskTime.contains(QPair<int, int>(devId, taskId)))
             devTaskTime[QPair<int, int>(devId, taskId)] += time;
         else
@@ -100,29 +124,8 @@ void Stats::getRunData()
         procTime += time;
     }
 
-    int overhead = elapsed - procTime;
-
-    QString line[6];
-    line[0] = "Total time: " + QString::number((double)elapsed / 1000) + "s\n";
-    line[1] = "Processes time: " + QString::number((double)procTime / 1000) +
-              "s (" + QString::number((double)procTime / elapsed * 100) +
-              "%)\n";
-    line[2] = "Processes ran: " + QString::number(procsRan) + "\n";
-    line[3] = "Success rate: " +
-              QString::number((double)failed / procsRan + 100) + "% (" +
-              QString::number(failed) + " failed)\n";
-    line[4] = "IDE overhead: " + QString::number((double)overhead / 1000) +
-              "s (" + QString::number((double)overhead / elapsed * 100) +
-              "%)\n";
-    line[5] = "Number of devices: " + QString::number(devs.size()) + "\n";
-
-    QString textRow1;
-
-    for(int i = 0; i < 6; i++)
-        textRow1 += line[i];
-
-    ui->runStats_1->textCursor().insertText(textRow1);
-
+    setupRun1(elapsed, procTime, procsRan, failed, devs);
+    setupRun2(tasks, taskTime, taskProcs);
     setupTaskTime(devTaskTime, devs, tasks);
 }
 
@@ -283,6 +286,50 @@ void Stats::setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
 
     delete time;
     delete[] times;
+}
+
+void Stats::setupRun1(int elapsed, int procTime, int procsRan, int failed,
+                      QVector<int> devs)
+{
+    int overhead = elapsed - procTime;
+
+    QString line[6];
+    line[0] = "Total time: " + QString::number((double)elapsed / 1000) + "s\n";
+    line[1] = "Processes time: " + QString::number((double)procTime / 1000) +
+              "s (" + QString::number((double)procTime / elapsed * 100) +
+              "%)\n";
+    line[2] = "Processes ran: " + QString::number(procsRan) + "\n";
+    line[3] = "Success rate: " +
+              QString::number((double)failed / procsRan + 100) + "% (" +
+              QString::number(failed) + " failed)\n";
+    line[4] = "IDE overhead: " + QString::number((double)overhead / 1000) +
+              "s (" + QString::number((double)overhead / elapsed * 100) +
+              "%)\n";
+    line[5] = "Number of devices: " + QString::number(devs.size()) + "\n";
+
+    QString textRow1;
+
+    for(int i = 0; i < 6; i++)
+        textRow1 += line[i];
+
+    ui->runStats_1->textCursor().insertText(textRow1);
+}
+
+void Stats::setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
+                      QMap<int, int> taskProcs)
+{
+    QStringList lines;
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        QString name = QString("Task %1").arg(tasks[i]);
+        QString ran = QString("Processes ran: %1").arg(taskProcs[tasks[i]]);
+        QString time = QString("Run time: %1(s)").
+                arg((double)taskTime[tasks[i]] / 1000);
+        QString avg = QString("Average time/process: %1(ms/proc)\n").
+                      arg((double)taskTime[tasks[i]] / taskProcs[tasks[i]]);
+        lines << name << ran << time << avg;
+    }
+    ui->runStats_2->textCursor().insertText(lines.join("\n"));
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
