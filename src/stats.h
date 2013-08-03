@@ -43,6 +43,8 @@ private:
 
     void setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
                        QVector<int> devs, QVector<int> tasks);
+    void setupDevTime(QMap<QPair<int, int>, int> devTaskTime,
+                      QVector<int> devs, QVector<int> tasks);
     void setupRun1(int elapsed, int procTime, int procsRan, int failed,
                    QVector<int> devs);
     void setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
@@ -50,7 +52,7 @@ private:
                    QMap<QPair<int, QString>, int> taskFileTime);
     void setupRun3(QVector<int> devs, QMap<int, int> devTime,
                    QMap<int, int> devProcs);
-    void setupDevTime();
+
     void setupGeneral(QVector<QString> devices,
                       QVector<double> success, QVector<double> ioError[],
                       QVector<double> crashExit, QVector<double> procError[]);

@@ -132,6 +132,7 @@ void Stats::getRunData()
     setupRun1(elapsed, procTime, procsRan, failed, devs);
     setupRun2(tasks, taskTime, taskProcs, taskFileTime);
     setupRun3(devs, devTime, devProcs);
+    setupDevTime(devTaskTime, devs, tasks);
     setupTaskTime(devTaskTime, devs, tasks);
 }
 
@@ -217,7 +218,8 @@ void Stats::setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
     for(int i = 0; i < tasks.size(); i++)
     {
         QString idString = QString("Task ID %1").arg(tasks[i]);
-        diagId.append(idString);
+        diagId << idString;
+
         for(int j = 0; j < devs.size(); j++)
             if(devTaskTime.contains(QPair<int, int>(devs[j], tasks[i])))
                 times[j] << devTaskTime[QPair<int, int>(devs[j], tasks[i])];
@@ -232,6 +234,7 @@ void Stats::setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
     QVector<double> ticks;
     for(int i = 1; i <= tasks.size(); i++)
         ticks << i;
+
     ui->taskTimePlot->xAxis->setAutoTicks(false);
     ui->taskTimePlot->xAxis->setAutoTickLabels(false);
     ui->taskTimePlot->xAxis->setTickVector(ticks);
@@ -294,6 +297,117 @@ void Stats::setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
     delete[] times;
 }
 
+void Stats::setupDevTime(QMap<QPair<int, int>, int> devTaskTime,
+                         QVector<int> devs, QVector<int> tasks)
+{
+    QCPBars **time = new QCPBars*[tasks.size()];
+    int colourDiff = 255 / tasks.size();
+
+    QPen pen;
+    pen.setWidthF(1.2);
+
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        time[i] = new QCPBars(ui->devTimePlot->xAxis, ui->devTimePlot->yAxis);
+        ui->devTimePlot->addPlottable(time[i]);
+
+        time[i]->setName(QString("Task ID %1").arg(tasks[i]));
+
+        pen.setColor(QColor(0, 255 - colourDiff * i, colourDiff * i));
+        time[i]->setPen(pen);
+        time[i]->setBrush(QColor(0, 255 - colourDiff * i, colourDiff * i, 100));
+
+        if(i > 0)
+            time[i]->moveAbove(time[i - 1]);
+    }
+
+    QVector<QString> devNames;
+    QVector<double> *times = new QVector<double>[tasks.size()];
+
+    for(int i = 0; i < devs.size(); i++)
+    {
+        QString nameString = deviceQuery->getName(devs[i]);
+        if(nameString.isNull())
+            nameString = QString("Device %1").arg(devs[i]);
+        devNames << nameString;
+
+        for(int j = 0; j < tasks.size(); j++)
+            if(devTaskTime.contains(QPair<int, int>(devs[i], tasks[j])))
+                times[j] << devTaskTime[QPair<int, int>(devs[i], tasks[j])];
+            else
+                times[j] << 0;
+    }
+
+    /**
+     * Preparing x axis
+     */
+
+    QVector<double> ticks;
+    for(int i = 1; i <= devs.size(); i++)
+        ticks << i;
+
+    ui->devTimePlot->xAxis->setAutoTicks(false);
+    ui->devTimePlot->xAxis->setAutoTickLabels(false);
+    ui->devTimePlot->xAxis->setTickVector(ticks);
+    ui->devTimePlot->xAxis->setTickVectorLabels(devNames);
+    ui->devTimePlot->xAxis->setTickLabelRotation(20);
+    ui->devTimePlot->xAxis->setSubTickCount(0);
+    ui->devTimePlot->xAxis->setTickLength(0, 4);
+    ui->devTimePlot->xAxis->grid()->setVisible(true);
+    ui->devTimePlot->xAxis->setRange(0, devs.size() + 1);
+
+    /**
+     * Preparing y axis
+     */
+
+    double max = 0;
+    for(int i = 0; i < devs.size(); i++)
+    {
+        double current = 0;
+        for(int j = 0; j < tasks.size(); j++)
+            current += times[j][i];
+        if(max < current)
+            max = current;
+    }
+
+    ui->devTimePlot->yAxis->setRange(0, max * 1.2);
+    ui->devTimePlot->yAxis->setPadding(5);
+    ui->devTimePlot->yAxis->setLabel("Time (ms)");
+    ui->devTimePlot->yAxis->grid()->setSubGridVisible(true);
+    QPen gridPen;
+    gridPen.setStyle(Qt::SolidLine);
+    gridPen.setColor(QColor(0, 0, 0, 25));
+    ui->devTimePlot->yAxis->grid()->setPen(gridPen);
+    gridPen.setStyle(Qt::DotLine);
+    ui->devTimePlot->yAxis->grid()->setSubGridPen(gridPen);
+
+    /**
+     * Setting data
+     */
+
+    for(int i = 0; i < tasks.size(); i++)
+        time[i]->setData(ticks, times[i]);
+
+    /**
+     * Legend setup
+     */
+
+    ui->devTimePlot->legend->setVisible(true);
+    ui->devTimePlot->axisRect()->insetLayout()->setInsetAlignment(0,
+                                                 Qt::AlignTop|Qt::AlignHCenter);
+    ui->devTimePlot->legend->setBrush(QColor(255, 255, 255, 200));
+    QPen legendPen;
+    legendPen.setColor(QColor(130, 130, 130, 200));
+    ui->devTimePlot->legend->setBorderPen(legendPen);
+    QFont legendFont = ui->title->font();
+    legendFont.setPointSize(10);
+    ui->devTimePlot->legend->setFont(legendFont);
+    ui->devTimePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
+    delete time;
+    delete[] times;
+}
+
 void Stats::setupRun1(int elapsed, int procTime, int procsRan, int failed,
                       QVector<int> devs)
 {
@@ -330,16 +444,16 @@ void Stats::setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
     {
         QString name = QString("Task ID %1").arg(tasks[i]);
         QString ran = QString("Processes ran: %1").arg(taskProcs[tasks[i]]);
-        QString time = QString("Run time: %1(s)").
+        QString time = QString("Run time: %1s").
                 arg((double)taskTime[tasks[i]] / 1000);
-        QString avg = QString("Average time/process: %1(ms/proc)").
+        QString avg = QString("Average time/process: %1ms/proc").
                       arg((double)taskTime[tasks[i]] / taskProcs[tasks[i]]);
         lines << name << ran << time << avg;
         for(QMap<QPair<int, QString>, int>::Iterator j = taskFileTime.begin();
             j != taskFileTime.end(); j++)
             if(j.key().first == tasks[i])
             {
-                QString fileTime = QString("Run time for \"%1\": %2(ms)").
+                QString fileTime = QString("Run time for \"%1\": %2ms").
                                    arg(j.key().second).arg(j.value());
                 lines << fileTime;
             }
@@ -356,9 +470,9 @@ void Stats::setupRun3(QVector<int> devs, QMap<int, int> devTime,
     {
         QString name = QString("Task %1").arg(devs[i]);
         QString ran = QString("Processes ran: %1").arg(devProcs[devs[i]]);
-        QString time = QString("Run time: %1(s)").
+        QString time = QString("Run time: %1s").
                 arg((double)devTime[devs[i]] / 1000);
-        QString avg = QString("Average time/process: %1(ms/proc)\n").
+        QString avg = QString("Average time/process: %1ms/proc\n").
                       arg((double)devTime[devs[i]] / devProcs[devs[i]]);
         lines << name << ran << time << avg;
     }
