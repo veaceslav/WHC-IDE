@@ -47,29 +47,12 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayoutRow_1">
             <item>
-             <widget class="QLineEdit" name="totalTime">
-              <property name="text">
-               <string>Total time: </string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="procTime">
-              <property name="text">
-               <string>Processes time: </string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="procsRan">
-              <property name="text">
-               <string>Processes ran: </string>
+             <widget class="QPlainTextEdit" name="runStats_1">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="readOnly">
                <bool>true</bool>
@@ -81,29 +64,12 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayoutRow_2">
             <item>
-             <widget class="QLineEdit" name="successRate">
-              <property name="text">
-               <string>Success rate: </string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="ideOverhead">
-              <property name="text">
-               <string>IDE overhead: </string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="devicesNo">
-              <property name="text">
-               <string>Number of devices: </string>
+             <widget class="QPlainTextEdit" name="runStats_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="readOnly">
                <bool>true</bool>
@@ -111,9 +77,6 @@
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayoutRow_3"/>
           </item>
          </layout>
         </widget>

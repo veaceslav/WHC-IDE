@@ -102,23 +102,26 @@ void Stats::getRunData()
 
     int overhead = elapsed - procTime;
 
-    ui->totalTime->setText(ui->totalTime->text() +
-                           QString::number((double)elapsed / 1000) + "s");
-    ui->procTime->setText(ui->procTime->text() +
-                          QString::number((double)procTime / 1000) + "s (" +
-                          QString::number((double)procTime / elapsed * 100) +
-                          "%)");
-    ui->procsRan->setText(ui->procsRan->text() + QString::number(procsRan));
-    ui->successRate->setText(ui->successRate->text() +
-                             QString::number((double)failed / procsRan + 100) +
-                             "% (" + QString::number(failed) + " failed)");
-    ui->ideOverhead->setText(ui->ideOverhead->text() +
-                             QString::number((double)overhead / 1000) +
-                             "s (" +
-                             QString::number((double)overhead / elapsed * 100) +
-                             "%)");
-    ui->devicesNo->setText(ui->devicesNo->text() +
-                           QString::number(devs.size()));
+    QString line[6];
+    line[0] = "Total time: " + QString::number((double)elapsed / 1000) + "s\n";
+    line[1] = "Processes time: " + QString::number((double)procTime / 1000) +
+              "s (" + QString::number((double)procTime / elapsed * 100) +
+              "%)\n";
+    line[2] = "Processes ran: " + QString::number(procsRan) + "\n";
+    line[3] = "Success rate: " +
+              QString::number((double)failed / procsRan + 100) + "% (" +
+              QString::number(failed) + " failed)\n";
+    line[4] = "IDE overhead: " + QString::number((double)overhead / 1000) +
+              "s (" + QString::number((double)overhead / elapsed * 100) +
+              "%)\n";
+    line[5] = "Number of devices: " + QString::number(devs.size()) + "\n";
+
+    QString textRow1;
+
+    for(int i = 0; i < 6; i++)
+        textRow1 += line[i];
+
+    ui->runStats_1->textCursor().insertText(textRow1);
 
     setupTaskTime(devTaskTime, devs, tasks);
 }
