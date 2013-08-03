@@ -126,6 +126,7 @@ void Stats::getRunData()
 
     setupRun1(elapsed, procTime, procsRan, failed, devs);
     setupRun2(tasks, taskTime, taskProcs);
+    setupRun3(devs, devTime, devProcs);
     setupTaskTime(devTaskTime, devs, tasks);
 }
 
@@ -330,6 +331,23 @@ void Stats::setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
         lines << name << ran << time << avg;
     }
     ui->runStats_2->textCursor().insertText(lines.join("\n"));
+}
+
+void Stats::setupRun3(QVector<int> devs, QMap<int, int> devTime,
+                      QMap<int, int> devProcs)
+{
+    QStringList lines;
+    for(int i = 0; i < devs.size(); i++)
+    {
+        QString name = QString("Task %1").arg(devs[i]);
+        QString ran = QString("Processes ran: %1").arg(devProcs[devs[i]]);
+        QString time = QString("Run time: %1(s)").
+                arg((double)devTime[devs[i]] / 1000);
+        QString avg = QString("Average time/process: %1(ms/proc)\n").
+                      arg((double)devTime[devs[i]] / devProcs[devs[i]]);
+        lines << name << ran << time << avg;
+    }
+    ui->runStats_3->textCursor().insertText(lines.join("\n"));
 }
 
 void Stats::setupGeneral(QVector<QString> devices,

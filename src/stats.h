@@ -47,6 +47,8 @@ private:
                    QVector<int> devs);
     void setupRun2(QVector<int> tasks, QMap<int, int> taskTime,
                    QMap<int, int> taskProcs);
+    void setupRun3(QVector<int> devs, QMap<int, int> devTime,
+                   QMap<int, int> devProcs);
     void setupDevTime();
     void setupGeneral(QVector<QString> devices,
                       QVector<double> success, QVector<double> ioError[],
