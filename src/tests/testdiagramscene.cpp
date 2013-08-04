@@ -21,6 +21,8 @@
  *
  * ============================================================ */
 
+#include <QtTest/QtTest>
+
 #include "testdiagramscene.h"
 #include "../diagram/diagramwindow.h"
 #include "../diagram/diagramscene.h"
@@ -28,7 +30,6 @@
 #include "../model/projecttreemodel.h"
 #include "../diagram/connector.h"
 #include "../diagram/containers.h"
-#include <QtTest/QtTest>
 
 TestDiagramScene::TestDiagramScene(QObject *parent) :
     QObject(parent)

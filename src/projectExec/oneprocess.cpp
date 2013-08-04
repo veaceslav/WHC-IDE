@@ -82,8 +82,8 @@ void OneProcess::slotProcessFailed(QProcess::ProcessError error)
     }
     writeErrorToCmd("process error - " + errType);
 
-    if(proc->state() == QProcess::NotRunning)
-        emit signalEnd(device, taskNode->diagId, args, ProcessError, error);
+
+    emit signalEnd(device, taskNode->diagId, args, ProcessError, error);
 }
 
 void OneProcess::slotUpdateText()

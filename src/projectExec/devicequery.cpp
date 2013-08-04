@@ -30,14 +30,14 @@
 #include <QLabel>
 
 DeviceQuery::DeviceQuery(Ide *parent)
-    :QWidget(parent),parentIde(parent)
+    :QWidget(parent), parentIde(parent)
 {
     this->setMaximumHeight(250);
 
     devList = new QListWidget(this);
-    QVBoxLayout* lay = new QVBoxLayout(this);
+    QVBoxLayout *lay = new QVBoxLayout(this);
 
-    QHBoxLayout* hb = new QHBoxLayout();
+    QHBoxLayout *hb = new QHBoxLayout();
 
     lay->addLayout(hb);
 
@@ -47,11 +47,11 @@ DeviceQuery::DeviceQuery(Ide *parent)
     QIcon closeIcon(":/images/close2.png");
     refresh = new QToolButton(this);
     refresh->setIcon(ref);
-    connect(refresh,SIGNAL(clicked()),this,SLOT(getDeviceInfo()));
+    connect(refresh, SIGNAL(clicked()), this, SLOT(getDeviceInfo()));
 
     closeButton = new QToolButton(this);
     closeButton->setIcon(closeIcon);
-    connect(closeButton,SIGNAL(clicked()),this,SLOT(hideDev()));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(hideDev()));
 
     hb->addWidget(title);
     hb->addWidget(refresh);
@@ -73,13 +73,13 @@ void DeviceQuery::getDeviceInfo()
     cl_platform_id platform[MAX_PLAT];
     cl_device_id devices[MAX_DEV];
 
-    cl_uint totalDevices=0;
-    cl_uint platformDevices=0;
+    cl_uint totalDevices = 0;
+    cl_uint platformDevices = 0;
 
-    cl_uint num_platforms=0;
+    cl_uint num_platforms = 0;
     char tempString[MAX_STR];
 
-    clGetPlatformIDs(MAX_PLAT,platform,&num_platforms);
+    clGetPlatformIDs(MAX_PLAT, platform, &num_platforms);
 
     if(num_platforms == 0)
     {
@@ -87,29 +87,29 @@ void DeviceQuery::getDeviceInfo()
         return;
     }
 
-    for(unsigned int i=0;i<num_platforms;i++)
+    for(unsigned int i = 0; i < num_platforms; i++)
     {
         QString code = "[";
-        clGetPlatformInfo(platform[i],CL_PLATFORM_NAME,
-                          sizeof(char)* MAX_STR,tempString,NULL);
+        clGetPlatformInfo(platform[i], CL_PLATFORM_NAME,
+                          sizeof(char) * MAX_STR, tempString, NULL);
 
         code+= QString(tempString).split(" ").first() + "]";
 
-        clGetDeviceIDs(platform[i],CL_DEVICE_TYPE_ALL,MAX_DEV,devices,
+        clGetDeviceIDs(platform[i], CL_DEVICE_TYPE_ALL, MAX_DEV, devices,
                        &platformDevices);
 
-        totalDevices+= platformDevices;
+        totalDevices += platformDevices;
 
-        for(unsigned int j=0;j<platformDevices;j++)
+        for(unsigned int j = 0; j < platformDevices; j++)
         {
-            clGetDeviceInfo(devices[j],CL_DEVICE_NAME,
-                            sizeof(char)*MAX_STR,tempString,NULL);
+            clGetDeviceInfo(devices[j], CL_DEVICE_NAME,
+                            sizeof(char) * MAX_STR, tempString, NULL);
 
-            QListWidgetItem* item1 = new QListWidgetItem(code
+            QListWidgetItem *item1 = new QListWidgetItem(code
                                                          + QString(tempString));
             item1->setFlags(item1->flags() | Qt::ItemIsUserCheckable);
             item1->setCheckState(Qt::Checked);
-            devList->insertItem(0,item1);
+            devList->insertItem(0, item1);
         }
     }
     title->setText(QString("Found " + QString::number(totalDevices)
@@ -123,13 +123,32 @@ QVector<int> DeviceQuery::getSelection()
     if(devList->count() == 0)
         getDeviceInfo();
 
-    for(int i=0;i<devList->count();i++)
+    for(int i = 0; i < devList->count(); i++)
     {
-        QListWidgetItem* item = devList->item(i);
+        QListWidgetItem *item = devList->item(i);
         if(item->checkState() == Qt::Checked)
             selection.push_back(i);
     }
     return selection;
+}
+
+int DeviceQuery::devicesCount()
+{
+    getDeviceInfo();
+    return devList->count();
+}
+
+QString DeviceQuery::getName(int devId)
+{
+    QListWidgetItem *dev = devList->item(devId);
+    if(!dev)
+    {
+        getDeviceInfo();
+        dev = devList->item(devId);
+    }
+    if(dev)
+        return dev->text();
+    return QString();
 }
 
 void DeviceQuery::showDev()

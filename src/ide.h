@@ -31,6 +31,7 @@
 #include "mditexteditor.h"
 #include "projectExec/execute.h"
 #include "settings/editorSettingsVar.h"
+#include "stats.h"
 
 class Highlighter;
 class MdiTextEditor;
@@ -257,6 +258,8 @@ private slots:
 
     void on_actionRestore_triggered();
 
+    void on_actionView_stats_triggered();
+
 private:
 
     void keyPressEvent(QKeyEvent *event);
@@ -312,6 +315,7 @@ private:
     DeviceQuery *devices;
 
     Execute *exec;
+    Stats *stats;
 
     /**
      * Friend class is used for testing Ide functionality and it need to have

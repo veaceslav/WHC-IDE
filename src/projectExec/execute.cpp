@@ -146,11 +146,14 @@ void Execute::slotNextProcess(int dev, int finishedTask, QStringList *args,
                                 moreInfo);
     }
 
-    delete args;
-    exec2[dev]->deleteLater();
+    if(!exec2[dev]->running())
+    {
+        delete args;
+        exec2[dev]->deleteLater();
 
-    if(!stop)
-        start(dev);
+        if(!stop)
+            start(dev);
+    }
 }
 
 void Execute::execute()

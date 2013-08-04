@@ -50,6 +50,19 @@ public:
 
     QVector<int> getSelection();
 
+    /**
+     * @brief devicesCount - gets the number of devices
+     * @return        - returns the number of devices
+     */
+    int devicesCount();
+
+    /**
+     * @brief getName - get the name of the requested device
+     * @param devId   - the id of the device from the widget
+     * @return        - returns the name of the id as it appears in the devList
+     */
+    QString getName(int devId);
+
 public slots:
     /**
      * @brief hideDev - hide device list when clicking close button
@@ -62,11 +75,11 @@ public slots:
     void getDeviceInfo();
 private:
 
-    Ide* parentIde;
-    QListWidget* devList;
-    QToolButton* closeButton;
-    QToolButton* refresh;
-    QLabel* title;
+    Ide *parentIde;
+    QListWidget *devList;
+    QToolButton *closeButton;
+    QToolButton *refresh;
+    QLabel *title;
 
     QList<QListWidgetItem*> items;
 };

@@ -27,6 +27,14 @@ set(CMAKE_CXX_FLAGS "-fPIC")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(plot_SOURCES
+    customPlot/qcustomplot.cpp
+)
+
+set(plot_HEADERS
+    customPlot/qcustomplot.h
+)
+
 set(model_SOURCES
     model/projecttreemodel.cpp
     model/projecttreeitem.cpp
@@ -149,6 +157,7 @@ set(test_SOURCES
     )
 
 set(whc_SOURCES
+    ${plot_SOURCES}
     ${model_SOURCES}
     ${diagram_SOURCES}
     ${libssh_SOURCES}
@@ -169,10 +178,12 @@ set(whc_SOURCES
     syntaxhighlighter.cpp
     staticmethods.cpp
     monitor.cpp
+    stats.cpp
 )
 
 
 set(whc_HEADERS
+    ${plot_HEADERS}
     ${model_HEADERS}
     ${diagram_HEADERS}
     ${libssh_HEADERS}
@@ -192,6 +203,7 @@ set(whc_HEADERS
     syntaxhighlighter.h
     staticmethods.h
     monitor.h
+    stats.h
 )
 
 set(whc_FORMS
@@ -202,6 +214,7 @@ set(whc_FORMS
     forms/credits.ui
     forms/settingsDialog.ui
     forms/projectdialog.ui
+    forms/stats.ui
 )
 
 set(whc_RESOURCES
@@ -220,7 +233,7 @@ add_executable(whc
         ${whc_RESOURCES_RCC}
 )
 
-qt5_use_modules(whc Widgets Core Test Xml)
+qt5_use_modules(whc Widgets Core Test Xml PrintSupport)
 
 target_link_libraries(whc
     ${Qt5Widgets_LIBRARIES}

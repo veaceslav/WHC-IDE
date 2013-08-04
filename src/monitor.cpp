@@ -21,62 +21,13 @@
  *
  * ============================================================ */
 
-#include "monitor.h"
-
 #include <QStringList>
 #include <QString>
 #include <QDir>
 #include <QDebug>
 
-/**
- * The total number of processes that ran on the device
- */
-#define DEV_RUNS "devId%1_status%2_info%3"
-
-/**
- * The total number of runs
- */
-#define PROJ_RUNS "projRuns"
-
-/**
- * The total number of processes that ran;
- */
-#define PROCS_RAN "procsRan"
-
-/**
- * The device on which the process ran
- */
-#define PROC_DEVID "procDevId_Id%1"
-
-/**
- * The time it took to finish the process
- */
-#define PROC_TIME "procTime_Id%1"
-
-/**
- * The input file/s for the process
- **/
-#define PROC_INPUT "procInput_Id%1"
-
-/**
- * The id of the process in the workflow diagram
- */
-#define PROC_DIAG_ID "procDiagId_Id%1"
-
-/**
- * The status of the process (Succress, IOError, Crash exit or Process error)
- */
-#define PROC_EXIT_STATUS "procExitStatus_Id%1"
-
-/**
- * Additional info regarding the process exit status
- */
-#define PROC_EXIT_INFO "procExitInfo_Id%1"
-
-/**
- * Total execution time
- */
-#define EXEC_TIME "execTime"
+#include "monitor.h"
+#include "projectExec/oneprocess.h"
 
 Monitor::Monitor()
 {
@@ -147,14 +98,16 @@ void Monitor::slotFinishedProcess(int devId, int taskId, QString *inFiles,
             QString(DEV_RUNS).arg(devId).arg(taskStatus).arg(moreInfo);
     int ranOnDev;
     if(!aggregateStats->contains(devProcRuns))
-        ranOnDev = 0;
+        ranOnDev = 1;
     else
         ranOnDev = aggregateStats->value(devProcRuns).toInt() + 1;
 
+    aggregateStats->setValue(devProcRuns, ranOnDev);
     procsRan++;
 
     delete inFiles;
-    delete procTimer[devId];
+    if(taskStatus != OneProcess::ProcessError)
+        delete procTimer[devId];
 }
 
 void Monitor::slotFinishedExecute()
