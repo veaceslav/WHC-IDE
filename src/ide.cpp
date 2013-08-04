@@ -78,6 +78,7 @@ Ide::Ide(QWidget *parent) :
     model           = NULL;
     outWindow       = NULL;
     editorSettings  = NULL;
+    stats           = NULL;
 
     settings = new ProjectSettings();
     readSettingsfromFile();
@@ -167,6 +168,7 @@ Ide::~Ide()
     }
 
     StaticMethods::destroyObj(&settings);
+    StaticMethods::destroyObj(&stats);
     StaticMethods::destroyObj(&contextTask);
     StaticMethods::destroyObj(&contextFile);
     StaticMethods::destroyObj(&contextData);
@@ -820,6 +822,7 @@ void Ide::slotCloseProject()
 
     disableMenuOptions(true);
     disableStopExec(true);
+    whcFile = QString();
 }
 
 void Ide::slotDeleteItem()
@@ -1155,4 +1158,13 @@ void Ide::on_actionRestore_triggered()
     flow.close();
 
     startProjectExec(exclusionList);
+}
+
+void Ide::on_actionView_stats_triggered()
+{
+    StaticMethods::destroyObj(&stats);
+    if(whcFile.isNull())
+        stats = new Stats(devices);
+    else
+        stats = new Stats(devices, whcFile);
 }

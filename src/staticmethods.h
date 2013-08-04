@@ -23,6 +23,7 @@
 
 #ifndef STATICMETHODS_H
 #define STATICMETHODS_H
+
 #include "ide.h"
 
 class QDir;
