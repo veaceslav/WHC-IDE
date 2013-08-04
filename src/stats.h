@@ -39,6 +39,7 @@ public:
 private:
     void initGraphs();
     void getRunData();
+    void getProjectData();
     void getGeneralData();
 
     void setupTaskTime(QMap<QPair<int, int>, int> devTaskTime,
@@ -52,6 +53,8 @@ private:
                    QMap<QPair<int, QString>, int> taskFileTime);
     void setupRun3(QVector<int> devs, QMap<int, int> devTime,
                    QMap<int, int> devProcs);
+
+    void setupProject(QVector<int> tasks, QVector<double> taskTime[]);
 
     void setupGeneral(QVector<QString> devices,
                       QVector<double> success, QVector<double> ioError[],

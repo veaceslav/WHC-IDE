@@ -56,6 +56,7 @@ void Stats::initGraphs()
     if(!logsPath.isNull())
     {
         getRunData();
+        getProjectData();
     }
     getGeneralData();
 
@@ -134,6 +135,10 @@ void Stats::getRunData()
     setupRun3(devs, devTime, devProcs);
     setupDevTime(devTaskTime, devs, tasks);
     setupTaskTime(devTaskTime, devs, tasks);
+}
+
+void Stats::getProjectData()
+{
 }
 
 void Stats::getGeneralData()
@@ -477,6 +482,39 @@ void Stats::setupRun3(QVector<int> devs, QMap<int, int> devTime,
         lines << name << ran << time << avg;
     }
     ui->runStats_3->textCursor().insertText(lines.join("\n"));
+}
+
+void Stats::setupProject(QVector<int> tasks, QVector<double> taskTime[])
+{
+    QFont legendFont = ui->title->font();
+    legendFont.setPointSize(10);
+    ui->projPlot->legend->setVisible(true);
+    ui->projPlot->legend->setFont(legendFont);
+    QPen pen;
+
+    QVector<double> ticks;
+
+    for(int i = 0; i < taskTime[0].size(); i++)
+        ticks << i;
+
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        pen.setColor(QColor(sin(i*1+1.2)*80+80, sin(i*0.3+0)*80+80,
+                            sin(i*0.3+1.5)*80+80));
+        ui->projPlot->addGraph();
+        ui->projPlot->graph()->setPen(pen);
+        ui->projPlot->graph()->setName(QString("Task ID %1").arg(tasks[i]));
+        ui->projPlot->graph()->setLineStyle(QCPGraph::lsLine);
+        ui->projPlot->graph()->setScatterStyle(QCPScatterStyle
+                                               (QCPScatterStyle::ssCircle, 5));
+
+        ui->projPlot->graph()->setData(ticks, taskTime[i]);
+        ui->projPlot->graph()->rescaleAxes(true);
+    }
+
+    // zoom out a bit:
+    ui->projPlot->yAxis->scaleRange(1.1, ui->projPlot->yAxis->range().center());
+    ui->projPlot->xAxis->scaleRange(1.1, ui->projPlot->xAxis->range().center());
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
