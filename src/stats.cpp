@@ -56,6 +56,7 @@ void Stats::initGraphs()
     if(!logsPath.isNull())
     {
         getRunData();
+        getProjectData();
     }
     getGeneralData();
 
@@ -134,6 +135,71 @@ void Stats::getRunData()
     setupRun3(devs, devTime, devProcs);
     setupDevTime(devTaskTime, devs, tasks);
     setupTaskTime(devTaskTime, devs, tasks);
+}
+
+void Stats::getProjectData()
+{
+    QSettings projectStats(logsPath + "stats", QSettings::IniFormat);
+
+    int runs;
+
+    if(projectStats.contains(PROJ_RUNS))
+        runs = projectStats.value(PROJ_RUNS).toInt();
+    else
+        return;
+
+    QVector<int> tasks;
+    for(int i = 1; i <= runs; i++)
+    {
+        QSettings runStats(logsPath + QString("stats%1").arg(i),
+                           QSettings::IniFormat);
+
+        int procsRan;
+
+        if(runStats.contains(PROCS_RAN))
+            procsRan = runStats.value(PROCS_RAN).toInt();
+        else
+            procsRan = 0;
+
+        for(int j = 0; j < procsRan; j++)
+        {
+
+            int taskId = runStats.value(QString(PROC_DIAG_ID).arg(j)).toInt();
+            if(!tasks.contains(taskId))
+                tasks << taskId;
+        }
+    }
+
+    QVector<double> *taskTime = new QVector<double>[tasks.size()];
+
+    for(int i = 0; i < tasks.size(); i++)
+        for(int j = 1; j <= runs; j++)
+        {
+            QSettings runStats(logsPath + QString("stats%1").arg(j),
+                               QSettings::IniFormat);
+            int procsRan;
+            int runTime = 0;
+
+            if(runStats.contains(PROCS_RAN))
+                procsRan = runStats.value(PROCS_RAN).toInt();
+            else
+                procsRan = 0;
+
+
+            for(int k = 0; k < procsRan; k++)
+            {
+                int taskId =
+                           runStats.value(QString(PROC_DIAG_ID).arg(k)).toInt();
+                if(taskId == tasks[i])
+                    runTime +=
+                              runStats.value(QString(PROC_TIME).arg(k)).toInt();
+            }
+
+            taskTime[i] << runTime;
+        }
+
+    if(tasks.size() > 0)
+        setupProject(tasks, taskTime);
 }
 
 void Stats::getGeneralData()
@@ -477,6 +543,45 @@ void Stats::setupRun3(QVector<int> devs, QMap<int, int> devTime,
         lines << name << ran << time << avg;
     }
     ui->runStats_3->textCursor().insertText(lines.join("\n"));
+}
+
+void Stats::setupProject(QVector<int> tasks, QVector<double> *taskTime)
+{
+    int colourDiff = 255 / tasks.size();
+
+    QFont legendFont = ui->title->font();
+    legendFont.setPointSize(10);
+    ui->projPlot->legend->setVisible(true);
+    ui->projPlot->legend->setFont(legendFont);
+    QPen pen;
+
+    QVector<double> ticks;
+
+    for(int i = 0; i < taskTime[0].size(); i++)
+        ticks << i;
+
+    for(int i = 0; i < tasks.size(); i++)
+    {
+        pen.setColor(QColor(0, 255 - i * colourDiff, i * colourDiff));
+        ui->projPlot->addGraph();
+        ui->projPlot->graph()->setPen(pen);
+        ui->projPlot->graph()->setName(QString("Task ID %1").arg(tasks[i]));
+        ui->projPlot->graph()->setLineStyle(QCPGraph::lsLine);
+        ui->projPlot->graph()->setScatterStyle(QCPScatterStyle
+                                               (QCPScatterStyle::ssCircle, 5));
+
+        ui->projPlot->graph()->setData(ticks, taskTime[i]);
+        ui->projPlot->graph()->rescaleAxes(true);
+    }
+
+    ui->projPlot->yAxis->setLabel("Time (ms)");
+    ui->projPlot->xAxis->setTickStep(1);
+
+    // zoom out a bit:
+    ui->projPlot->yAxis->scaleRange(1.1, ui->projPlot->yAxis->range().center());
+    ui->projPlot->xAxis->scaleRange(1.1, ui->projPlot->xAxis->range().center());
+
+    delete[] taskTime;
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
