@@ -233,7 +233,7 @@ add_executable(whc
         ${whc_RESOURCES_RCC}
 )
 
-qt5_use_modules(whc Widgets Core Test Xml)
+qt5_use_modules(whc Widgets Core Test Xml PrintSupport)
 
 target_link_libraries(whc
     ${Qt5Widgets_LIBRARIES}
