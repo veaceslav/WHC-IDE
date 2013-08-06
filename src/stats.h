@@ -57,8 +57,10 @@ private:
     void setupProject(QVector<int> tasks, QVector<double> *taskTime);
 
     void setupGeneral(QVector<QString> devices,
-                      QVector<double> success, QVector<double> ioError[],
-                      QVector<double> crashExit, QVector<double> procError[]);
+                      QVector<double> success,
+                      QVector<QVector<double> > ioError,
+                      QVector<double> crashExit,
+                      QVector<QVector<double> > procError);
 
     QString logsPath;
     DeviceQuery *deviceQuery;
