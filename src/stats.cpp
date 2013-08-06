@@ -207,8 +207,8 @@ void Stats::getGeneralData()
     QSettings general("WHC", "WHC IDE Monitor");
     int devices = deviceQuery->devicesCount();
     QVector<QString> devNames;
-    QVector<double> successVect, ioErrorVect[3], crashExitVect,
-            procErrorVect[4];
+    QVector<double> successVect, crashExitVect;
+    QVector<QVector<double> > ioErrorVect(3), procErrorVect(6);
 
     for(int i = 0; i <= devices; i++)
     {
@@ -219,6 +219,7 @@ void Stats::getGeneralData()
         if(general.contains(success))
             successes = general.value(success).toInt();
 
+        /** Iterating through all the elements of the enum **/
         for(int j = OneProcess::Copy; j <= OneProcess::Mkdir; j++)
         {
             int ioErrs = 0;
@@ -234,6 +235,7 @@ void Stats::getGeneralData()
         if(general.contains(crashExit))
             crashExits = general.value(crashExit).toInt();
 
+        /** Iterating through all the elements of the enum **/
         for(int j = QProcess::FailedToStart; j <= QProcess::UnknownError; j++)
         {
             int procErrs = 0;
@@ -585,8 +587,10 @@ void Stats::setupProject(QVector<int> tasks, QVector<double> *taskTime)
 }
 
 void Stats::setupGeneral(QVector<QString> devices,
-                         QVector<double> success, QVector<double> ioError[],
-                         QVector<double> crashExit, QVector<double> procError[])
+                         QVector<double> success,
+                         QVector<QVector<double> > ioError,
+                         QVector<double> crashExit,
+                         QVector<QVector<double> > procError)
 {
     /**
      * Preparing bars and colours
