@@ -80,12 +80,6 @@ SortTasks::SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data)
         std::reverse(execOrder.begin(), execOrder.end());
 }
 
-SortTasks::~SortTasks()
-{
-    for(int i = 0; i < execOrder.size(); i++)
-        delete execOrder.at(i);
-}
-
 int SortTasks::dfs(Node *nod, int &time)
 {
     int foundCycle = 0;

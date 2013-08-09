@@ -57,7 +57,6 @@ class SortTasks
 {
 public:
     SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data);
-    ~SortTasks();
 
     /**
      * @brief getExecutionOrder - returns a vector with execution order for

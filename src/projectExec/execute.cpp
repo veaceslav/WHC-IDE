@@ -29,6 +29,7 @@
 #include <QLinkedList>
 
 #include "projBuild/commandline.h"
+#include "staticmethods.h"
 #include "execute.h"
 #include "sorttask.h"
 
@@ -104,6 +105,7 @@ Execute::~Execute()
         delete saveExecProgress;
         delete saveStream;
     }
+    StaticMethods::destroyObj(&monitor);
 }
 
 void Execute::stopExec()
