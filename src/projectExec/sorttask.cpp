@@ -72,7 +72,7 @@ void SortTasks::computeExecOrder()
     {
         bool removed = false;
         execOrder << QVector<Node *>();
-        QVector<Node *> last = execOrder.last();
+        QVector<Node *> &last = execOrder.last();
 
         for(QMap<int, Node *>::Iterator i = graph.begin(); i != graph.end();)
             if(i.value()->dependencies() == 0)
@@ -93,6 +93,9 @@ void SortTasks::computeExecOrder()
             for(int j = 0; j < last[i]->link[outIndex].size(); j++)
                 last[i]->removeEdge(j);
         }
+
+        if(last.size() == 0)
+            execOrder.remove(execOrder.size() - 1);
 
         if(!removed)
         {
