@@ -71,8 +71,8 @@ void SortTasks::computeExecOrder()
     while(!graph.isEmpty())
     {
         bool removed = false;
-        execOrder2 << QVector<Node *>();
-        QVector<Node *> last = execOrder2.last();
+        execOrder << QVector<Node *>();
+        QVector<Node *> last = execOrder.last();
 
         for(QMap<int, Node *>::Iterator i = graph.begin(); i != graph.end();)
             if(i.value()->dependencies() == 0)

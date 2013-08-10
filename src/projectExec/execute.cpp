@@ -33,8 +33,8 @@
 #include "execute.h"
 #include "sorttask.h"
 
-Execute::Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-                 Ide *parent, CommandLine *cmd,
+Execute::Execute(QString whcFile, QVector<QVector<Node*> > sorted,
+                 QVector<int> devices, Ide *parent, CommandLine *cmd,
                  QLinkedList<Exclusion> exclusionList):execOrder(sorted),
                  devices(devices), exclusions(exclusionList), cmd(cmd)
 {
@@ -164,9 +164,6 @@ void Execute::execute()
     if(stop)
         return;
 
-    while(taskIndex < execOrder.size() && execOrder[taskIndex]->type != 0)
-        taskIndex++;
-
     if(taskIndex >= execOrder.count())
     {
         /**
@@ -176,7 +173,8 @@ void Execute::execute()
         return;
     }
 
-    fillQueue(execOrder[taskIndex]);
+    for(int i = 0; i < execOrder[taskIndex].size(); i++)
+        fillQueue(execOrder[taskIndex][i]);
     taskIndex++;
 
     /** Reset the number of device that finished counter

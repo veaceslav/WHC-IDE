@@ -54,7 +54,7 @@ public:
      * @return                  - returns true if the graph has a cycle,
      *                            false otherwise
      */
-    QVector<Node*> getExecutionOrder() const
+    QVector<QVector<Node*> > getExecutionOrder() const
                     { return execOrder; }
 
     /**
@@ -68,8 +68,7 @@ private:
 
     bool hasCycle;
     QMap<int, Node *> graph;
-    QVector<Node *> execOrder;
-    QVector<QVector<Node *> > execOrder2;
+    QVector<QVector<Node *> > execOrder;
 
     void computeExecOrder();
 };
