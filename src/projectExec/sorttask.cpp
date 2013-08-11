@@ -63,55 +63,81 @@ SortTasks::SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data)
         nod2->link[tmp.second.conId].append(nod1);
     }
 
-    int time = 0, foundCycle;
+    computeExecOrder();
+}
 
-    for(QMap<int, Node*>::Iterator it = graph.begin(); it != graph.end(); ++it)
+void SortTasks::computeExecOrder()
+{
+    while(!graph.isEmpty())
     {
-        if(it.value()->nodeColor == Node::White)
-            foundCycle = dfs(it.value(), time);
-        if(foundCycle)
+        bool removed = false;
+        execOrder << QVector<Node *>();
+        QVector<Node *> &last = execOrder.last();
+
+        for(QMap<int, Node *>::Iterator i = graph.begin(); i != graph.end();)
+            if(i.value()->dependencies() == 0)
+            {
+                if(i.value()->type == 0)
+                    last << i.value();
+                i = graph.erase(i);
+                removed = true;
+            }
+            else
+            {
+                i++;
+            }
+
+        for(int i = 0; i < last.size(); i++)
+        {
+            int outIndex = last[i]->link.size() - 1;
+            for(int j = 0; j < last[i]->link[outIndex].size(); j++)
+                last[i]->removeEdge(j);
+        }
+
+        if(last.size() == 0)
+            execOrder.remove(execOrder.size() - 1);
+
+        if(!removed)
         {
             hasCycle = true;
             break;
         }
     }
-
-    if(!hasCycle)
-        std::reverse(execOrder.begin(), execOrder.end());
 }
 
-SortTasks::~SortTasks()
+Node::Node(int conMax,int diagId,QString name, int type)
 {
-    for(int i = 0; i < execOrder.size(); i++)
-        delete execOrder.at(i);
+    link = QVector<QVector<Node*> >(conMax);
+    this->diagId = diagId;
+    this->Name = name;
+    this->type = type;
+    done = false;
 }
 
-int SortTasks::dfs(Node *nod, int &time)
+int Node::dependencies() const
 {
-    int foundCycle = 0;
+    int dependNo = 0;
 
-    nod->nodeColor = Node::Grey;
-    time++;
+    for(int i = 0; i < link.size() - 1; i++)
+        for(int j = 0; j < link[i].size(); j++)
+            if(link[i][j]->type != 1 || link[i][j]->dependencies() != 0)
+                dependNo++;
 
-    int outIndex = nod->link.size() - 1;
+    return dependNo;
+}
 
-    QVector<Node*> lst = nod->link[outIndex];
+void Node::removeEdge(int pos)
+{
+    if(pos < 0 || pos >= link[link.size() - 1].size())
+        return;
 
-    for(int i = 0; i < lst.size(); i++)
-    {
-        if(lst.at(i)->nodeColor == Node::White)
-            foundCycle = dfs(lst.at(i), time);
-        else if(lst.at(i)->nodeColor == Node::Grey)
-            foundCycle = 1;
-        if(foundCycle)
-            break;
-    }
+    Node *other = link[link.size() - 1][pos];
 
-    nod->nodeColor = Node::Black;
-    time++;
-
-    nod->time = time;
-    execOrder.append(nod);
-
-    return foundCycle;
+    for(int i = 0; i < other->link.size() - 1; i++)
+        for(QVector<Node *>::Iterator j = other->link[i].begin();
+            j != other->link[i].end();)
+            if(*j == this)
+                j = other->link[i].erase(j);
+            else
+                j++;
 }

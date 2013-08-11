@@ -30,34 +30,23 @@ class Node
 {
 public:
 
-    enum Color {Black, White, Grey};
     int diagId;
     QString Name;
     int type;
-    int time;
     bool done;
-
-    Color nodeColor;
 
     QVector<QVector<Node*> > link;
 
-    Node(int conMax,int diagId,QString name, int type)
-    {
-        link = QVector<QVector<Node*> >(conMax);
-        this->diagId = diagId;
-        this->Name = name;
-        this->type = type;
-        time = 0;
-        nodeColor = Node::White;
-        done = false;
-    }
+    Node(int conMax,int diagId,QString name, int type);
+
+    int dependencies() const;
+    void removeEdge(int pos);
 };
 
 class SortTasks
 {
 public:
     SortTasks(Ide *parent, QVector<QPair<ExecNode, ExecNode> > data);
-    ~SortTasks();
 
     /**
      * @brief getExecutionOrder - returns a vector with execution order for
@@ -65,7 +54,7 @@ public:
      * @return                  - returns true if the graph has a cycle,
      *                            false otherwise
      */
-    QVector<Node*> getExecutionOrder() const
+    QVector<QVector<Node*> > getExecutionOrder() const
                     { return execOrder; }
 
     /**
@@ -77,15 +66,9 @@ public:
 
 private:
 
-    /**
-     * @brief dfs  - Dfs used for Topological Sort.
-     * @param nod  - node to expand
-     * @param time - time when node was discovered
-     * @return     - It returns 0 in case there is no cycle, 1 otherwise
-     */
-    int dfs(Node *nod, int &time);
-
     bool hasCycle;
-    QMap<int, Node*> graph;
-    QVector<Node*> execOrder;
+    QMap<int, Node *> graph;
+    QVector<QVector<Node *> > execOrder;
+
+    void computeExecOrder();
 };
