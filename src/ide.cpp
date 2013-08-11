@@ -1014,6 +1014,8 @@ void Ide::startProjectExec(QLinkedList<Exclusion> exclusionList)
         exec = new Execute(whcFile, srt->getExecutionOrder(), devs, this,
                            outWindow, exclusionList);
     }
+
+    delete srt;
 }
 
 void Ide::on_actionRun_triggered()

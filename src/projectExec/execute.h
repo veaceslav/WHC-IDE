@@ -53,8 +53,8 @@ class Execute : public QObject
 {
     Q_OBJECT
 public:
-    Execute(QString whcFile, QVector<Node*> sorted, QVector<int> devices,
-            Ide *parent, CommandLine *cmd,
+    Execute(QString whcFile, QVector<QVector<Node*> > sorted,
+            QVector<int> devices, Ide *parent, CommandLine *cmd,
             QLinkedList<Exclusion> exclusionList);
 
     ~Execute();
@@ -114,7 +114,7 @@ private:
     int taskIndex;
 
     QQueue<QPair<Node*, QStringList> > q;
-    QVector<Node*> execOrder;
+    QVector<QVector<Node*> > execOrder;
     QVector<int> devices;
     QLinkedList<Exclusion> exclusions;
 
