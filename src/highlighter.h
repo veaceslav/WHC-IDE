@@ -47,8 +47,8 @@
 #include "mdisubwindow.h"
 
 
-#define HIGHLIGHTER_LANG_FOLDER "Global_settings/lang/"
-#define HIGHLIGHTER_FORMAT_FOLDER "Global_settings/lang/format_scheme/"
+#define HIGHLIGHTER_LANG_FOLDER ":/lang/"
+#define HIGHLIGHTER_FORMAT_FOLDER ":/lang/format_scheme/"
 
 class SyntaxHighlighter;
 class MdiSubWindow;
