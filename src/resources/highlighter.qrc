@@ -1,9 +1,13 @@
 <RCC>
     <qresource prefix="/lang">
-        <file>c.lang</file>
-        <file>cpp.lang</file>
-        <file>opencl.lang</file>
-        <file>opencl_host.lang</file>
+        <file>lang/c.lang</file>
+        <file>lang/cpp.lang</file>
+        <file>lang/opencl.lang</file>
+        <file>lang/opencl_host.lang</file>
     </qresource>
-    <qresource prefix="/lang/format_scheme"/>
+    <qresource prefix="/lang/format_scheme">
+        <file>lang/format_scheme/c.lang</file>
+        <file>lang/format_scheme/cpp.lang</file>
+        <file>lang/format_scheme/opencl.lang</file>
+    </qresource>
 </RCC>
