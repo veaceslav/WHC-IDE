@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/lang">
+        <file>c.lang</file>
+        <file>cpp.lang</file>
+        <file>opencl.lang</file>
+        <file>opencl_host.lang</file>
+    </qresource>
+</RCC>

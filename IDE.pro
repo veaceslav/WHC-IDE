@@ -123,7 +123,8 @@ FORMS += \
     src/forms/stats.ui
 RESOURCES += \
     src/resources/icons.qrc \
-    src/resources/mainCppTemplate.qrc
+    src/resources/mainCppTemplate.qrc \
+    src/resources/highlighter.qrc
 
 OTHER_FILES += \
     src/CMakeLists.txt
