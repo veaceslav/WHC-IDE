@@ -5,4 +5,5 @@
         <file>opencl.lang</file>
         <file>opencl_host.lang</file>
     </qresource>
+    <qresource prefix="/lang/format_scheme"/>
 </RCC>
