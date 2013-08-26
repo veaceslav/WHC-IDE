@@ -220,6 +220,7 @@ set(whc_FORMS
 set(whc_RESOURCES
     resources/icons.qrc
     resources/mainCppTemplate.qrc
+    resources/highlighter.qrc
 )
 
 qt5_wrap_cpp(whc_HEADERS_MOC ${whc_HEADERS})
