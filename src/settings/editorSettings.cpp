@@ -362,5 +362,6 @@ void EditorSettings::saveHighlightSettings()
 void EditorSettings::endLineHighlightChange(int state)
 {
     parent->editorSettings->endLineSpace = (state == Qt::Checked);
-    parent->langs[win->comboBox->currentText()]->sh->rehighlight();
+    if(parent->langs.contains(win->comboBox->currentText()))
+        parent->langs[win->comboBox->currentText()]->sh->rehighlight();
 }
