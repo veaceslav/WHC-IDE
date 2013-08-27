@@ -68,6 +68,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
+    void bracketMatch();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);

@@ -74,6 +74,8 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
     this->setCompleter(c);
+
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(bracketMatch()));
 }
 
 QAbstractItemModel *MdiTextEditor::modelFromFile()
@@ -251,6 +253,28 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     cr.setWidth(c->popup()->sizeHintForColumn(0) +
                 c->popup()->verticalScrollBar()->sizeHint().width());
     c->complete(cr); // popup it up!
+}
+
+void MdiTextEditor::bracketMatch()
+{
+    int charPos = this->textCursor().position();
+    QChar selectedChar = this->toPlainText().at(charPos);
+    QChar otherBracket;
+
+    if(selectedChar == '{')
+        otherBracket = '}';
+    else if(selectedChar == '}')
+        otherBracket = '{';
+    else if(selectedChar == '(')
+        otherBracket = ')';
+    else if(selectedChar == ')')
+        otherBracket = '(';
+    else if(selectedChar == '[')
+        otherBracket = ']';
+    else if(selectedChar == ']')
+        otherBracket = '[';
+    else
+        return;
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
