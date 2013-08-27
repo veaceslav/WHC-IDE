@@ -257,24 +257,50 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
 void MdiTextEditor::bracketMatch()
 {
+    /**
+     * @brief direction - the direction in which to look for the other bracket
+     *                    -1 means up, 1 means down
+     */
+    int direction;
     int charPos = this->textCursor().position();
-    QChar selectedChar = this->toPlainText().at(charPos);
+    QString text = this->toPlainText();
+    QChar selectedChar = text.at(charPos);
     QChar otherBracket;
 
     if(selectedChar == '{')
+    {
         otherBracket = '}';
+        direction = 1;
+    }
     else if(selectedChar == '}')
+    {
         otherBracket = '{';
+        direction = -1;
+    }
     else if(selectedChar == '(')
+    {
         otherBracket = ')';
+        direction = 1;
+    }
     else if(selectedChar == ')')
+    {
         otherBracket = '(';
+        direction = -1;
+    }
     else if(selectedChar == '[')
+    {
         otherBracket = ']';
+        direction = 1;
+    }
     else if(selectedChar == ']')
+    {
         otherBracket = '[';
+        direction = -1;
+    }
     else
+    {
         return;
+    }
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
