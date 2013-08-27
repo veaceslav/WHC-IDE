@@ -253,28 +253,6 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
-
-bool MdiTextEditor::save()
-{
-    //    QFile file(fileName);
-    //    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-    //        QMessageBox::warning(this, tr("MDI"),
-    //                             tr("Cannot write file %1:\n%2.")
-    //                             .arg(fileName)
-    //                             .arg(file.errorString()));
-    //        return false;
-    //    }
-
-    //    QTextStream out(&file);
-    //    QApplication::setOverrideCursor(Qt::WaitCursor);
-    //    out << toPlainText();
-    //    QApplication::restoreOverrideCursor();
-
-    //    setCurrentFile(fileName);
-    //    return true;
-    return false;
-}
-
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(lineNumberArea);
@@ -298,7 +276,6 @@ void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
-
 }
 
 int MdiTextEditor::lineNumberAreaWidth()

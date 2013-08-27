@@ -55,7 +55,6 @@ class MdiTextEditor : public QPlainTextEdit
 
 public:
     MdiTextEditor(const QString &fileName, QWidget *parent = 0);
-    bool save();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
     void setCompleter(QCompleter *c);
