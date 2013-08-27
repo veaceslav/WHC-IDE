@@ -261,17 +261,30 @@ void MdiTextEditor::bracketMatch()
      * @brief direction - the direction in which to look for the other bracket
      *                    -1 means up, 1 means down
      */
-    int direction;
+    int direction = 0;
     /**
      * @brief stackSize - the size of the stack of brackets. Must be 0 to be
      *                    able to close (no other brackets left on bracket
      *                    stack)
      */
     int stackSize = 1;
-    int charPos = this->textCursor().position();
+    /**
+     * @brief cursorStart - the starting cursor, with the first bracket.
+     */
+    QTextCursor cursorStart = this->textCursor();
+    int charPos = cursorStart.position();
     QString text = this->toPlainText();
     QChar selectedChar = text.at(charPos);
+
+    /**
+     * @brief otherBracket - the corresponding bracket that must be found
+     */
     QChar otherBracket;
+    /**
+     * @brief extraSel - the list that will contain the matching brackets
+     *                   selected
+     */
+    QList<QTextEdit::ExtraSelection> extraSel;
 
     if(selectedChar == '{')
     {
@@ -303,25 +316,45 @@ void MdiTextEditor::bracketMatch()
         otherBracket = '[';
         direction = -1;
     }
-    else
-    {
-        return;
-    }
 
     int pos;
-    for(pos = charPos + direction; pos >= 0 && pos < text.size() && stackSize;
-        pos += direction)
-    {
-        if(text.at(pos) == selectedChar)
-            stackSize++;
-        else if(text.at(pos) == otherBracket)
-            stackSize--;
-    }
+    if(direction)
+        for(pos = charPos + direction; pos >= 0 && pos < text.size() &&
+            stackSize; pos += direction)
+        {
+            if(text.at(pos) == selectedChar)
+                stackSize++;
+            else if(text.at(pos) == otherBracket)
+                stackSize--;
+        }
+
     if(!stackSize)
     {
         pos -= direction;
-        //TODO put colours
+        QTextCursor cursorEnd(cursorStart);
+        cursorEnd.setPosition(pos);
+
+        /**
+        * Selects initial bracket
+        */
+        cursorStart.movePosition(QTextCursor::NextCharacter,
+                                 QTextCursor::KeepAnchor);
+        /**
+        * Selects the other bracket
+        */
+        cursorEnd.movePosition(QTextCursor::NextCharacter,
+                               QTextCursor::KeepAnchor);
+
+        QTextCharFormat fmt;
+        fmt.setBackground(Qt::green);
+
+        QTextEdit::ExtraSelection b1, b2;
+        b1.cursor = cursorStart;
+        b2.cursor = cursorEnd;
+        b1.format = b2.format = fmt;
+        extraSel<<b1<<b2;
     }
+    this->setExtraSelections(extraSel);
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
