@@ -262,6 +262,12 @@ void MdiTextEditor::bracketMatch()
      *                    -1 means up, 1 means down
      */
     int direction;
+    /**
+     * @brief stackSize - the size of the stack of brackets. Must be 0 to be
+     *                    able to close (no other brackets left on bracket
+     *                    stack)
+     */
+    int stackSize = 1;
     int charPos = this->textCursor().position();
     QString text = this->toPlainText();
     QChar selectedChar = text.at(charPos);
@@ -300,6 +306,21 @@ void MdiTextEditor::bracketMatch()
     else
     {
         return;
+    }
+
+    int pos;
+    for(pos = charPos + direction; pos >= 0 && pos < text.size() && stackSize;
+        pos += direction)
+    {
+        if(text.at(pos) == selectedChar)
+            stackSize++;
+        else if(text.at(pos) == otherBracket)
+            stackSize--;
+    }
+    if(!stackSize)
+    {
+        pos -= direction;
+        //TODO put colours
     }
 }
 
