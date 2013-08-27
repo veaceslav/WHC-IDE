@@ -272,9 +272,12 @@ void MdiTextEditor::bracketMatch()
      * @brief cursorStart - the starting cursor, with the first bracket.
      */
     QTextCursor cursorStart = this->textCursor();
+
     int charPos = cursorStart.position();
     QString text = this->toPlainText();
-    QChar selectedChar = text.at(charPos);
+    QChar selectedChar = '\0';
+    if(!cursorStart.atEnd())
+        selectedChar = text.at(charPos);
 
     /**
      * @brief otherBracket - the corresponding bracket that must be found
