@@ -74,6 +74,8 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
     this->setCompleter(c);
+
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(bracketMatch()));
 }
 
 QAbstractItemModel *MdiTextEditor::modelFromFile()
@@ -253,26 +255,109 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
-
-bool MdiTextEditor::save()
+void MdiTextEditor::bracketMatch()
 {
-    //    QFile file(fileName);
-    //    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-    //        QMessageBox::warning(this, tr("MDI"),
-    //                             tr("Cannot write file %1:\n%2.")
-    //                             .arg(fileName)
-    //                             .arg(file.errorString()));
-    //        return false;
-    //    }
+    /**
+     * @brief direction - the direction in which to look for the other bracket
+     *                    -1 means up, 1 means down
+     */
+    int direction = 0;
+    /**
+     * @brief stackSize - the size of the stack of brackets. Must be 0 to be
+     *                    able to close (no other brackets left on bracket
+     *                    stack)
+     */
+    int stackSize = 1;
+    /**
+     * @brief cursorStart - the starting cursor, with the first bracket.
+     */
+    QTextCursor cursorStart = this->textCursor();
 
-    //    QTextStream out(&file);
-    //    QApplication::setOverrideCursor(Qt::WaitCursor);
-    //    out << toPlainText();
-    //    QApplication::restoreOverrideCursor();
+    int charPos = cursorStart.position();
+    QString text = this->toPlainText();
+    QChar selectedChar = '\0';
+    if(!cursorStart.atEnd())
+        selectedChar = text.at(charPos);
 
-    //    setCurrentFile(fileName);
-    //    return true;
-    return false;
+    /**
+     * @brief otherBracket - the corresponding bracket that must be found
+     */
+    QChar otherBracket;
+    /**
+     * @brief extraSel - the list that will contain the matching brackets
+     *                   selected
+     */
+    QList<QTextEdit::ExtraSelection> extraSel;
+
+    if(selectedChar == '{')
+    {
+        otherBracket = '}';
+        direction = 1;
+    }
+    else if(selectedChar == '}')
+    {
+        otherBracket = '{';
+        direction = -1;
+    }
+    else if(selectedChar == '(')
+    {
+        otherBracket = ')';
+        direction = 1;
+    }
+    else if(selectedChar == ')')
+    {
+        otherBracket = '(';
+        direction = -1;
+    }
+    else if(selectedChar == '[')
+    {
+        otherBracket = ']';
+        direction = 1;
+    }
+    else if(selectedChar == ']')
+    {
+        otherBracket = '[';
+        direction = -1;
+    }
+
+    int pos;
+    if(direction)
+        for(pos = charPos + direction; pos >= 0 && pos < text.size() &&
+            stackSize; pos += direction)
+        {
+            if(text.at(pos) == selectedChar)
+                stackSize++;
+            else if(text.at(pos) == otherBracket)
+                stackSize--;
+        }
+
+    if(!stackSize)
+    {
+        pos -= direction;
+        QTextCursor cursorEnd(cursorStart);
+        cursorEnd.setPosition(pos);
+
+        /**
+        * Selects initial bracket
+        */
+        cursorStart.movePosition(QTextCursor::NextCharacter,
+                                 QTextCursor::KeepAnchor);
+        /**
+        * Selects the other bracket
+        */
+        cursorEnd.movePosition(QTextCursor::NextCharacter,
+                               QTextCursor::KeepAnchor);
+
+        QTextCharFormat fmt;
+        fmt.setBackground(Qt::green);
+
+        QTextEdit::ExtraSelection b1, b2;
+        b1.cursor = cursorStart;
+        b2.cursor = cursorEnd;
+        b1.format = b2.format = fmt;
+        extraSel<<b1<<b2;
+    }
+    this->setExtraSelections(extraSel);
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
@@ -298,7 +383,6 @@ void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
-
 }
 
 int MdiTextEditor::lineNumberAreaWidth()

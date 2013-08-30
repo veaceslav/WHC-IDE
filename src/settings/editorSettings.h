@@ -34,149 +34,159 @@
 class QObject;
 class Ide;
 
-class EditorSettings:QObject{
+class EditorSettings : QObject
+{
     Q_OBJECT
 public:
     EditorSettings(Ide *parent, Ui::settingsDialog *win);
     ~EditorSettings();
 
     /**
-      * \return Returns the current class for highlight
-      */
-    inline Highlighter* getCurrentHighlighter() const {return parent->langs[win->comboBox->currentText()];}
+     * @return Returns the current class for highlight
+     */
+    inline Highlighter *getCurrentHighlighter() const
+            {return parent->langs[win->comboBox->currentText()];}
 
     /**
-      * \brief Actions that happends on <<apply>> button pressed
-      */
+     * @brief Actions that happends on <<apply>> button pressed
+     */
     void applyButtonPressed();
 
 private slots:
     /**
-      * \brief on Replace tabs button checkbox checked or unchecked
-      */
+     * @brief on Replace tabs button checkbox checked or unchecked
+     */
     void checkButtonChanged(int state);
 
     /**
-      * \brief Reset editor settings to default
-      */
+     * @brief Reset editor settings to default
+     */
     void resetSettings();
 
 
     /**
-      * \brief On Language keywords group selection changed
-      */
+     * @brief On Language keywords group selection changed
+     */
     void listItemChanged(QListWidgetItem *item);
 
     /**
-      * \brief Change color on request
-      */
+     * @brief Change color on request
+     */
     void onChooseCOlorClicked();
 
     /**
-      * \brief On Highlight line ending state changed
-      */
+     * @brief On Highlight line ending state changed
+     */
     void endLineHighlightChange(int state);
 
 private:
     /**
-      * \param parent Main class of the IDE
-      */
+     * @param parent Main class of the IDE
+     */
     Ide* parent;
 
     /**
-      * \param win Pointer to program form
-      */
-    Ui::settingsDialog* win;
+     * @param win Pointer to program form
+     */
+    Ui::settingsDialog *win;
     QWidget *colors;
     QWidget *fonts;
     QHash<QString, QString> langs;
 
     /**
-      * \brief Apply color selected
-      */
+     * @brief Apply color selected
+     */
     void setColorsTab();
 
     /**
-      * \brief Fill tab width form with the current tab width
-      */
+     * @brief Fill tab width form with the current tab width
+     */
     void setFontTab();
 
     /**
-      * \brief Load settings from global settings
-      */
+     * @brief Load settings from global settings
+     */
     void loadSettings();
 
     /**
-      * \brief Save settings to global variables
-      */
+     * @brief Save settings to global variables
+     */
     void saveSettings();
 
     /**
-      * \brief Apply settings to editor
-      */
+     * @brief Apply settings to editor
+     */
     void applySettings();
 
     /**
-      * \brief check if the settings are valid
-      */
+     * @brief check if the settings are valid
+     */
     bool checkSettings();
 
     /**
-      * \brief Save only the highlight configuration
-      */
+     * @brief Save only the highlight configuration
+     */
     void saveHighlightSettings();
 
     /**
-      * \brief Load the highlight configuration
-      */
+     * @brief Load the highlight configuration
+     */
     void loadHighlight(QString &lang);
 
     /**
-      * \brief Load the groups of keywords that have to be
-      * highlighted
-      */
+     * @brief Load the groups of keywords that have to be
+     * highlighted
+     */
     void loadKeyWords(QVector<QRegExp> &w);
 
 
     /**
-      * \brief Sets the tab size to tabsize
-      */
-    inline void setTabSize(int tabSize){parent->editorSettings->tabSize = tabSize;}
+     * @brief Sets the tab size to tabsize
+     */
+    inline void setTabSize(int tabSize)
+            {parent->editorSettings->tabSize = tabSize;}
 
     /**
-      * \brief Sets the font size to fontSize
-      */
-    inline void setFontSize(int fontSize) {parent->editorSettings->fontSize = fontSize;}
+     * @brief Sets the font size to fontSize
+     */
+    inline void setFontSize(int fontSize)
+            {parent->editorSettings->fontSize = fontSize;}
 
     /**
-      * \brief Sets the FontFamily to fontFamily
-      */
-    inline void setfontFamily(QString &fontFamily) {parent->editorSettings->fontFamily = fontFamily;}
+     * @brief Sets the FontFamily to fontFamily
+     */
+    inline void setfontFamily(QString &fontFamily)
+            {parent->editorSettings->fontFamily = fontFamily;}
 
     /**
-      * \brief Sets <<Tab to spaces>> stat to tabToSpaces state
-      */
-    inline void setTabToSpaces(bool tabToSpaces) {parent->editorSettings->tabToSpaces = tabToSpaces;}
+     * @brief Sets <<Tab to spaces>> stat to tabToSpaces state
+     */
+    inline void setTabToSpaces(bool tabToSpaces)
+            {parent->editorSettings->tabToSpaces = tabToSpaces;}
 
     /**
-      * \return Return the tab size from the form
-      */
-    inline int getTabSize() const {return parent->editorSettings->tabSize;}
+     * @return Return the tab size from the form
+     */
+    inline int getTabSize() const
+            {return parent->editorSettings->tabSize;}
 
     /**
-      * \return Returns the font family specified in the form
-      */
-    inline QString getFontFamily() const {return parent->editorSettings->fontFamily;}
+     * @return Returns the font family specified in the form
+     */
+    inline QString getFontFamily() const
+            {return parent->editorSettings->fontFamily;}
 
     /**
-      * \return Returns the font size specified in the editor settings form
-      */
-    inline int getFontSize() const {return parent->editorSettings->fontSize;}
+     * @return Returns the font size specified in the editor settings form
+     */
+    inline int getFontSize() const
+            {return parent->editorSettings->fontSize;}
 
     /**
-      * \return Return the state of <<tab to spaces>>
-      */
-    inline bool getTabToSpaces() const {return parent->editorSettings->tabToSpaces;}
+     * @return Return the state of <<tab to spaces>>
+     */
+    inline bool getTabToSpaces() const
+            {return parent->editorSettings->tabToSpaces;}
 
 };
 

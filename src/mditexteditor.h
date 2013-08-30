@@ -55,7 +55,6 @@ class MdiTextEditor : public QPlainTextEdit
 
 public:
     MdiTextEditor(const QString &fileName, QWidget *parent = 0);
-    bool save();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
     void setCompleter(QCompleter *c);
@@ -69,6 +68,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
+    void bracketMatch();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
