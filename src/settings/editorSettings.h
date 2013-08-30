@@ -83,7 +83,7 @@ private:
     /**
      * @param parent Main class of the IDE
      */
-    Ide* parent;
+    Ide *parent;
 
     /**
      * @param win Pointer to program form

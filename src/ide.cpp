@@ -63,7 +63,6 @@ Ide::Ide(QWidget *parent) :
 {
     findtool = NULL;
     gotoTool = NULL;
-    modified = false;
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/icon.png"), QSize(),
                  QIcon::Normal, QIcon::Off);
@@ -77,7 +76,6 @@ Ide::Ide(QWidget *parent) :
     devices         = NULL;
     model           = NULL;
     outWindow       = NULL;
-    editorSettings  = NULL;
     stats           = NULL;
 
     settings = new ProjectSettings();
@@ -149,10 +147,11 @@ Ide::Ide(QWidget *parent) :
 
     devices = new DeviceQuery(this);
     /**
-     * while no project is open, this options must be disabled
+     * while no project is open, these options must be disabled
      */
     disableMenuOptions(true);
     disableStopExec(true);
+
     editorSettings = new EditorSettingsVar(this);
 
     connect(ui->actionClose_Project, SIGNAL(triggered()),
