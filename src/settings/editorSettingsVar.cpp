@@ -38,7 +38,7 @@ EditorSettingsVar::EditorSettingsVar(Ide *parent)
     if(fontFamily.isEmpty())
         fontFamily = QString("Courier New");
 
-    fontSize = sets.value("fontSize").toString();
+    fontSize = sets.value("fontSize").toInt();
     if(fontSize == 0)
         fontSize = 10;
 
