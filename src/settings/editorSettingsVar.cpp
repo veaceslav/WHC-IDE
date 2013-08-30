@@ -26,44 +26,55 @@
 EditorSettingsVar::EditorSettingsVar(Ide* parent)
 {
     this->parent = parent;
-    QSettings sets("WHC","WHC IDE");
+    QSettings sets("WHC", "WHC IDE");
 
     QString line = sets.value("tabSize").toString();
-    if(line.toInt() == 0){
+    if(line.toInt() == 0)
+    {
         tabSize = 8;
     }
-    else{
+    else
+    {
         tabSize = line.toInt();
     }
 
     line = sets.value("tabToSpaces").toString();
-    if(line.toInt() == 0){
+    if(line.toInt() == 0)
+    {
         tabToSpaces = false;
     }
-    else{
+    else
+    {
         tabToSpaces = true;
     }
 
     line = sets.value("fontFamily").toString();
-    if(line.isEmpty()){
+    if(line.isEmpty())
+    {
         fontFamily = QString("Courier New");
-    }else{
+    }
+    else
+    {
         fontFamily = line;
     }
 
     line = sets.value("fontSize").toString();
 
-    if(line.toInt() == 0){
+    if(line.toInt() == 0)
+    {
         fontSize = 10;
     }
-    else{
+    else
+    {
         fontSize = line.toInt();
     }
     line = sets.value("endLineSpaces").toString();
-    if(line.toInt() == 0){
+    if(line.toInt() == 0)
+    {
         endLineSpace = false;
     }
-    else{
+    else
+    {
         endLineSpace = true;
     }
 
