@@ -26,13 +26,6 @@
 MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     QPlainTextEdit(parent), c(NULL)
 {
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(10);
-
-    setFont(font);
-
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -60,6 +53,14 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     MdiSubWindow *tmp_subwin = qobject_cast<MdiSubWindow*>(parent);
     Ide *tmp_ide = qobject_cast<Ide*>(tmp_subwin->p);
     ide = tmp_ide;
+
+    QFont font;
+    font.setFamily(ide->editorSettings->fontFamily);
+    font.setFixedPitch(true);
+    font.setPointSize(ide->editorSettings->fontSize);
+
+    setFont(font);
+
     this->setTabStopWidth(10 * tmp_ide->editorSettings->tabSize);
 
     this->setStyleSheet(QString("font: ") +
