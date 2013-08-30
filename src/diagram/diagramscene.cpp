@@ -129,17 +129,25 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     qgraphicsitem_cast<Connector *>(startItems.first());
             Connector *endItem =
                     qgraphicsitem_cast<Connector *>(endItems.first());
-            QDomNode arrowXml =  createArrowXml(startItem, endItem);
-            Arrow *arrow = new Arrow(startItem, endItem, arrowXml);
+            /**
+             * Checks if at least one of the connected diagrams is not data
+             * before it adds the arrow (connecting two data diagrams is not
+             * allowed)
+             */
+            if(((DiagramItem*)startItem->parentItem())->diagramType() != 1 ||
+                    ((DiagramItem*)endItem->parentItem())->diagramType() != 1)
+            {
+                QDomNode arrowXml =  createArrowXml(startItem, endItem);
+                Arrow *arrow = new Arrow(startItem, endItem, arrowXml);
 
-            arrowList.append(arrow);
-            arrow->setColor(myLineColor);
-            startItem->addArrow(arrow);
-            endItem->addArrow(arrow);
-            arrow->setZValue(-1000.0);
-            addItem(arrow);
-            arrow->updatePosition();
-
+                arrowList.append(arrow);
+                arrow->setColor(myLineColor);
+                startItem->addArrow(arrow);
+                endItem->addArrow(arrow);
+                arrow->setZValue(-1000.0);
+                addItem(arrow);
+                arrow->updatePosition();
+            }
         }
     }
 
