@@ -307,25 +307,30 @@ void EditorSettings::onChooseCOlorClicked()
     QTextCharFormat cf;
     cf.setForeground(QBrush(color));
     Highlighter *h = getCurrentHighlighter();
-    QString tmp_currentIndex;
-    if (win->listWidget_2->currentItem())
+    if(h)
     {
-        tmp_currentIndex = win->listWidget_2->currentItem()->text();
-        h->sh->setStyle(tmp_currentIndex, cf);
-     }
+        QString tmp_currentIndex;
+        if (win->listWidget_2->currentItem())
+        {
+            tmp_currentIndex = win->listWidget_2->currentItem()->text();
+            h->sh->setStyle(tmp_currentIndex, cf);
+        }
+    }
 }
 
 void EditorSettings::saveHighlightSettings()
 {
+    Highlighter *h = getCurrentHighlighter();
+    if(!h)
+        return;
     QFile output(QString("Global_settings/lang/") +
                  win->comboBox->currentText() + QString(".lang"));
     output.open(QIODevice::WriteOnly);
     QXmlStreamWriter stream(&output);
     stream.setAutoFormatting(true);
-    stream.writeComment(getCurrentHighlighter()->getLicence());
+    stream.writeComment(h->getLicence());
     stream.writeStartElement("language");
     stream.writeAttribute("id", win->comboBox->currentText());
-    Highlighter *h = getCurrentHighlighter();
     foreach(Type *t, h->getTypes())
     {
         stream.writeStartElement("context");
