@@ -69,6 +69,7 @@ protected:
 
 private slots:
     void bracketMatch();
+    void slotIndent();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
@@ -79,9 +80,10 @@ private:
     QWidget *lineNumberArea;
     QCompleter *c;
     Ide *ide;
-    int tabSize, fontSize;
-    bool tabToSpaces;
-    QString fontFamily;
+    /**
+     * @brief oldSize - size of the text before modification
+     */
+    int oldSize;
     QStringListModel *completionModel;
     QStringList words;
 };

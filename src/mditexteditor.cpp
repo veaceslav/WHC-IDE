@@ -76,6 +76,8 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     c->setWrapAround(false);
     this->setCompleter(c);
 
+    oldSize = this->toPlainText().size();
+
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(bracketMatch()));
 }
 
@@ -359,6 +361,10 @@ void MdiTextEditor::bracketMatch()
         extraSel<<b1<<b2;
     }
     this->setExtraSelections(extraSel);
+}
+
+void MdiTextEditor::slotIndent()
+{
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
