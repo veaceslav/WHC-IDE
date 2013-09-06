@@ -355,6 +355,9 @@ void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
     }
 
     int pos;
+    /**
+     * If direction is 0, this means we don't have to look for matching brackets
+     */
     if(direction)
         for(pos = charPos + direction; pos >= 0 && pos < text.size() &&
             stackSize; pos += direction)
@@ -365,17 +368,22 @@ void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
                 stackSize--;
         }
 
+    /**
+    * Selects initial bracket
+    */
+    cursorStart.movePosition(QTextCursor::NextCharacter,
+                             QTextCursor::KeepAnchor);
+
+    /**
+     * The stack must have size 0, else the stack is broken, or the bracket is
+     * not closed yet.
+     */
     if(!stackSize)
     {
         pos -= direction;
         QTextCursor cursorEnd(cursorStart);
         cursorEnd.setPosition(pos);
 
-        /**
-        * Selects initial bracket
-        */
-        cursorStart.movePosition(QTextCursor::NextCharacter,
-                                 QTextCursor::KeepAnchor);
         /**
         * Selects the other bracket
         */
@@ -390,6 +398,16 @@ void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
         b2.cursor = cursorEnd;
         b1.format = b2.format = fmt;
         extraSel<<b1<<b2;
+    }
+    else if(direction)
+    {
+        QTextCharFormat fmt;
+        fmt.setBackground(Qt::red);
+
+        QTextEdit::ExtraSelection b1;
+        b1.cursor = cursorStart;
+        b1.format = fmt;
+        extraSel<<b1;
     }
     this->setExtraSelections(extraSel);
 }
