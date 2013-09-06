@@ -68,7 +68,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
-    void bracketMatch();
+    void slotBracketMatch();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
@@ -79,11 +79,18 @@ private:
     QWidget *lineNumberArea;
     QCompleter *c;
     Ide *ide;
-    int tabSize, fontSize;
-    bool tabToSpaces;
-    QString fontFamily;
     QStringListModel *completionModel;
     QStringList words;
+
+    int getIndentLevel(QTextCursor cr);
+    /**
+     * @brief matchIndent - Matches the indent level to the given amount.
+     *                      Used for closing brackets
+     * @param cr          - the current text cursor
+     * @param level       - the desired level of indentation
+     */
+    void matchIndent(QTextCursor cr, int level);
+    void bracketMatch(QTextCursor cursorStart);
 };
 
 class LineNumberArea : public QWidget

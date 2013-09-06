@@ -27,7 +27,8 @@
 #include <QSettings>
 
 class Ide;
-class EditorSettingsVar{
+class EditorSettingsVar
+{
 public:
     Ide *parent;
     int tabSize, fontSize;
