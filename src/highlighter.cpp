@@ -103,7 +103,7 @@ SyntaxHighlighter *Highlighter::highlight(MdiSubWindow *mdiSubWindow)
     QPair<QVector<Type*>, QVector<Style*> > content(types, styles);
     QVector<QPair<QVector<Type*>, QVector<Style*> >* > container;
     container.append(&content);
-    QDir *dr = new QDir(".");
+    QDir dr(".");
     Q_UNUSED(dr);
     sh = new SyntaxHighlighter(qobject_cast<MdiTextEditor*>
                                (mdiSubWindow->widget())->document(), container,
