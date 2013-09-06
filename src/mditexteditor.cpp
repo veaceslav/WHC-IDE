@@ -26,13 +26,6 @@
 MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     QPlainTextEdit(parent), c(NULL)
 {
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(10);
-
-    setFont(font);
-
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -60,6 +53,14 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     MdiSubWindow *tmp_subwin = qobject_cast<MdiSubWindow*>(parent);
     Ide *tmp_ide = qobject_cast<Ide*>(tmp_subwin->p);
     ide = tmp_ide;
+
+    QFont font;
+    font.setFamily(ide->editorSettings->fontFamily);
+    font.setFixedPitch(true);
+    font.setPointSize(ide->editorSettings->fontSize);
+
+    setFont(font);
+
     this->setTabStopWidth(10 * tmp_ide->editorSettings->tabSize);
 
     this->setStyleSheet(QString("font: ") +
@@ -75,7 +76,8 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     c->setWrapAround(false);
     this->setCompleter(c);
 
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(bracketMatch()));
+    connect(this, SIGNAL(cursorPositionChanged()), this,
+            SLOT(slotBracketMatch()));
 }
 
 QAbstractItemModel *MdiTextEditor::modelFromFile()
@@ -104,6 +106,53 @@ QAbstractItemModel *MdiTextEditor::modelFromFile()
 #endif
     completionModel = new QStringListModel(words, c);
     return completionModel;
+}
+
+int MdiTextEditor::getIndentLevel(QTextCursor cr)
+{
+    int charPos = cr.position();
+    QString text = this->toPlainText();
+    QLinkedList<QChar> stack;
+
+    for(int i = 0; i < charPos; i++)
+        if(text.at(i) == '{')
+            stack.append('{');
+        else if(text.at(i) == '}')
+            if(!stack.isEmpty())
+                stack.pop_back();
+            /**
+             * Else the stack is broken. This means the brackets do not close
+             * properly
+             */
+    return stack.size();
+}
+
+void MdiTextEditor::matchIndent(QTextCursor cr, int level)
+{
+    /**
+     * Selects all the text from the beggining of the line to the '}' character
+     */
+    cr.movePosition(QTextCursor::PreviousCharacter);
+    cr.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+    QString line = cr.selectedText();
+
+    for(int i = 0; i < line.size(); i++)
+        if(line.at(i) != ' ' && line.at(i) != '\t')
+            return;
+
+    QString indent;
+    if(ide->editorSettings->tabToSpaces)
+        for(int i = 0; i < ide->editorSettings->tabSize; i++)
+            indent += " ";
+    else
+        indent = "\t";
+
+    /**
+     * Remove old spaces and replace them with the desired indent
+     */
+    cr.removeSelectedText();
+    for(int i = 0; i < level; i++)
+        cr.insertText(indent);
 }
 
 void MdiTextEditor::setCompleter(QCompleter *completer)
@@ -161,19 +210,28 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
         // The following keys are forwarded by the completer to the widget
         switch (e->key())
         {
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
-        case Qt::Key_Escape:
-        case Qt::Key_Tab:
-        case Qt::Key_Backtab:
-            e->ignore();
-            return; // let the completer do default behavior
-        default:
-            break;
+            case Qt::Key_Enter:
+            case Qt::Key_Return:
+            case Qt::Key_Escape:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+                e->ignore();
+                return; // let the completer do default behavior
         }
     }
     else
     {
+        /**
+         * @brief indent - a string with the character(s) that compose the
+         *                 indentation
+         */
+        QString indent;
+        if(ide->editorSettings->tabToSpaces)
+            for(int i = 0; i < ide->editorSettings->tabSize; i++)
+                indent += " ";
+        else
+            indent = '\t';
+
         if(e->key() == Qt::Key_Return)
         {
             QTextCursor cr = this->textCursor();
@@ -191,44 +249,55 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             }
             words.sort();
             completionModel->setStringList(words);
-            if(ide->editorSettings->tabToSpaces)
-            {
-                pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
-                cr = this->textCursor();
-                cr.insertText(QString("\n"));
-                for(int i = 0; i < ide->editorSettings->tabSize *
-                                        (pos/ide->editorSettings->tabSize); i++)
-                    cr.insertText(" ");
-                e->ignore();
-                return;
-            }
-            else
-            {
-                pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
-                cr = this->textCursor();
-                cr.insertText(QString("\n"));
-                for(int i = 0; i < pos; i++)
-                    cr.insertText(QString("\t"));
-                e->ignore();
-                return;
-            }
+
+            cr = this->textCursor();
+            cr.insertText(QString("\n"));
+
+            for(int i = 0; i < getIndentLevel(cr); i++)
+                cr.insertText(indent);
+
+            e->ignore();
+            return;
         }
-        if(e->key() == Qt::Key_Tab)
+        if(e->key() == Qt::Key_Tab && ide->editorSettings->tabToSpaces)
         {
-            if(ide->editorSettings->tabToSpaces == true)
-            {
-                for(int i = 0; i < ide->editorSettings->tabSize; i++)
-                    this->insertPlainText(" ");
-                e->ignore();
-                return;
-            }
+            this->insertPlainText(indent);
+            e->ignore();
+            return;
         }
     }
     bool isShortcut = ((e->modifiers() & Qt::ControlModifier) &&
                        e->key() == Qt::Key_E); // CTRL+E
     if (!c || !isShortcut) // dont process the shortcut when we have a completer
         QPlainTextEdit::keyPressEvent(e);
-    const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+
+    /**
+     * If the right bracket is pressed, the indent level will be decreased by 1
+     */
+    if(e->key() == Qt::Key_BraceRight)
+        matchIndent(this->textCursor(), getIndentLevel(this->textCursor()) - 1);
+
+    /**
+     * Highlight matching brackets
+     */
+    {
+        QTextCursor crs;
+        switch(e->key())
+        {
+            case Qt::Key_ParenLeft:
+            case Qt::Key_ParenRight:
+            case Qt::Key_BraceLeft:
+            case Qt::Key_BraceRight:
+            case Qt::Key_BracketLeft:
+            case Qt::Key_BracketRight:
+                crs = this->textCursor();
+                crs.movePosition(QTextCursor::PreviousCharacter);
+                bracketMatch(crs);
+        }
+    }
+
+    const bool ctrlOrShift = e->modifiers() &
+                                     (Qt::ControlModifier | Qt::ShiftModifier);
     if (!c || (ctrlOrShift && e->text().isEmpty()))
         return;
 
@@ -255,7 +324,12 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
-void MdiTextEditor::bracketMatch()
+void MdiTextEditor::slotBracketMatch()
+{
+    bracketMatch(this->textCursor());
+}
+
+void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
 {
     /**
      * @brief direction - the direction in which to look for the other bracket
@@ -268,10 +342,6 @@ void MdiTextEditor::bracketMatch()
      *                    stack)
      */
     int stackSize = 1;
-    /**
-     * @brief cursorStart - the starting cursor, with the first bracket.
-     */
-    QTextCursor cursorStart = this->textCursor();
 
     int charPos = cursorStart.position();
     QString text = this->toPlainText();
@@ -321,6 +391,9 @@ void MdiTextEditor::bracketMatch()
     }
 
     int pos;
+    /**
+     * If direction is 0, this means we don't have to look for matching brackets
+     */
     if(direction)
         for(pos = charPos + direction; pos >= 0 && pos < text.size() &&
             stackSize; pos += direction)
@@ -331,17 +404,22 @@ void MdiTextEditor::bracketMatch()
                 stackSize--;
         }
 
+    /**
+    * Selects initial bracket
+    */
+    cursorStart.movePosition(QTextCursor::NextCharacter,
+                             QTextCursor::KeepAnchor);
+
+    /**
+     * The stack must have size 0, else the stack is broken, or the bracket is
+     * not closed yet.
+     */
     if(!stackSize)
     {
         pos -= direction;
         QTextCursor cursorEnd(cursorStart);
         cursorEnd.setPosition(pos);
 
-        /**
-        * Selects initial bracket
-        */
-        cursorStart.movePosition(QTextCursor::NextCharacter,
-                                 QTextCursor::KeepAnchor);
         /**
         * Selects the other bracket
         */
@@ -356,6 +434,16 @@ void MdiTextEditor::bracketMatch()
         b2.cursor = cursorEnd;
         b1.format = b2.format = fmt;
         extraSel<<b1<<b2;
+    }
+    else if(direction)
+    {
+        QTextCharFormat fmt;
+        fmt.setBackground(Qt::red);
+
+        QTextEdit::ExtraSelection b1;
+        b1.cursor = cursorStart;
+        b1.format = fmt;
+        extraSel<<b1;
     }
     this->setExtraSelections(extraSel);
 }

@@ -45,7 +45,8 @@ public:
      * @return Returns the current class for highlight
      */
     inline Highlighter *getCurrentHighlighter() const
-            {return parent->langs[win->comboBox->currentText()];}
+            {return parent->langs.contains(win->comboBox->currentText()) ?
+                parent->langs[win->comboBox->currentText()] : NULL ;}
 
     /**
      * @brief Actions that happends on <<apply>> button pressed
@@ -83,7 +84,7 @@ private:
     /**
      * @param parent Main class of the IDE
      */
-    Ide* parent;
+    Ide *parent;
 
     /**
      * @param win Pointer to program form

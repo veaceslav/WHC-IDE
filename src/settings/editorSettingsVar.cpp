@@ -23,50 +23,26 @@
 
 #include "settings/editorSettingsVar.h"
 
-EditorSettingsVar::EditorSettingsVar(Ide* parent)
+EditorSettingsVar::EditorSettingsVar(Ide *parent)
 {
     this->parent = parent;
-    QSettings sets("WHC","WHC IDE");
+    QSettings sets("WHC", "WHC IDE");
 
-    QString line = sets.value("tabSize").toString();
-    if(line.toInt() == 0){
+    tabSize = sets.value("tabSize").toInt();
+    if(tabSize == 0)
         tabSize = 8;
-    }
-    else{
-        tabSize = line.toInt();
-    }
 
-    line = sets.value("tabToSpaces").toString();
-    if(line.toInt() == 0){
-        tabToSpaces = false;
-    }
-    else{
-        tabToSpaces = true;
-    }
+    tabToSpaces = sets.value("tabToSpaces").toBool();
 
-    line = sets.value("fontFamily").toString();
-    if(line.isEmpty()){
+    fontFamily = sets.value("fontFamily").toString();
+    if(fontFamily.isEmpty())
         fontFamily = QString("Courier New");
-    }else{
-        fontFamily = line;
-    }
 
-    line = sets.value("fontSize").toString();
-
-    if(line.toInt() == 0){
+    fontSize = sets.value("fontSize").toInt();
+    if(fontSize == 0)
         fontSize = 10;
-    }
-    else{
-        fontSize = line.toInt();
-    }
-    line = sets.value("endLineSpaces").toString();
-    if(line.toInt() == 0){
-        endLineSpace = false;
-    }
-    else{
-        endLineSpace = true;
-    }
 
+    endLineSpace = sets.value("endLineSpaces").toBool();
 }
 
 EditorSettingsVar::~EditorSettingsVar()

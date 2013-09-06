@@ -137,33 +137,30 @@ void EditorSettings::checkButtonChanged(int state)
 
 void EditorSettings::loadSettings()
 {
-    QSettings sets("WHC","WHC IDE");
-    QString line;
-    QString set = sets.value("tabSize").toString();
-    win->lineEdit->setText(QString::number(getTabSize()));
-    line = sets.value("tabToSpaces").toString();
-    if(line.toInt() == 0)
-    {
-        setTabToSpaces(false);
-        win->checkBox->setChecked(false);
-    }
-    else
-    {
-        setTabToSpaces(true);
-        win->checkBox->setChecked(true);
-    }
-    line = sets.value("fontFamily").toString();
-    setfontFamily(line);
-    win->fontComboBox->setCurrentFont(getFontFamily());
-    line = sets.value("fontSize").toString();
-    setFontSize(line.toInt());
-    win->font_size->setText(QString::number(getFontSize()));
-    line = sets.value("endLineSpaces").toString();
+    QSettings sets("WHC", "WHC IDE");
 
-    if(line.toInt() == 0)
-        win->checkBox_2->setChecked(false);
-    else
-        win->checkBox_2->setChecked(true);
+    bool tabToSpace, endLineSpaces;
+    int fontSize, tabSize;
+    QString fontFamily;
+
+    tabSize = sets.value("tabSize").toInt();
+    setTabSize(tabSize);
+    win->lineEdit->setText(QString::number(getTabSize()));
+
+    tabToSpace = sets.value("tabToSpaces").toBool();
+    setTabToSpaces(tabToSpace);
+    win->checkBox->setChecked(tabToSpace);
+
+    fontFamily = sets.value("fontFamily").toString();
+    setfontFamily(fontFamily);
+    win->fontComboBox->setCurrentFont(getFontFamily());
+
+    fontSize = sets.value("fontSize").toInt();
+    setFontSize(fontSize);
+    win->font_size->setText(QString::number(getFontSize()));
+
+    endLineSpaces = sets.value("endLineSpaces").toBool();
+    win->checkBox_2->setChecked(endLineSpaces);
 }
 
 void EditorSettings::saveSettings()
@@ -171,16 +168,8 @@ void EditorSettings::saveSettings()
     QSettings sets("WHC", "WHC IDE");
     sets.setValue("tabSize", win->lineEdit->text());
     parent->editorSettings->tabSize = win->lineEdit->text().toInt();
-    if(win->checkBox->isChecked())
-    {
-        sets.setValue("tabToSpaces", "1");
-        parent->editorSettings->tabToSpaces = true;
-    }
-    else
-    {
-        sets.setValue("tabToSpaces", "0");
-        parent->editorSettings->tabToSpaces = false;
-    }
+    sets.setValue("tabToSpaces", win->checkBox->isChecked());
+    parent->editorSettings->tabToSpaces = win->checkBox->isChecked();
 
     sets.setValue("fontFamily", win->fontComboBox->currentFont().family());
     parent->editorSettings->fontFamily =
@@ -188,17 +177,8 @@ void EditorSettings::saveSettings()
     sets.setValue("fontSize", win->font_size->text());
     parent->editorSettings->fontSize = win->font_size->text().toInt();
 
-    if(win->checkBox_2->isChecked())
-    {
-        sets.setValue("endLineSpaces", "1");
-        sets.setValue("fontSize", win->font_size->text());
-        parent->editorSettings->endLineSpace = true;
-    }
-    else
-    {
-        sets.setValue("endLineSpaces", "0");
-        parent->editorSettings->endLineSpace = false;
-    }
+    sets.setValue("endLineSpaces", win->checkBox_2->isChecked());
+    parent->editorSettings->endLineSpace = win->checkBox_2->isChecked();
 }
 
 bool EditorSettings::checkSettings()
@@ -327,25 +307,30 @@ void EditorSettings::onChooseCOlorClicked()
     QTextCharFormat cf;
     cf.setForeground(QBrush(color));
     Highlighter *h = getCurrentHighlighter();
-    QString tmp_currentIndex;
-    if (win->listWidget_2->currentItem())
+    if(h)
     {
-        tmp_currentIndex = win->listWidget_2->currentItem()->text();
-        h->sh->setStyle(tmp_currentIndex, cf);
-     }
+        QString tmp_currentIndex;
+        if (win->listWidget_2->currentItem())
+        {
+            tmp_currentIndex = win->listWidget_2->currentItem()->text();
+            h->sh->setStyle(tmp_currentIndex, cf);
+        }
+    }
 }
 
 void EditorSettings::saveHighlightSettings()
 {
+    Highlighter *h = getCurrentHighlighter();
+    if(!h)
+        return;
     QFile output(QString("Global_settings/lang/") +
                  win->comboBox->currentText() + QString(".lang"));
     output.open(QIODevice::WriteOnly);
     QXmlStreamWriter stream(&output);
     stream.setAutoFormatting(true);
-    stream.writeComment(getCurrentHighlighter()->getLicence());
+    stream.writeComment(h->getLicence());
     stream.writeStartElement("language");
     stream.writeAttribute("id", win->comboBox->currentText());
-    Highlighter *h = getCurrentHighlighter();
     foreach(Type *t, h->getTypes())
     {
         stream.writeStartElement("context");

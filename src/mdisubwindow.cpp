@@ -25,8 +25,9 @@
 
 #include "ide.h"
 
-MdiSubWindow::MdiSubWindow(const QString &fileName, QWidget *parent, Qt::WindowFlags flags) :
-    QMdiSubWindow(parent, flags),fileName(fileName)
+MdiSubWindow::MdiSubWindow(const QString &fileName, QWidget *parent,
+                           Qt::WindowFlags flags) :
+    QMdiSubWindow(parent, flags), fileName(fileName)
 {
     this->p = parent;
     setAttribute(Qt::WA_DeleteOnClose);
@@ -38,11 +39,14 @@ MdiSubWindow::MdiSubWindow(const QString &fileName, QWidget *parent, Qt::WindowF
             this, SLOT(on_document_modify(bool)));
 
     QString filetype = getFileType(fileName);
-    if(filetype.compare("") != 0){
+    if(filetype.compare("") != 0)
+    {
         Ide *p = reinterpret_cast<Ide*>(parent);
-        if(!p->langs.contains(filetype)){
-            p->langs.insert(filetype, new Highlighter(filetype, p->editorSettings));
-           p->langs[filetype]->setName(filetype);
+        if(!p->langs.contains(filetype))
+        {
+            p->langs.insert(filetype, new Highlighter(filetype,
+                                                      p->editorSettings));
+            p->langs[filetype]->setName(filetype);
         }
         p->langs[filetype]->highlight(this);
     }
@@ -68,39 +72,50 @@ QString MdiSubWindow::getFileType(QString filename)
 
 void MdiSubWindow::on_document_modify(bool modified)
 {
-    if(modified){
-        foreach(QTabBar * tab, this->mdiArea()->findChildren<QTabBar*>()){
+    if(modified)
+    {
+        foreach(QTabBar * tab, this->mdiArea()->findChildren<QTabBar*>())
+        {
             tab->setTabTextColor(tab->currentIndex(), Qt::red);
             //connect(tab, SIGNAL(tabCloseRequested(int)), this, SLOT(on_tab_closed(int)));
             this->modified = true;
         }
     }
-    else{
+    else
+    {
         this->modified = false;
-        foreach(QTabBar * tab, this->mdiArea()->findChildren<QTabBar*>()){
+        foreach(QTabBar * tab, this->mdiArea()->findChildren<QTabBar*>())
+        {
             tab->setTabTextColor(tab->currentIndex(), Qt::black);
         }
     }
 }
 void MdiSubWindow::closeEvent(QCloseEvent *closeEvent)
 {
-    if(modified){
-        QMessageBox::StandardButton answ = QMessageBox::question(this, tr("WHC"),
+    if(modified)
+    {
+        QMessageBox::StandardButton answ = QMessageBox::question(this,
+                     tr("WHC"),
                      tr("The document has been modified.\n"
                         "Do you want to save your changes?"),
-                     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        if(answ == QMessageBox::Save){
+                     QMessageBox::Save | QMessageBox::Discard |
+                     QMessageBox::Cancel);
+        if(answ == QMessageBox::Save)
+        {
             saveDocument();
             closeEvent->accept();
         }
-        if(answ == QMessageBox::Discard){
+        if(answ == QMessageBox::Discard)
+        {
             closeEvent->accept();
         }
-        if(answ == QMessageBox::Cancel){
+        if(answ == QMessageBox::Cancel)
+        {
             closeEvent->ignore();
         }
     }
-    else{
+    else
+    {
         closeEvent->accept();
     }
 }
