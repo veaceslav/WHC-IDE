@@ -189,8 +189,6 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             case Qt::Key_Backtab:
                 e->ignore();
                 return; // let the completer do default behavior
-            default:
-                break;
         }
     }
     else
