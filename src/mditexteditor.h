@@ -68,7 +68,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
-    void bracketMatch();
+    void slotBracketMatch();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
@@ -83,6 +83,7 @@ private:
     QStringList words;
 
     int getIndentLevel(QTextCursor cr);
+    void bracketMatch(QTextCursor cursorStart);
 };
 
 class LineNumberArea : public QWidget
