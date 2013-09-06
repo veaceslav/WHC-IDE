@@ -83,6 +83,12 @@ private:
     QStringList words;
 
     int getIndentLevel(QTextCursor cr);
+    /**
+     * @brief decreaseIndent - decreases the indent level by one. Used for
+     *                         closing brackets
+     * @param cr             - the current text cursor
+     */
+    void decreaseIndent(QTextCursor cr);
     void bracketMatch(QTextCursor cursorStart);
 };
 

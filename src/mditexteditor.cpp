@@ -127,6 +127,22 @@ int MdiTextEditor::getIndentLevel(QTextCursor cr)
     return stack.size();
 }
 
+void MdiTextEditor::decreaseIndent(QTextCursor cr)
+{
+    int spaces = 0, tabs = 0;
+    cr.select(QTextCursor::LineUnderCursor);
+    QString line = cr.selectedText();
+    for(int i = 0; i < line.size(); i++)
+    {
+        if(line.at(i) == ' ')
+            spaces++;
+        else if(line.at(i) == '\t')
+            tabs++;
+        else
+            return;
+    }
+}
+
 void MdiTextEditor::setCompleter(QCompleter *completer)
 {
     if (c)
