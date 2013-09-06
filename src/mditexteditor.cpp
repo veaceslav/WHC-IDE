@@ -127,20 +127,32 @@ int MdiTextEditor::getIndentLevel(QTextCursor cr)
     return stack.size();
 }
 
-void MdiTextEditor::decreaseIndent(QTextCursor cr)
+void MdiTextEditor::matchIndent(QTextCursor cr, int level)
 {
-    int spaces = 0, tabs = 0;
-    cr.select(QTextCursor::LineUnderCursor);
+    /**
+     * Selects all the text from the beggining of the line to the '}' character
+     */
+    cr.movePosition(QTextCursor::PreviousCharacter);
+    cr.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
     QString line = cr.selectedText();
+
     for(int i = 0; i < line.size(); i++)
-    {
-        if(line.at(i) == ' ')
-            spaces++;
-        else if(line.at(i) == '\t')
-            tabs++;
-        else
+        if(line.at(i) != ' ' && line.at(i) != '\t')
             return;
-    }
+
+    QString indent;
+    if(ide->editorSettings->tabToSpaces)
+        for(int i = 0; i < ide->editorSettings->tabSize; i++)
+            indent += " ";
+    else
+        indent = "\t";
+
+    /**
+     * Remove old spaces and replace them with the desired indent
+     */
+    cr.removeSelectedText();
+    for(int i = 0; i < level; i++)
+        cr.insertText(indent);
 }
 
 void MdiTextEditor::setCompleter(QCompleter *completer)
@@ -209,6 +221,10 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     }
     else
     {
+        /**
+         * @brief indent - a string with the character(s) that compose the
+         *                 indentation
+         */
         QString indent;
         if(ide->editorSettings->tabToSpaces)
             for(int i = 0; i < ide->editorSettings->tabSize; i++)
@@ -256,7 +272,13 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
         QPlainTextEdit::keyPressEvent(e);
 
     /**
-     * Match brackets
+     * If the right bracket is pressed, the indent level will be decreased by 1
+     */
+    if(e->key() == Qt::Key_BraceRight)
+        matchIndent(this->textCursor(), getIndentLevel(this->textCursor()) - 1);
+
+    /**
+     * Highlight matching brackets
      */
     {
         QTextCursor crs;
