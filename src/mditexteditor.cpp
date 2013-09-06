@@ -76,8 +76,6 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     c->setWrapAround(false);
     this->setCompleter(c);
 
-    oldSize = this->toPlainText().size();
-
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(bracketMatch()));
 }
 
@@ -107,6 +105,25 @@ QAbstractItemModel *MdiTextEditor::modelFromFile()
 #endif
     completionModel = new QStringListModel(words, c);
     return completionModel;
+}
+
+int MdiTextEditor::getIndentLevel(QTextCursor cr)
+{
+    int charPos = cr.position();
+    QString text = this->toPlainText();
+    QLinkedList<QChar> stack;
+
+    for(int i = 0; i < charPos; i++)
+        if(text.at(i) == '{')
+            stack.append('{');
+        else if(text.at(i) == '}')
+            if(!stack.isEmpty())
+                stack.pop_back();
+            /**
+             * Else the stack is broken.
+             * We will let the user know by highlighting the text.
+             */
+    return stack.size();
 }
 
 void MdiTextEditor::setCompleter(QCompleter *completer)
@@ -194,27 +211,23 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             }
             words.sort();
             completionModel->setStringList(words);
+
+            cr = this->textCursor();
+            cr.insertText(QString("\n"));
+
+            QString indent;
+
             if(ide->editorSettings->tabToSpaces)
-            {
-                pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
-                cr = this->textCursor();
-                cr.insertText(QString("\n"));
-                for(int i = 0; i < ide->editorSettings->tabSize *
-                                        (pos/ide->editorSettings->tabSize); i++)
-                    cr.insertText(" ");
-                e->ignore();
-                return;
-            }
+                for(int i = 0; i < ide->editorSettings->tabSize; i++)
+                    indent += " ";
             else
-            {
-                pos = cr.selectedText().indexOf(QRegExp("[\\w|#]+"));
-                cr = this->textCursor();
-                cr.insertText(QString("\n"));
-                for(int i = 0; i < pos; i++)
-                    cr.insertText(QString("\t"));
-                e->ignore();
-                return;
-            }
+                indent = '\t';
+
+            for(int i = 0; i < getIndentLevel(cr); i++)
+                cr.insertText(indent);
+
+            e->ignore();
+            return;
         }
         if(e->key() == Qt::Key_Tab)
         {
@@ -361,10 +374,6 @@ void MdiTextEditor::bracketMatch()
         extraSel<<b1<<b2;
     }
     this->setExtraSelections(extraSel);
-}
-
-void MdiTextEditor::slotIndent()
-{
 }
 
 void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
