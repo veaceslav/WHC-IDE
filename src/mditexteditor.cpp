@@ -27,6 +27,10 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     QPlainTextEdit(parent), c(NULL)
 {
     QFile file(fileName);
+
+    notBrace.first = QChar();
+    notBrace.second = QChar();
+
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
         QMessageBox::warning(this, tr("WHC"),
@@ -153,6 +157,18 @@ void MdiTextEditor::matchIndent(QTextCursor cr, int level)
     cr.removeSelectedText();
     for(int i = 0; i < level; i++)
         cr.insertText(indent);
+}
+
+QPair<QChar, QChar> MdiTextEditor::getBracePair(QChar brace)
+{
+    QVector<QPair<QChar, QChar> >braces;
+    braces<<QPair<QChar, QChar>('[', ']')<<QPair<QChar, QChar>('{', '}')
+            <<QPair<QChar, QChar>('(', ')')<<QPair<QChar, QChar>('<', '>');
+
+    for(int i = 0; i < braces.size(); i++)
+        if(braces[i].first == brace || braces[i].second == brace)
+            return braces[i];
+    return notBrace;
 }
 
 void MdiTextEditor::setCompleter(QCompleter *completer)
@@ -290,6 +306,8 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             case Qt::Key_BraceRight:
             case Qt::Key_BracketLeft:
             case Qt::Key_BracketRight:
+            case Qt::Key_Less:
+            case Qt::Key_Greater:
                 crs = this->textCursor();
                 crs.movePosition(QTextCursor::PreviousCharacter);
                 bracketMatch(crs);
@@ -333,7 +351,8 @@ void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
 {
     /**
      * @brief direction - the direction in which to look for the other bracket
-     *                    -1 means up, 1 means down
+     *                    -1 means up, 1 means down, 0 means no direction
+     *                    (char is not brace)
      */
     int direction = 0;
     /**
@@ -359,35 +378,19 @@ void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
      */
     QList<QTextEdit::ExtraSelection> extraSel;
 
-    if(selectedChar == '{')
+    QPair<QChar, QChar> bracePair = getBracePair(selectedChar);
+    if(bracePair != notBrace)
     {
-        otherBracket = '}';
-        direction = 1;
-    }
-    else if(selectedChar == '}')
-    {
-        otherBracket = '{';
-        direction = -1;
-    }
-    else if(selectedChar == '(')
-    {
-        otherBracket = ')';
-        direction = 1;
-    }
-    else if(selectedChar == ')')
-    {
-        otherBracket = '(';
-        direction = -1;
-    }
-    else if(selectedChar == '[')
-    {
-        otherBracket = ']';
-        direction = 1;
-    }
-    else if(selectedChar == ']')
-    {
-        otherBracket = '[';
-        direction = -1;
+        if(selectedChar == bracePair.first)
+        {
+            direction = 1;
+            otherBracket = bracePair.second;
+        }
+        else
+        {
+            direction = -1;
+            otherBracket = bracePair.first;
+        }
     }
 
     int pos;
