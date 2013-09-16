@@ -163,7 +163,7 @@ QPair<QChar, QChar> MdiTextEditor::getBracePair(QChar brace)
 {
     QVector<QPair<QChar, QChar> >braces;
     braces<<QPair<QChar, QChar>('[', ']')<<QPair<QChar, QChar>('{', '}')
-            <<QPair<QChar, QChar>('(', ')')<<QPair<QChar, QChar>('<', '>');
+            <<QPair<QChar, QChar>('(', ')');
 
     for(int i = 0; i < braces.size(); i++)
         if(braces[i].first == brace || braces[i].second == brace)
@@ -306,8 +306,6 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
             case Qt::Key_BraceRight:
             case Qt::Key_BracketLeft:
             case Qt::Key_BracketRight:
-            case Qt::Key_Less:
-            case Qt::Key_Greater:
                 crs = this->textCursor();
                 crs.movePosition(QTextCursor::PreviousCharacter);
                 bracketMatch(crs);
@@ -465,8 +463,8 @@ void MdiTextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
         {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
-            painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
-                             Qt::AlignRight, number);
+            painter.drawText(0, top, lineNumberArea->width(),
+                             fontMetrics().height(), Qt::AlignRight, number);
         }
 
         block = block.next();
