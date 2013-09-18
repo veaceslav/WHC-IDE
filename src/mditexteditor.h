@@ -75,18 +75,15 @@ private slots:
 
 private:
     QString textUnderCursor() const;
-    QAbstractItemModel *modelFromFile();
     QWidget *lineNumberArea;
     QCompleter *c;
     Ide *ide;
-    QStringListModel *completionModel;
-    QStringList words;
     /**
      * @brief notBrace - returned by getBracePair, see below
      */
     QPair<QChar, QChar> notBrace;
 
-    QAbstractItemModel *modelFromScope(int position);
+    QAbstractItemModel *modelFromScope(int position = -1);
     bool inScopeOf(int a, int b);
 
     int getIndentLevel(QTextCursor cr);

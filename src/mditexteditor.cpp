@@ -74,7 +74,7 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
                         "\";");
 
     c = new QCompleter(parent);
-    c->setModel(modelFromFile());
+    c->setModel(modelFromScope());
     c->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
@@ -84,51 +84,24 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
             SLOT(slotBracketMatch()));
 }
 
-QAbstractItemModel *MdiTextEditor::modelFromFile()
-{
-#ifndef QT_NO_CURSOR
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-#endif
-    QSet<QString> ls;
-    QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
-    QString str = this->toPlainText();
-    int pos = 0;
-    while ((pos = rx.indexIn(str, pos)) != -1)
-    {
-        ls.insert(rx.cap(0));
-        pos += rx.matchedLength();
-    }
-    foreach(QString s, ls)
-    {
-        if(s.size() > 3)
-            words<<s;
-    }
-    words.sort();
-
-#ifndef QT_NO_CURSOR
-    QApplication::restoreOverrideCursor();
-#endif
-    completionModel = new QStringListModel(words, c);
-    return completionModel;
-}
-
 QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
 {
     //Don't know what it does but it was here before
 #ifndef QT_NO_CURSOR
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 #endif
-    if(position < 0)
-        return NULL;
 
     QString text = this->toPlainText();
 
-    if(position >= text.size())
+    if(position < 0)
+        position = text.size();
+    if(position > text.size())
         return NULL;
 
     QSet<QString> foundWords;
     QRegExp regex("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
     int currentPos = regex.indexIn(text);
+    QStringList words;
 
     while (currentPos != -1 && currentPos < position)
     {
@@ -146,8 +119,8 @@ QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif
-    completionModel = new QStringListModel(words, c);
-    return completionModel;
+
+    return new QStringListModel(words, c);
 }
 
 bool MdiTextEditor::inScopeOf(int a, int b)
@@ -157,7 +130,7 @@ bool MdiTextEditor::inScopeOf(int a, int b)
 
     QString text = this->toPlainText();
 
-    if(a >= text.size() || b >= text.size())
+    if(a >= text.size() || b > text.size())
         return false;
 
     int levelDiff = 0;
@@ -312,27 +285,10 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
         if(e->key() == Qt::Key_Return)
         {
-            QTextCursor cr = this->textCursor();
-            cr.select(QTextCursor::LineUnderCursor);
-            QString str = cr.selectedText();
-            QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
-            int pos = 0;
-            while ((pos = rx.indexIn(str, pos)) != -1)
-            {
-                if(!words.contains(rx.cap(0)) && rx.cap(0).size() > 3)
-                {
-                    words.append(rx.cap(0));
-                }
-                pos += rx.matchedLength();
-            }
-            words.sort();
-            completionModel->setStringList(words);
-
-            cr = this->textCursor();
-            cr.insertText(QString("\n"));
-
-            for(int i = 0; i < getIndentLevel(cr); i++)
-                cr.insertText(indent);
+            c->setModel(modelFromScope(this->textCursor().position()));
+            this->insertPlainText("\n");
+            for(int i = 0; i < getIndentLevel(this->textCursor()); i++)
+                this->insertPlainText(indent);
 
             e->ignore();
             return;
