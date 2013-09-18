@@ -81,6 +81,10 @@ private:
     Ide *ide;
     QStringListModel *completionModel;
     QStringList words;
+    /**
+     * @brief notBrace - returned by getBracePair, see below
+     */
+    QPair<QChar, QChar> notBrace;
 
     int getIndentLevel(QTextCursor cr);
     /**
@@ -90,6 +94,14 @@ private:
      * @param level       - the desired level of indentation
      */
     void matchIndent(QTextCursor cr, int level);
+    /**
+     * @brief getBracePair    - gets the brace/bracket pair for the given
+     *                          input
+     * @param brace           - the selected brace/bracket
+     * @return                - the opposite of the input. If the input is not
+     *                          valid, the notBrace pair is returned
+     */
+    QPair<QChar, QChar> getBracePair(QChar brace);
     void bracketMatch(QTextCursor cursorStart);
 };
 
