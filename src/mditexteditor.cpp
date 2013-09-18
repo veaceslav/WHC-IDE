@@ -112,6 +112,68 @@ QAbstractItemModel *MdiTextEditor::modelFromFile()
     return completionModel;
 }
 
+QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
+{
+    //Don't know what it does but it was here before
+#ifndef QT_NO_CURSOR
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+#endif
+    if(position < 0)
+        return NULL;
+
+    QString text = this->toPlainText();
+
+    if(position >= text.size())
+        return NULL;
+
+    QSet<QString> foundWords;
+    QRegExp regex("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
+    int currentPos = regex.indexIn(text);
+
+    while (currentPos != -1 && currentPos < position)
+    {
+        if(inScopeOf(currentPos, position))
+            foundWords.insert(regex.cap());
+        currentPos = regex.indexIn(text, currentPos + regex.matchedLength());
+    }
+    foreach(QString word, foundWords)
+    {
+        if(word.size() > 3)
+            words<<word;
+    }
+    words.sort();
+
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
+    completionModel = new QStringListModel(words, c);
+    return completionModel;
+}
+
+bool MdiTextEditor::inScopeOf(int a, int b)
+{
+    if(a > b || a < 0 || b < 0)
+        return false;
+
+    QString text = this->toPlainText();
+
+    if(a >= text.size() || b >= text.size())
+        return false;
+
+    int levelDiff = 0;
+
+    for(int i = a; i < b; i++)
+        if(text.at(i) == '{')
+            levelDiff++;
+        else if(text.at(i) == '}')
+            levelDiff--;
+
+    if(levelDiff < 0)
+        return false;
+    else
+        return true;
+}
+
 int MdiTextEditor::getIndentLevel(QTextCursor cr)
 {
     int charPos = cr.position();
