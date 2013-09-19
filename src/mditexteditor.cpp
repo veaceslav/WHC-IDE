@@ -335,13 +335,16 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     if (!c || (ctrlOrShift && e->text().isEmpty()))
         return;
 
-    static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
+    QString wordCharacters =
+              "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
+
     bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
     QString completionPrefix = textUnderCursor();
 
     if (!isShortcut &&
-        (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3 ||
-                                              eow.contains(e->text().right(1))))
+        (hasModifier || e->text().isEmpty() ||
+         completionPrefix.length() < 3 || completionPrefix.at(0).isDigit() ||
+         !wordCharacters.contains(e->text().right(1))))
     {
         c->popup()->hide();
         return;
@@ -356,6 +359,7 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     cr.setWidth(c->popup()->sizeHintForColumn(0) +
                 c->popup()->verticalScrollBar()->sizeHint().width());
     c->complete(cr); // popup it up!
+
 }
 
 void MdiTextEditor::slotCursorChanged()
@@ -370,7 +374,7 @@ void MdiTextEditor::slotCursorChanged()
      * cursor). A "word" is a variable name or a number.
      */
     while(currentPos > 0 &&
-          (text.at(currentPos).isLetterOrNumber() ||
+          (text.at(currentPos).isLetter() || text.at(currentPos).isDigit() ||
            text.at(currentPos) == '_'))
         currentPos--;
 
@@ -380,8 +384,8 @@ void MdiTextEditor::slotCursorChanged()
      * Same as above
      */
     while(prevCursorPos > 0 &&
-          (text.at(prevCursorPos).isLetterOrNumber() ||
-           text.at(prevCursorPos) == '_'))
+          (text.at(prevCursorPos).isLetter() ||
+           text.at(prevCursorPos).isDigit() || text.at(prevCursorPos) == '_'))
         prevCursorPos--;
 
     if(prevCursorPos != currentPos)
