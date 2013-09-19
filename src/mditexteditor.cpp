@@ -362,6 +362,11 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
 }
 
+void MdiTextEditor::slotGotModel(QAbstractItemModel *model)
+{
+    c->setModel(model);
+}
+
 void MdiTextEditor::slotCursorChanged()
 {
     bracketMatch(this->textCursor());

@@ -67,11 +67,17 @@ protected:
     void focusInEvent(QFocusEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
+public slots:
+    void slotGotModel(QAbstractItemModel *model);
+
 private slots:
     void slotCursorChanged();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
+
+signals:
+    void getModel(int position);
 
 private:
     QString textUnderCursor() const;

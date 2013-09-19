@@ -7,6 +7,7 @@ CompleteModel::CompleteModel(MdiTextEditor *parent, QCompleter *completer) :
     worker = new ModelFromScope(this, parent, completer);
     worker->moveToThread(thread);
 
+    connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
     connect(this, SIGNAL(gotModel(QAbstractItemModel*)), parent,
             SLOT(slotGotModel(QAbstractItemModel*)));
     connect(this, SIGNAL(requestModel(int)), worker, SLOT(slotGetModel(int)));
@@ -18,6 +19,7 @@ CompleteModel::CompleteModel(MdiTextEditor *parent, QCompleter *completer) :
 
 CompleteModel::~CompleteModel()
 {
+    worker->deleteLater();
     thread->deleteLater();
 }
 
