@@ -68,13 +68,14 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
-    void slotBracketMatch();
+    void slotCursorChanged();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
 
 private:
     QString textUnderCursor() const;
+    int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;
     Ide *ide;

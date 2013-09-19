@@ -74,14 +74,15 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
                         "\";");
 
     c = new QCompleter(parent);
-    c->setModel(modelFromScope());
+    c->setModel(modelFromScope(this->textCursor().position()));
     c->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
     this->setCompleter(c);
+    prevCursorPos = this->textCursor().position();
 
     connect(this, SIGNAL(cursorPositionChanged()), this,
-            SLOT(slotBracketMatch()));
+            SLOT(slotCursorChanged()));
 }
 
 QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
@@ -285,7 +286,6 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
         if(e->key() == Qt::Key_Return)
         {
-            c->setModel(modelFromScope(this->textCursor().position()));
             this->insertPlainText("\n");
             for(int i = 0; i < getIndentLevel(this->textCursor()); i++)
                 this->insertPlainText(indent);
@@ -358,9 +358,28 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
-void MdiTextEditor::slotBracketMatch()
+void MdiTextEditor::slotCursorChanged()
 {
     bracketMatch(this->textCursor());
+
+    int currentPos = this->textCursor().position() - 1;
+    QString text = this->toPlainText();
+
+    while(currentPos > 0 &&
+          (text.at(currentPos).isLetterOrNumber() ||
+           text.at(currentPos) == '_'))
+        currentPos--;
+
+    prevCursorPos--;
+
+    while(prevCursorPos > 0 &&
+          (text.at(prevCursorPos).isLetterOrNumber() ||
+           text.at(prevCursorPos) == '_'))
+        prevCursorPos--;
+
+    if(prevCursorPos != currentPos)
+        c->setModel(modelFromScope(currentPos));
+    prevCursorPos = this->textCursor().position();
 }
 
 void MdiTextEditor::bracketMatch(QTextCursor cursorStart)
