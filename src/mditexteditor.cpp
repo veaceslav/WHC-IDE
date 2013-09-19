@@ -99,7 +99,7 @@ QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
         return NULL;
 
     QSet<QString> foundWords;
-    QRegExp regex("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
+    QRegExp regex("[a-zA-Z_][a-zA-Z0-9_]*");
     int currentPos = regex.indexIn(text);
     QStringList words;
 
