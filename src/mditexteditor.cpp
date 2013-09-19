@@ -74,42 +74,78 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
                         "\";");
 
     c = new QCompleter(parent);
-    c->setModel(modelFromFile());
+    c->setModel(modelFromScope(this->textCursor().position()));
     c->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
     this->setCompleter(c);
+    prevCursorPos = this->textCursor().position();
 
     connect(this, SIGNAL(cursorPositionChanged()), this,
-            SLOT(slotBracketMatch()));
+            SLOT(slotCursorChanged()));
 }
 
-QAbstractItemModel *MdiTextEditor::modelFromFile()
+QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
 {
+    //Don't know what it does but it was here before
 #ifndef QT_NO_CURSOR
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 #endif
-    QSet<QString> ls;
-    QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
-    QString str = this->toPlainText();
-    int pos = 0;
-    while ((pos = rx.indexIn(str, pos)) != -1)
+
+    QString text = this->toPlainText();
+
+    if(position < 0)
+        position = text.size();
+    if(position > text.size())
+        return NULL;
+
+    QSet<QString> foundWords;
+    QRegExp regex("[a-zA-Z_][a-zA-Z0-9_]*");
+    int currentPos = regex.indexIn(text);
+    QStringList words;
+
+    while (currentPos != -1 && currentPos < position)
     {
-        ls.insert(rx.cap(0));
-        pos += rx.matchedLength();
+        if(inScopeOf(currentPos, position))
+            foundWords.insert(regex.cap());
+        currentPos = regex.indexIn(text, currentPos + regex.matchedLength());
     }
-    foreach(QString s, ls)
+    foreach(QString word, foundWords)
     {
-        if(s.size() > 3)
-            words<<s;
+        if(word.size() > 3)
+            words<<word;
     }
     words.sort();
 
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif
-    completionModel = new QStringListModel(words, c);
-    return completionModel;
+
+    return new QStringListModel(words, c);
+}
+
+bool MdiTextEditor::inScopeOf(int a, int b)
+{
+    if(a > b || a < 0 || b < 0)
+        return false;
+
+    QString text = this->toPlainText();
+
+    if(a >= text.size() || b > text.size())
+        return false;
+
+    int levelDiff = 0;
+
+    for(int i = a; i < b; i++)
+        if(text.at(i) == '{')
+            levelDiff++;
+        else if(text.at(i) == '}')
+            levelDiff--;
+
+    if(levelDiff < 0)
+        return false;
+    else
+        return true;
 }
 
 int MdiTextEditor::getIndentLevel(QTextCursor cr)
@@ -250,27 +286,9 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
         if(e->key() == Qt::Key_Return)
         {
-            QTextCursor cr = this->textCursor();
-            cr.select(QTextCursor::LineUnderCursor);
-            QString str = cr.selectedText();
-            QRegExp rx("[_]?[a-zA-Z]+[_]*[a-zA-Z0-9]*");
-            int pos = 0;
-            while ((pos = rx.indexIn(str, pos)) != -1)
-            {
-                if(!words.contains(rx.cap(0)) && rx.cap(0).size() > 3)
-                {
-                    words.append(rx.cap(0));
-                }
-                pos += rx.matchedLength();
-            }
-            words.sort();
-            completionModel->setStringList(words);
-
-            cr = this->textCursor();
-            cr.insertText(QString("\n"));
-
-            for(int i = 0; i < getIndentLevel(cr); i++)
-                cr.insertText(indent);
+            this->insertPlainText("\n");
+            for(int i = 0; i < getIndentLevel(this->textCursor()); i++)
+                this->insertPlainText(indent);
 
             e->ignore();
             return;
@@ -340,9 +358,35 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
-void MdiTextEditor::slotBracketMatch()
+void MdiTextEditor::slotCursorChanged()
 {
     bracketMatch(this->textCursor());
+
+    int currentPos = this->textCursor().position() - 1;
+    QString text = this->toPlainText();
+
+    /**
+     * Moves the cursor to the left of the current word (the word under the
+     * cursor). A "word" is a variable name or a number.
+     */
+    while(currentPos > 0 &&
+          (text.at(currentPos).isLetterOrNumber() ||
+           text.at(currentPos) == '_'))
+        currentPos--;
+
+    prevCursorPos--;
+
+    /**
+     * Same as above
+     */
+    while(prevCursorPos > 0 &&
+          (text.at(prevCursorPos).isLetterOrNumber() ||
+           text.at(prevCursorPos) == '_'))
+        prevCursorPos--;
+
+    if(prevCursorPos != currentPos)
+        c->setModel(modelFromScope(currentPos));
+    prevCursorPos = this->textCursor().position();
 }
 
 void MdiTextEditor::bracketMatch(QTextCursor cursorStart)

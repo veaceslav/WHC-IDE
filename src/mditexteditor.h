@@ -68,23 +68,28 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 private slots:
-    void slotBracketMatch();
+    void slotCursorChanged();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
 
 private:
     QString textUnderCursor() const;
-    QAbstractItemModel *modelFromFile();
+    /**
+     * @brief prevCursorPos - the last cursor position, used to determine if
+     *                        we need to update the completion model
+     */
+    int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;
     Ide *ide;
-    QStringListModel *completionModel;
-    QStringList words;
     /**
      * @brief notBrace - returned by getBracePair, see below
      */
     QPair<QChar, QChar> notBrace;
+
+    QAbstractItemModel *modelFromScope(int position = -1);
+    bool inScopeOf(int a, int b);
 
     int getIndentLevel(QTextCursor cr);
     /**
