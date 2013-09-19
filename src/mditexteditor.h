@@ -75,6 +75,10 @@ private slots:
 
 private:
     QString textUnderCursor() const;
+    /**
+     * @brief prevCursorPos - the last cursor position, used to determine if
+     *                        we need to update the completion model
+     */
     int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;

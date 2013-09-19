@@ -365,6 +365,10 @@ void MdiTextEditor::slotCursorChanged()
     int currentPos = this->textCursor().position() - 1;
     QString text = this->toPlainText();
 
+    /**
+     * Moves the cursor to the left of the current word (the word under the
+     * cursor). A "word" is a variable name or a number.
+     */
     while(currentPos > 0 &&
           (text.at(currentPos).isLetterOrNumber() ||
            text.at(currentPos) == '_'))
@@ -372,6 +376,9 @@ void MdiTextEditor::slotCursorChanged()
 
     prevCursorPos--;
 
+    /**
+     * Same as above
+     */
     while(prevCursorPos > 0 &&
           (text.at(prevCursorPos).isLetterOrNumber() ||
            text.at(prevCursorPos) == '_'))
