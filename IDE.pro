@@ -58,7 +58,8 @@ SOURCES += \
     src/projManagement/overwritefile.cpp \
     src/monitor.cpp \
     src/customPlot/qcustomplot.cpp \
-    src/stats.cpp
+    src/stats.cpp \
+    src/editor/completemodel.cpp
 
 HEADERS += \
     src/ide.h \
@@ -106,7 +107,8 @@ HEADERS += \
     src/projManagement/overwritefile.h \
     src/monitor.h \
     src/customPlot/qcustomplot.h \
-    src/stats.h
+    src/stats.h \
+    src/editor/completemodel.h
 
 FORMS += \
     src/forms/tabproject.ui \
