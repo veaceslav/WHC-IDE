@@ -23,6 +23,8 @@
 
 #include "mditexteditor.h"
 #include "mdisubwindow.h"
+#include "editor/completemodel.h"
+
 MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     QPlainTextEdit(parent), c(NULL)
 {
@@ -83,6 +85,17 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
 
     connect(this, SIGNAL(cursorPositionChanged()), this,
             SLOT(slotCursorChanged()));
+
+    complModel = new CompleteModel(this, c);
+
+    connect(this, SIGNAL(getModel(int)), complModel, SLOT(slotGetModel(int)));
+    connect(complModel, SIGNAL(gotModel(QAbstractItemModel*)), this,
+            SLOT(slotGotModel(QAbstractItemModel*)));
+}
+
+MdiTextEditor::~MdiTextEditor()
+{
+    complModel->deleteLater();
 }
 
 QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
@@ -394,7 +407,7 @@ void MdiTextEditor::slotCursorChanged()
         prevCursorPos--;
 
     if(prevCursorPos != currentPos)
-        c->setModel(modelFromScope(currentPos));
+        emit getModel(currentPos);
     prevCursorPos = this->textCursor().position();
 }
 

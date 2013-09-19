@@ -48,6 +48,7 @@
   http://doc.trolltech.com/4.6/widgets-codeeditor.html
 */
 class Ide;
+class CompleteModel;
 
 class MdiTextEditor : public QPlainTextEdit
 {
@@ -55,6 +56,8 @@ class MdiTextEditor : public QPlainTextEdit
 
 public:
     MdiTextEditor(const QString &fileName, QWidget *parent = 0);
+    ~MdiTextEditor();
+
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
     void setCompleter(QCompleter *c);
@@ -88,6 +91,7 @@ private:
     int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;
+    CompleteModel *complModel;
     Ide *ide;
     /**
      * @brief notBrace - returned by getBracePair, see below

@@ -1,3 +1,6 @@
+#ifndef COMPLETEMODEL_H
+#define COMPLETEMODEL_H
+
 #include <QThread>
 #include "mditexteditor.h"
 
@@ -45,3 +48,5 @@ private:
     QAbstractItemModel *modelFromScope(int position);
     bool inScopeOf(int a, int b);
 };
+
+#endif
