@@ -1,20 +1,17 @@
 #include "completionmodel.h"
 
 CompletionModel::CompletionModel(MdiTextEditor *parent) :
-    parent(parent)
+    QObject(parent)
 {
     thread = new QThread();
     worker = new ModelFromScope(parent);
 
     worker->moveToThread(thread);
 
-    connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
-    connect(this, SIGNAL(gotModel(QStringListModel*)), parent,
-            SLOT(slotGotModel(QStringListModel*)));
     connect(this, SIGNAL(requestModel(int)), worker,
             SLOT(slotGetModel(int)));
-    connect(worker, SIGNAL(gotModel(QStringList)), this,
-            SLOT(slotObtainedModel(QStringList)));
+    connect(worker, SIGNAL(gotModel(QStringList)), parent,
+            SLOT(slotGotModel(QStringList)));
     connect(thread, SIGNAL(finished()), worker,
             SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread,
@@ -31,11 +28,6 @@ CompletionModel::~CompletionModel()
 void CompletionModel::slotGetModel(int position)
 {
     emit requestModel(position);
-}
-
-void CompletionModel::slotObtainedModel(QStringList words)
-{
-    emit gotModel(new QStringListModel(words));
 }
 
 ModelFromScope::ModelFromScope(MdiTextEditor *editor) :

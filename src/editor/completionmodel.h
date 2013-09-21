@@ -15,15 +15,12 @@ public:
 
 public slots:
     void slotGetModel(int position);
-    void slotObtainedModel(QStringList words);
 
 signals:
-    void gotModel(QStringListModel *model);
     void requestModel(int position);
 
 private:
     QThread *thread;
-    MdiTextEditor *parent;
     ModelFromScope *worker;
 };
 

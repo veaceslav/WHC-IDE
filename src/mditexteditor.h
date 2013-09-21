@@ -56,7 +56,6 @@ class MdiTextEditor : public QPlainTextEdit
 
 public:
     MdiTextEditor(const QString &fileName, QWidget *parent = 0);
-    ~MdiTextEditor();
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
@@ -71,7 +70,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 public slots:
-    void slotGotModel(QStringListModel *model);
+    void slotGotModel(QStringList words);
 
 private slots:
     void slotCursorChanged();

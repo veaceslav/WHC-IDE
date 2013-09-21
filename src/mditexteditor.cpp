@@ -88,15 +88,8 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     complModel = new CompletionModel(this);
 
     connect(this, SIGNAL(getModel(int)), complModel, SLOT(slotGetModel(int)));
-    connect(complModel, SIGNAL(gotModel(QStringListModel*)), this,
-            SLOT(slotGotModel(QStringListModel*)));
 
     emit getModel(this->textCursor().position());
-}
-
-MdiTextEditor::~MdiTextEditor()
-{
-    complModel->deleteLater();
 }
 
 int MdiTextEditor::getIndentLevel(QTextCursor cr)
@@ -313,9 +306,9 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
 }
 
-void MdiTextEditor::slotGotModel(QStringListModel *model)
+void MdiTextEditor::slotGotModel(QStringList words)
 {
-    c->setModel(model);
+    c->setModel(new QStringListModel(words, c));
 }
 
 void MdiTextEditor::slotCursorChanged()
