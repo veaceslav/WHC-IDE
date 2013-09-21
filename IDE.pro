@@ -59,7 +59,7 @@ SOURCES += \
     src/monitor.cpp \
     src/customPlot/qcustomplot.cpp \
     src/stats.cpp \
-    src/editor/completemodel.cpp
+    src/editor/completionmodel.cpp
 
 HEADERS += \
     src/ide.h \
@@ -108,7 +108,7 @@ HEADERS += \
     src/monitor.h \
     src/customPlot/qcustomplot.h \
     src/stats.h \
-    src/editor/completemodel.h
+    src/editor/completionmodel.h
 
 FORMS += \
     src/forms/tabproject.ui \

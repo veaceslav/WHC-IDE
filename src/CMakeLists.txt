@@ -157,11 +157,11 @@ set(test_SOURCES
     )
 
 set(editor_HEADERS
-    editor/completemodel.h
+    editor/completionmodel.h
     )
 
 set(editor_SOURCES
-    editor/completemodel.cpp
+    editor/completionmodel.cpp
     )
 
 set(whc_SOURCES
