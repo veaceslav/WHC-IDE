@@ -4,15 +4,19 @@ CompleteModel::CompleteModel(MdiTextEditor *parent) :
     parent(parent)
 {
     thread = new QThread();
-    worker = new ModelFromScope(this, parent);
+    worker = new ModelFromScope(parent);
+    model = new QStringListModel();
+
     worker->moveToThread(thread);
+    model->moveToThread(thread);
 
     connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
     connect(this, SIGNAL(gotModel(QStringListModel*)), parent,
             SLOT(slotGotModel(QStringListModel*)));
-    connect(this, SIGNAL(requestModel(int)), worker, SLOT(slotGetModel(int)));
-    connect(worker, SIGNAL(gotModel(QStringListModel*)), this,
-            SLOT(slotObtainedModel(QStringListModel*)));
+    connect(this, SIGNAL(requestModel(int, QStringListModel*)), worker,
+            SLOT(slotGetModel(int, QStringListModel*)));
+    connect(worker, SIGNAL(gotModel()), this,
+            SLOT(slotObtainedModel()));
 
     thread->start();
 }
@@ -25,26 +29,28 @@ CompleteModel::~CompleteModel()
 
 void CompleteModel::slotGetModel(int position)
 {
-    emit requestModel(position);
+    emit requestModel(position, model);
 }
 
-void CompleteModel::slotObtainedModel(QStringListModel *model)
+void CompleteModel::slotObtainedModel()
 {
     emit gotModel(model);
 }
 
-ModelFromScope::ModelFromScope(CompleteModel *parent, MdiTextEditor *editor) :
-    parent(parent), editor(editor)
+ModelFromScope::ModelFromScope(MdiTextEditor *editor) :
+    editor(editor)
 {
-    connect(parent, SIGNAL(requestModel(int)), this, SLOT(slotGetModel(int)));
 }
 
-void ModelFromScope::slotGetModel(int position)
+void ModelFromScope::slotGetModel(int position, QStringListModel *model)
 {
-    emit gotModel(modelFromScope(position));
+    this->model = model;
+    modelFromScope(position);
+    model->moveToThread(QApplication::instance()->thread());
+    emit gotModel();
 }
 
-QStringListModel *ModelFromScope::modelFromScope(int position)
+void ModelFromScope::modelFromScope(int position)
 {
     //Don't know what it does but it was here before
 #ifndef QT_NO_CURSOR
@@ -52,12 +58,12 @@ QStringListModel *ModelFromScope::modelFromScope(int position)
 #endif
 
     if(position < 0)
-        return NULL;
+        return;
 
     QString text = editor->toPlainText();
 
     if(position > text.size())
-        return NULL;
+        return;
 
     QSet<QString> foundWords;
     QRegExp regex("[a-zA-Z_][a-zA-Z0-9_]*");
@@ -81,9 +87,7 @@ QStringListModel *ModelFromScope::modelFromScope(int position)
     QApplication::restoreOverrideCursor();
 #endif
 
-    QStringListModel *result = new QStringListModel(words);
-    result->moveToThread(QApplication::instance()->thread());
-    return result;
+    model->setStringList(words);
 }
 
 bool ModelFromScope::inScopeOf(int a, int b)

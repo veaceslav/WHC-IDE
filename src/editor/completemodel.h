@@ -15,13 +15,14 @@ public:
 
 public slots:
     void slotGetModel(int position);
-    void slotObtainedModel(QStringListModel *model);
+    void slotObtainedModel();
 
 signals:
     void gotModel(QStringListModel *model);
-    void requestModel(int position);
+    void requestModel(int position, QStringListModel *model);
 
 private:
+    QStringListModel *model;
     QThread *thread;
     MdiTextEditor *parent;
     ModelFromScope *worker;
@@ -31,19 +32,19 @@ class ModelFromScope : public QObject
 {
     Q_OBJECT
 public:
-    ModelFromScope(CompleteModel *parent, MdiTextEditor *editor);
+    ModelFromScope(MdiTextEditor *editor);
 
 public slots:
-    void slotGetModel(int position);
+    void slotGetModel(int position, QStringListModel *model);
 
 signals:
-    void gotModel(QStringListModel *model);
+    void gotModel();
 
 private:
-    CompleteModel *parent;
     MdiTextEditor *editor;
+    QStringListModel *model;
 
-    QStringListModel *modelFromScope(int position);
+    void modelFromScope(int position);
     bool inScopeOf(int a, int b);
 };
 

@@ -377,9 +377,7 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
 void MdiTextEditor::slotGotModel(QStringListModel *model)
 {
-    QAbstractItemModel *oldModel = c->completionModel();
     c->setModel(model);
-    oldModel->deleteLater();
 }
 
 void MdiTextEditor::slotCursorChanged()
