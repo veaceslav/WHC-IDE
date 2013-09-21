@@ -48,6 +48,7 @@
   http://doc.trolltech.com/4.6/widgets-codeeditor.html
 */
 class Ide;
+class CompletionModel;
 
 class MdiTextEditor : public QPlainTextEdit
 {
@@ -55,6 +56,7 @@ class MdiTextEditor : public QPlainTextEdit
 
 public:
     MdiTextEditor(const QString &fileName, QWidget *parent = 0);
+
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
     void setCompleter(QCompleter *c);
@@ -67,11 +69,17 @@ protected:
     void focusInEvent(QFocusEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
+public slots:
+    void slotGotModel(QStringList words);
+
 private slots:
     void slotCursorChanged();
     void updateLineNumberAreaWidth(int);
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
+
+signals:
+    void getModel(int position);
 
 private:
     QString textUnderCursor() const;
@@ -82,14 +90,12 @@ private:
     int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;
+    CompletionModel *complModel;
     Ide *ide;
     /**
      * @brief notBrace - returned by getBracePair, see below
      */
     QPair<QChar, QChar> notBrace;
-
-    QAbstractItemModel *modelFromScope(int position = -1);
-    bool inScopeOf(int a, int b);
 
     int getIndentLevel(QTextCursor cr);
     /**
