@@ -86,11 +86,11 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     connect(this, SIGNAL(cursorPositionChanged()), this,
             SLOT(slotCursorChanged()));
 
-    complModel = new CompleteModel(this, c);
+    complModel = new CompleteModel(this);
 
     connect(this, SIGNAL(getModel(int)), complModel, SLOT(slotGetModel(int)));
-    connect(complModel, SIGNAL(gotModel(QAbstractItemModel*)), this,
-            SLOT(slotGotModel(QAbstractItemModel*)));
+    connect(complModel, SIGNAL(gotModel(QStringListModel*)), this,
+            SLOT(slotGotModel(QStringListModel*)));
 }
 
 MdiTextEditor::~MdiTextEditor()
@@ -98,7 +98,7 @@ MdiTextEditor::~MdiTextEditor()
     complModel->deleteLater();
 }
 
-QAbstractItemModel *MdiTextEditor::modelFromScope(int position)
+QStringListModel *MdiTextEditor::modelFromScope(int position)
 {
     //Don't know what it does but it was here before
 #ifndef QT_NO_CURSOR
@@ -375,9 +375,11 @@ void MdiTextEditor::keyPressEvent(QKeyEvent *e)
 
 }
 
-void MdiTextEditor::slotGotModel(QAbstractItemModel *model)
+void MdiTextEditor::slotGotModel(QStringListModel *model)
 {
+    QAbstractItemModel *oldModel = c->completionModel();
     c->setModel(model);
+    oldModel->deleteLater();
 }
 
 void MdiTextEditor::slotCursorChanged()

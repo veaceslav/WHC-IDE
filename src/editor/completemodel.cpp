@@ -1,18 +1,18 @@
 #include "completemodel.h"
 
-CompleteModel::CompleteModel(MdiTextEditor *parent, QCompleter *completer) :
+CompleteModel::CompleteModel(MdiTextEditor *parent) :
     parent(parent)
 {
     thread = new QThread();
-    worker = new ModelFromScope(this, parent, completer);
+    worker = new ModelFromScope(this, parent);
     worker->moveToThread(thread);
 
     connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
-    connect(this, SIGNAL(gotModel(QAbstractItemModel*)), parent,
-            SLOT(slotGotModel(QAbstractItemModel*)));
+    connect(this, SIGNAL(gotModel(QStringListModel*)), parent,
+            SLOT(slotGotModel(QStringListModel*)));
     connect(this, SIGNAL(requestModel(int)), worker, SLOT(slotGetModel(int)));
-    connect(worker, SIGNAL(gotModel(QAbstractItemModel*)), this,
-            SLOT(slotObtainedModel(QAbstractItemModel*)));
+    connect(worker, SIGNAL(gotModel(QStringListModel*)), this,
+            SLOT(slotObtainedModel(QStringListModel*)));
 
     thread->start();
 }
@@ -28,16 +28,15 @@ void CompleteModel::slotGetModel(int position)
     emit requestModel(position);
 }
 
-void CompleteModel::slotObtainedModel(QAbstractItemModel *model)
+void CompleteModel::slotObtainedModel(QStringListModel *model)
 {
     emit gotModel(model);
 }
 
-ModelFromScope::ModelFromScope(CompleteModel *parent, MdiTextEditor *editor,
-                               QCompleter *completer) :
-    parent(parent), editor(editor), completer(completer)
+ModelFromScope::ModelFromScope(CompleteModel *parent, MdiTextEditor *editor) :
+    parent(parent), editor(editor)
 {
-    connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
+    connect(parent, SIGNAL(requestModel(int)), this, SLOT(slotGetModel(int)));
 }
 
 void ModelFromScope::slotGetModel(int position)
@@ -45,7 +44,7 @@ void ModelFromScope::slotGetModel(int position)
     emit gotModel(modelFromScope(position));
 }
 
-QAbstractItemModel *ModelFromScope::modelFromScope(int position)
+QStringListModel *ModelFromScope::modelFromScope(int position)
 {
     //Don't know what it does but it was here before
 #ifndef QT_NO_CURSOR
@@ -82,7 +81,9 @@ QAbstractItemModel *ModelFromScope::modelFromScope(int position)
     QApplication::restoreOverrideCursor();
 #endif
 
-    return new QStringListModel(words, completer);
+    QStringListModel *result = new QStringListModel(words);
+    result->moveToThread(QApplication::instance()->thread());
+    return result;
 }
 
 bool ModelFromScope::inScopeOf(int a, int b)

@@ -10,15 +10,15 @@ class CompleteModel : public QObject
 {
     Q_OBJECT
 public:
-    CompleteModel(MdiTextEditor *parent, QCompleter *completer);
+    CompleteModel(MdiTextEditor *parent);
     ~CompleteModel();
 
 public slots:
     void slotGetModel(int position);
-    void slotObtainedModel(QAbstractItemModel *model);
+    void slotObtainedModel(QStringListModel *model);
 
 signals:
-    void gotModel(QAbstractItemModel *model);
+    void gotModel(QStringListModel *model);
     void requestModel(int position);
 
 private:
@@ -31,21 +31,19 @@ class ModelFromScope : public QObject
 {
     Q_OBJECT
 public:
-    ModelFromScope(CompleteModel *parent, MdiTextEditor *editor,
-                   QCompleter *completer);
+    ModelFromScope(CompleteModel *parent, MdiTextEditor *editor);
 
 public slots:
     void slotGetModel(int position);
 
 signals:
-    void gotModel(QAbstractItemModel *model);
+    void gotModel(QStringListModel *model);
 
 private:
     CompleteModel *parent;
     MdiTextEditor *editor;
-    QCompleter *completer;
 
-    QAbstractItemModel *modelFromScope(int position);
+    QStringListModel *modelFromScope(int position);
     bool inScopeOf(int a, int b);
 };
 

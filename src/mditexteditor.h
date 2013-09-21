@@ -71,7 +71,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 public slots:
-    void slotGotModel(QAbstractItemModel *model);
+    void slotGotModel(QStringListModel *model);
 
 private slots:
     void slotCursorChanged();
@@ -98,7 +98,7 @@ private:
      */
     QPair<QChar, QChar> notBrace;
 
-    QAbstractItemModel *modelFromScope(int position = -1);
+    QStringListModel *modelFromScope(int position = -1);
     bool inScopeOf(int a, int b);
 
     int getIndentLevel(QTextCursor cr);
