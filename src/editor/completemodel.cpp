@@ -5,18 +5,16 @@ CompleteModel::CompleteModel(MdiTextEditor *parent) :
 {
     thread = new QThread();
     worker = new ModelFromScope(parent);
-    model = new QStringListModel();
 
     worker->moveToThread(thread);
-    model->moveToThread(thread);
 
     connect(parent, SIGNAL(getModel(int)), this, SLOT(slotGetModel(int)));
     connect(this, SIGNAL(gotModel(QStringListModel*)), parent,
             SLOT(slotGotModel(QStringListModel*)));
-    connect(this, SIGNAL(requestModel(int, QStringListModel*)), worker,
-            SLOT(slotGetModel(int, QStringListModel*)));
-    connect(worker, SIGNAL(gotModel()), this,
-            SLOT(slotObtainedModel()));
+    connect(this, SIGNAL(requestModel(int)), worker,
+            SLOT(slotGetModel(int)));
+    connect(worker, SIGNAL(gotModel(QStringList)), this,
+            SLOT(slotObtainedModel(QStringList)));
 
     thread->start();
 }
@@ -29,12 +27,12 @@ CompleteModel::~CompleteModel()
 
 void CompleteModel::slotGetModel(int position)
 {
-    emit requestModel(position, model);
+    emit requestModel(position);
 }
 
-void CompleteModel::slotObtainedModel()
+void CompleteModel::slotObtainedModel(QStringList words)
 {
-    emit gotModel(model);
+    emit gotModel(new QStringListModel(words));
 }
 
 ModelFromScope::ModelFromScope(MdiTextEditor *editor) :
@@ -42,12 +40,9 @@ ModelFromScope::ModelFromScope(MdiTextEditor *editor) :
 {
 }
 
-void ModelFromScope::slotGetModel(int position, QStringListModel *model)
+void ModelFromScope::slotGetModel(int position)
 {
-    this->model = model;
     modelFromScope(position);
-    model->moveToThread(QApplication::instance()->thread());
-    emit gotModel();
 }
 
 void ModelFromScope::modelFromScope(int position)
@@ -87,7 +82,7 @@ void ModelFromScope::modelFromScope(int position)
     QApplication::restoreOverrideCursor();
 #endif
 
-    model->setStringList(words);
+    emit gotModel(words);
 }
 
 bool ModelFromScope::inScopeOf(int a, int b)

@@ -15,14 +15,13 @@ public:
 
 public slots:
     void slotGetModel(int position);
-    void slotObtainedModel();
+    void slotObtainedModel(QStringList words);
 
 signals:
     void gotModel(QStringListModel *model);
-    void requestModel(int position, QStringListModel *model);
+    void requestModel(int position);
 
 private:
-    QStringListModel *model;
     QThread *thread;
     MdiTextEditor *parent;
     ModelFromScope *worker;
@@ -35,14 +34,13 @@ public:
     ModelFromScope(MdiTextEditor *editor);
 
 public slots:
-    void slotGetModel(int position, QStringListModel *model);
+    void slotGetModel(int position);
 
 signals:
-    void gotModel();
+    void gotModel(QStringList words);
 
 private:
     MdiTextEditor *editor;
-    QStringListModel *model;
 
     void modelFromScope(int position);
     bool inScopeOf(int a, int b);

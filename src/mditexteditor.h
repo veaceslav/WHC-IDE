@@ -98,9 +98,6 @@ private:
      */
     QPair<QChar, QChar> notBrace;
 
-    QStringListModel *modelFromScope(int position = -1);
-    bool inScopeOf(int a, int b);
-
     int getIndentLevel(QTextCursor cr);
     /**
      * @brief matchIndent - Matches the indent level to the given amount.
