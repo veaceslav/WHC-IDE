@@ -156,6 +156,14 @@ set(test_SOURCES
     tests/testdiagramscene.cpp
     )
 
+set(editor_HEADERS
+    editor/completemodel.h
+    )
+
+set(editor_SOURCES
+    editor/completemodel.cpp
+    )
+
 set(whc_SOURCES
     ${plot_SOURCES}
     ${model_SOURCES}
@@ -167,6 +175,7 @@ set(whc_SOURCES
     ${projBuild_SOURCES}
     ${projExe_SOURCES}
     ${test_SOURCES}
+    ${editor_SOURCES}
     main.cpp
     ide.cpp
     newproject.cpp
@@ -193,6 +202,7 @@ set(whc_HEADERS
     ${projBuild_HEADERS}
     ${projExe_HEADERS}
     ${test_HEADERS}
+    ${editor_HEADERS}
     ide.h
     newproject.h
     findtool.h
