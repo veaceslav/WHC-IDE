@@ -1,6 +1,6 @@
-#include "completemodel.h"
+#include "completionmodel.h"
 
-CompleteModel::CompleteModel(MdiTextEditor *parent) :
+CompletionModel::CompletionModel(MdiTextEditor *parent) :
     parent(parent)
 {
     thread = new QThread();
@@ -15,22 +15,25 @@ CompleteModel::CompleteModel(MdiTextEditor *parent) :
             SLOT(slotGetModel(int)));
     connect(worker, SIGNAL(gotModel(QStringList)), this,
             SLOT(slotObtainedModel(QStringList)));
+    connect(thread, SIGNAL(finished()), worker,
+            SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread,
+            SLOT(deleteLater()));
 
     thread->start();
 }
 
-CompleteModel::~CompleteModel()
+CompletionModel::~CompletionModel()
 {
-    worker->deleteLater();
-    thread->deleteLater();
+    thread->exit();
 }
 
-void CompleteModel::slotGetModel(int position)
+void CompletionModel::slotGetModel(int position)
 {
     emit requestModel(position);
 }
 
-void CompleteModel::slotObtainedModel(QStringList words)
+void CompletionModel::slotObtainedModel(QStringList words)
 {
     emit gotModel(new QStringListModel(words));
 }

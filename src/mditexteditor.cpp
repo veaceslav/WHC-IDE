@@ -23,7 +23,7 @@
 
 #include "mditexteditor.h"
 #include "mdisubwindow.h"
-#include "editor/completemodel.h"
+#include "editor/completionmodel.h"
 
 MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     QPlainTextEdit(parent), c(NULL)
@@ -76,7 +76,6 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
                         "\";");
 
     c = new QCompleter(parent);
-    emit getModel(this->textCursor().position());
     c->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     c->setCaseSensitivity(Qt::CaseInsensitive);
     c->setWrapAround(false);
@@ -86,11 +85,13 @@ MdiTextEditor::MdiTextEditor(const QString &fileName, QWidget *parent) :
     connect(this, SIGNAL(cursorPositionChanged()), this,
             SLOT(slotCursorChanged()));
 
-    complModel = new CompleteModel(this);
+    complModel = new CompletionModel(this);
 
     connect(this, SIGNAL(getModel(int)), complModel, SLOT(slotGetModel(int)));
     connect(complModel, SIGNAL(gotModel(QStringListModel*)), this,
             SLOT(slotGotModel(QStringListModel*)));
+
+    emit getModel(this->textCursor().position());
 }
 
 MdiTextEditor::~MdiTextEditor()

@@ -48,7 +48,7 @@
   http://doc.trolltech.com/4.6/widgets-codeeditor.html
 */
 class Ide;
-class CompleteModel;
+class CompletionModel;
 
 class MdiTextEditor : public QPlainTextEdit
 {
@@ -91,7 +91,7 @@ private:
     int prevCursorPos;
     QWidget *lineNumberArea;
     QCompleter *c;
-    CompleteModel *complModel;
+    CompletionModel *complModel;
     Ide *ide;
     /**
      * @brief notBrace - returned by getBracePair, see below

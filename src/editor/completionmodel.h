@@ -1,17 +1,17 @@
-#ifndef COMPLETEMODEL_H
-#define COMPLETEMODEL_H
+#ifndef COMPLETIONMODEL_H
+#define COMPLETIONMODEL_H
 
 #include <QThread>
 #include "mditexteditor.h"
 
 class ModelFromScope;
 
-class CompleteModel : public QObject
+class CompletionModel : public QObject
 {
     Q_OBJECT
 public:
-    CompleteModel(MdiTextEditor *parent);
-    ~CompleteModel();
+    CompletionModel(MdiTextEditor *parent);
+    ~CompletionModel();
 
 public slots:
     void slotGetModel(int position);
