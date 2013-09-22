@@ -1165,7 +1165,7 @@ void Ide::on_actionView_stats_triggered()
 {
     StaticMethods::destroyObj(&stats);
     if(whcFile.isNull())
-        stats = new Stats(devices);
+        stats = new Stats(this, devices);
     else
-        stats = new Stats(devices, whcFile);
+        stats = new Stats(this, devices, whcFile);
 }
