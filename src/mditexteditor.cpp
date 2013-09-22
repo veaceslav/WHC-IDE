@@ -178,10 +178,9 @@ void MdiTextEditor::insertCompletion(const QString &completion)
     if (c->widget() != this)
         return;
     QTextCursor tc = textCursor();
-    int extra = completion.length() - c->completionPrefix().length();
-    tc.movePosition(QTextCursor::Left);
-    tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(completion.right(extra));
+    tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor,
+                    c->completionPrefix().length());
+    tc.insertText(completion);
     setTextCursor(tc);
 }
 
