@@ -30,15 +30,15 @@
 #include "projectExec/oneprocess.h"
 #include "projectExec/devicequery.h"
 
-Stats::Stats(DeviceQuery *devQuery) :
-    deviceQuery(devQuery), ui(new Ui::Stats)
+Stats::Stats(QWidget *parent, DeviceQuery *devQuery) :
+    QDialog(parent), deviceQuery(devQuery), ui(new Ui::Stats)
 {
     logsPath = QString();
     initGraphs();
 }
 
-Stats::Stats(DeviceQuery *devQuery, QString whcFile) :
-    deviceQuery(devQuery), ui(new Ui::Stats)
+Stats::Stats(QWidget *parent, DeviceQuery *devQuery, QString whcFile) :
+    QDialog(parent), deviceQuery(devQuery), ui(new Ui::Stats)
 {
     logsPath = whcFile.remove(whcFile.split("/").last()) + "log/";
     initGraphs();
