@@ -536,8 +536,8 @@ void Ide::startNewProject(QString whcFiles)
     diagramShow = true;
     diagramSubW->show();
 
-    connect(model, SIGNAL(updateDiagram(QString, QString)),
-            diagram, SLOT(renameDiagItems(QString, QString)));
+    connect(model, SIGNAL(updateDiagram(QString, QString)), diagram, SLOT(renameDiagItems(QString, QString)));
+    connect(model, SIGNAL(updateDiagram(QString,QString)), diagram, SLOT(renameTaskMenu(QString,QString)));
 
     /**
      * after staring the project, we must enable this options

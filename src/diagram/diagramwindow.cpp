@@ -374,6 +374,14 @@ void DiagramWindow::renameDiagItems(QString oldName, QString newName)
     scene->renameItems(oldName, newName);
 }
 
+void DiagramWindow::renameTaskMenu(QString oldName, QString newName)
+{
+    QList<QAction *>takeTaskList = taskMenu->actions();
+    for(int i = 0; i < takeTaskList.count(); i++)
+        if(takeTaskList[i]->text() == oldName)
+            takeTaskList[i]->setText(newName);
+}
+
 void DiagramWindow::createActions()
 {
     toFrontAction = new QAction(QIcon(":/images/bringtofront.png"),
