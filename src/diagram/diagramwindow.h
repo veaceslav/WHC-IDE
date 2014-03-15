@@ -129,6 +129,7 @@ public slots:
      * @param newName - the name to replace the old name of the items
      */
     void renameDiagItems(QString oldName, QString newName);
+    void renameTaskMenu(QString oldName, QString newName);
 
 
 private slots:
