@@ -29,14 +29,12 @@
 #include <QDir>
 #include <QTextStream>
 #include <QDate>
-
 #include "staticmethods.h"
 #include "model/projecttreemodel.h"
 #include "model/projecttreemodel.h"
 #include "diagram/diagramwindow.h"
 
-AddTask::AddTask(QDomDocument* proj, Ide *parent)
-    : QDialog(parent)
+AddTask::AddTask(QDomDocument* proj, Ide *parent) : QDialog(parent)
 {
 
     projectXml = proj;
@@ -46,26 +44,32 @@ AddTask::AddTask(QDomDocument* proj, Ide *parent)
     this->resize(391, 98);
     this->setWindowTitle(QString("Add New Task"));
 
+
     buttonBox = new QDialogButtonBox(this);
-    buttonBox->setGeometry(QRect(40, 60, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
     taskLabel = new QLabel(this);
-    taskLabel->setGeometry(QRect(20, 10, 71, 21));
     taskLabel->setText("Task Name:");
 
     taskName = new QLineEdit(this);
     taskName->setObjectName(QString::fromUtf8("lineEdit"));
-    taskName->setGeometry(QRect(100, 10, 271, 22));
 
     xLabel = new QLabel(this);
-    xLabel->setGeometry(QRect(20, 40, 51, 21));
     xLabel->setText("Inputs:");
 
     xPoz = new QLineEdit(this);
-    xPoz->setGeometry(QRect(100, 40, 81, 22));
     xPoz->setValidator(new QIntValidator(this));
+
+    gridLayout.addWidget(taskLabel, 0, 0);
+    gridLayout.addWidget(taskName, 0, 1);
+    gridLayout.addWidget(xLabel, 1, 0);
+    gridLayout.addWidget(xPoz, 1, 1);
+    orizontalLayout.addWidget(buttonBox);
+    verticalLayout.addLayout(&gridLayout);
+    verticalLayout.addLayout(&orizontalLayout);
+    verticalLayout.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    this->setLayout(&verticalLayout);
 
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAddTask()));
     QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
