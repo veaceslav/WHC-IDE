@@ -1,7 +1,7 @@
 <!DOCTYPE WHC>
 <project name="Execute">
  <tasks>
-  <task x="1" y="1" id="1" name="Task1">
+  <task x="1" y="1" name="Task1" id="1">
    <file name="CMakeLists.txt"/>
    <file name="kernel.cl"/>
    <file name="main.cpp"/>
@@ -9,22 +9,22 @@
   </task>
  </tasks>
  <data>
-  <group x="1" y="1" id="1" name="input">
+  <group x="1" y="1" name="input" id="1">
    <file name="1.txt"/>
    <file name="2.txt"/>
    <file name="3.txt"/>
   </group>
-  <group x="1" y="1" id="2" name="output"/>
-  <group x="1" y="1" id="3" name="input2"/>
+  <group x="1" y="1" name="output" id="2"/>
+  <group x="1" y="1" name="input2" id="3"/>
  </data>
  <diagram>
-  <item x="2069" y="2485" diagId="0" type="0" id="1"/>
-  <item x="2256" y="2226" diagId="1" type="1" id="1"/>
-  <item x="2365" y="2712" diagId="2" type="1" id="2"/>
-  <arrow parentInId="1" parentOutId="0" connectorOutId="0" connectorInId="1"/>
-  <arrow parentInId="0" parentOutId="2" connectorOutId="0" connectorInId="1"/>
-  <item x="2602" y="2473" diagId="3" type="0" id="1"/>
-  <arrow parentInId="3" parentOutId="2" connectorOutId="0" connectorInId="1"/>
-  <arrow parentInId="1" parentOutId="3" connectorOutId="0" connectorInId="1"/>
+  <item diagId="0" type="0" x="2155" y="2462" id="1"/>
+  <item diagId="1" type="1" x="2431" y="2239" id="1"/>
+  <item diagId="2" type="1" x="2444" y="2687" id="2"/>
+  <arrow connectorOutId="0" parentOutId="0" connectorInId="1" parentInId="1"/>
+  <arrow connectorOutId="0" parentOutId="2" connectorInId="1" parentInId="0"/>
+  <item diagId="3" type="0" x="2691" y="2463" id="1"/>
+  <arrow connectorOutId="0" parentOutId="2" connectorInId="1" parentInId="3"/>
+  <arrow connectorOutId="0" parentOutId="3" connectorInId="1" parentInId="1"/>
  </diagram>
 </project>
