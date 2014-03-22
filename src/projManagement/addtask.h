@@ -23,8 +23,12 @@
 
 #ifndef ADDTASK_H
 #define ADDTASK_H
+
 #include <QDialogButtonBox>
 #include <QGroupBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGridLayout>
 #include "ide.h"
 
 /**
@@ -69,6 +73,9 @@ private:
     QLineEdit *taskName;
     QLabel *xLabel;
     QLineEdit *xPoz;
+    QVBoxLayout verticalLayout;
+    QGridLayout gridLayout;
+    QHBoxLayout orizontalLayout;
 };
 
 #endif //ADDTASK_H
