@@ -41,27 +41,32 @@ AddData::AddData(QDomDocument* proj, Ide* parent, QModelIndex selected)
     this->setWindowTitle("Add Existing Data Files");
 
     buttonBox = new QDialogButtonBox(this);
-    buttonBox->setGeometry(QRect(40, 110, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
     label = new QLabel(this);
-    label->setGeometry(QRect(10, 20, 91, 21));
-    label->setText("Choose file(s)");
+    label->setText("Choose file(s):");
 
     lineEdit = new QLineEdit(this);
-    lineEdit->setGeometry(QRect(100, 20, 241, 23));
 
     label_2 = new QLabel(this);
-    label_2->setGeometry(QRect(10, 60, 91, 16));
     label_2->setText("Choose Group:");
 
     comboBox = new QComboBox(this);
-    comboBox->setGeometry(QRect(100, 60, 241, 24));
 
     pushButton = new QPushButton(this);
-    pushButton->setGeometry(QRect(350, 20, 31, 24));
     pushButton->setText("...");
+
+    gridLayout.addWidget(label, 0, 0);
+    gridLayout.addWidget(lineEdit, 0, 1);
+    gridLayout.addWidget(pushButton, 0, 2);
+    gridLayout.addWidget(label_2, 1, 0);
+    gridLayout.addWidget(comboBox, 1, 1);
+    orizontalLayout.addWidget(buttonBox);
+    verticalLayout.addLayout(&gridLayout);
+    verticalLayout.addLayout(&orizontalLayout);
+    verticalLayout.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    this->setLayout(&verticalLayout);
 
 
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAddData()));

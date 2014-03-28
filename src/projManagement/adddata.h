@@ -28,6 +28,9 @@
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QDomDocument>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGridLayout>
 
 #ifdef _WIN32
 #define sep "\\"
@@ -79,5 +82,8 @@ private:
     QLabel *label_2;
     QComboBox *comboBox;
     QPushButton *pushButton;
+    QVBoxLayout verticalLayout;
+    QGridLayout gridLayout;
+    QHBoxLayout orizontalLayout;
 };
 #endif // ADDDATA_H
