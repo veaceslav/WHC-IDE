@@ -25,6 +25,9 @@
 #define DATAGROUP_H
 #include <QDialogButtonBox>
 #include <QGroupBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGridLayout>
 #include "ide.h"
 
 
@@ -52,6 +55,9 @@ private:
     QDialogButtonBox *buttonBox;
     QLabel *taskLabel;
     QLineEdit *taskName;
+    QVBoxLayout verticalLayout;
+    QGridLayout gridLayout;
+    QHBoxLayout orizontalLayout;
 
 };
 

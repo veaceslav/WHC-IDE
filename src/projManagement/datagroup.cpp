@@ -43,17 +43,22 @@ DataGroup::DataGroup(QDomDocument* proj, Ide *parent)
     this->setWindowTitle(QString("Add New Data Group"));
 
     buttonBox = new QDialogButtonBox(this);
-    buttonBox->setGeometry(QRect(30, 40, 341, 32));
     buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
     taskLabel = new QLabel(this);
-    taskLabel->setGeometry(QRect(15, 10, 79, 21));
     taskLabel->setText("Group Name:");
 
     taskName = new QLineEdit(this);
     taskName->setObjectName(QString::fromUtf8("lineEdit"));
-    taskName->setGeometry(QRect(100, 10, 271, 22));
+
+    gridLayout.addWidget(taskLabel, 0, 0);
+    gridLayout.addWidget(taskName, 0, 1);
+    orizontalLayout.addWidget(buttonBox);
+    verticalLayout.addLayout(&gridLayout);
+    verticalLayout.addLayout(&orizontalLayout);
+    verticalLayout.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    this->setLayout(&verticalLayout);
 
 
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotDataGroup()));
