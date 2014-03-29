@@ -29,6 +29,10 @@
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QDomNodeList>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGridLayout>
 
 #ifdef WIN32
 #define sep "\\"
@@ -73,5 +77,8 @@ private:
      * Instance of the overwrite diablog
      */
     OverwriteFile *overwriteDialog;
+    QVBoxLayout verticalLayout;
+    QGridLayout gridLayout;
+    QHBoxLayout orizontalLayout;
 };
 #endif // ADDNEWFILE_H
