@@ -36,7 +36,8 @@ TestDiagramScene::TestDiagramScene(QObject *parent) :
 {
 }
 
-void TestDiagramScene::slotTestRenameItems(){
+void TestDiagramScene::slotTestRenameItems()
+{
 
     Ide ide;
 
@@ -44,19 +45,19 @@ void TestDiagramScene::slotTestRenameItems(){
 
     QMenu menu;
 
-    DiagramWindow dw(&docXml,&ide);
+    DiagramWindow dw(&docXml, &ide);
 
-    DiagramScene ds(&menu,&docXml,&dw);
+    DiagramScene ds(&menu, &docXml, &dw);
 
     QDomNode domNode;
 
     QString oldName("oldName");
     QString newName("newName");
 
-    DiagramItem di(ds.myItemType,&menu,oldName,domNode,1,1,0,0);
+    DiagramItem di(ds.myItemType, &menu, oldName, domNode, 1, 1, 0, 0);
 
     ds.diagItems.append(&di);
-    ds.renameItems(oldName,newName);
+    ds.renameItems(oldName, newName);
 
     QVERIFY(ds.diagItems.at(0)->Name() == newName);
 }
