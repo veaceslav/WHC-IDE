@@ -78,8 +78,9 @@ public:
      *                     (used after a rename in the project tree model)
      * @param oldName - the name of the items that need to be renamed
      * @param newName - the name to replace the old name
+     * @param type    - type of the item to be renamed ("task" or "group")
      */
-    void renameItems(QString oldName, QString newName);
+    void renameItems(QString oldName, QString newName, QString type);
 
 
 public slots:

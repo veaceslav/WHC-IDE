@@ -59,7 +59,7 @@ void TestDiagramScene::slotTestRenameItems()
 
     ds.diagItems.append(&ditem1);
     ds.diagItems.append(&ditem2);
-    ds.renameItems(oldName, newName);
+    ds.renameItems(oldName, newName, "task");
 
     QVERIFY(ds.diagItems.at(0)->Name() == newName);
     QVERIFY(ds.diagItems.at(1)->Name() == oldName);

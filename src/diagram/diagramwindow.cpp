@@ -372,7 +372,7 @@ void DiagramWindow::deleteItemById(int id, int type)
 void DiagramWindow::renameDiagItems(QString oldName, QString newName,
                                     QString type)
 {
-    scene->renameItems(oldName, newName);
+    scene->renameItems(oldName, newName, type);
 }
 
 void DiagramWindow::renameTaskMenu(QString oldName, QString newName,

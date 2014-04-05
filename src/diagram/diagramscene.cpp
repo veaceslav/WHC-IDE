@@ -52,10 +52,17 @@ void DiagramScene::setItemType(DiagramItem::DiagramType type)
     myItemType = type;
 }
 
-void DiagramScene::renameItems(QString oldName, QString newName) {
+void DiagramScene::renameItems(QString oldName, QString newName, QString type)
+{
+    DiagramItem *crtItem;
+    DiagramItem::DiagramType typeInt = type == "task" ? DiagramItem::Task :
+                                                        DiagramItem::Data;
     for(int i = 0; i < diagItems.count(); i++)
-        if(diagItems.at(i)->Name() == oldName)
-            diagItems.at(i)->setName(newName);
+    {
+        crtItem = diagItems.at(i);
+        if(crtItem->diagramType() == typeInt && crtItem->Name() == oldName)
+            crtItem->setName(newName);
+    }
 }
 
 void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
