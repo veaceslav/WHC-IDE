@@ -49,7 +49,7 @@ class DiagramItem : public QGraphicsItem
 public:
     enum {Type = UserType + 15};
 
-    enum DiagramType {Task,Data};
+    enum DiagramType {Task, Data};
 
     DiagramItem(DiagramType DiagramType, QMenu *contextMenu,
                 QString name, QDomNode& node, int diagId, int inputs =1,

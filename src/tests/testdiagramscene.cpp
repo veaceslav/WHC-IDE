@@ -49,17 +49,20 @@ void TestDiagramScene::slotTestRenameItems()
 
     DiagramScene ds(&menu, &docXml, &dw);
 
-    QDomNode domNode;
+    QDomNode domNode1, domNode2;
 
     QString oldName("oldName");
     QString newName("newName");
 
-    DiagramItem di(ds.myItemType, &menu, oldName, domNode, 1, 1, 0, 0);
+    DiagramItem ditem1(DiagramItem::Task, &menu, oldName, domNode1, 1, 1, 0, 0);
+    DiagramItem ditem2(DiagramItem::Data, &menu, oldName, domNode2, 2, 1, 0, 0);
 
-    ds.diagItems.append(&di);
+    ds.diagItems.append(&ditem1);
+    ds.diagItems.append(&ditem2);
     ds.renameItems(oldName, newName);
 
     QVERIFY(ds.diagItems.at(0)->Name() == newName);
+    QVERIFY(ds.diagItems.at(1)->Name() == oldName);
 }
 
 void TestDiagramScene::slotTestGetItemById()
