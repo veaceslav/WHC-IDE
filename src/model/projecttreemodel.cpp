@@ -133,7 +133,7 @@ bool ProjectTreeModel::setData(const QModelIndex &index,
             return false;
         }
 
-        emit updateDiagram(oldFile, newFile);
+        emit updateDiagram(oldFile, newFile, type);
     }
 
     /*Everything went well, so we write the changes to the xml file*/

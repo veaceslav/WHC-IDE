@@ -106,8 +106,10 @@ signals:
      *                        with the new one
      * @param oldName - the name used before the rename
      * @param newName - the name used to replace the old name
+     * @param type    - type of the diagram item to be renamed ("task" or
+     *                  "group")
      */
-    void updateDiagram(QString oldName, QString newName);
+    void updateDiagram(QString oldName, QString newName, QString type);
 
 
 private:

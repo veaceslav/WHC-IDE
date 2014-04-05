@@ -369,12 +369,14 @@ void DiagramWindow::deleteItemById(int id, int type)
     qDebug() << "Diagram Window: Unknown option";
 }
 
-void DiagramWindow::renameDiagItems(QString oldName, QString newName)
+void DiagramWindow::renameDiagItems(QString oldName, QString newName,
+                                    QString type)
 {
     scene->renameItems(oldName, newName);
 }
 
-void DiagramWindow::renameTaskMenu(QString oldName, QString newName)
+void DiagramWindow::renameTaskMenu(QString oldName, QString newName,
+                                   QString type)
 {
     QList<QAction *>takeTaskList = taskMenu->actions();
     for(int i = 0; i < takeTaskList.count(); i++)
