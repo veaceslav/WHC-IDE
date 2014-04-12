@@ -43,6 +43,7 @@ public:
 
     bool setData(const QVariant &value,int role);
     int row() const;
+    QList<ProjectTreeItem*> getChildItems();
 
     QDomNode getNode();
 

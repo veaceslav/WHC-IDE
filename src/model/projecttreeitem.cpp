@@ -118,6 +118,11 @@ int ProjectTreeItem::row() const
         return 0;
 }
 
+QList<ProjectTreeItem *> ProjectTreeItem::getChildItems()
+{
+    return childItems;
+}
+
 QDomNode ProjectTreeItem::getNode()
 {
     return node;
